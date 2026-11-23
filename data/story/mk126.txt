@@ -1,0 +1,38 @@
+0.30	On the rooftop, Liu Kang kneels on hands and knees at Raiden's feet, beaten.
+5.60	Inside the portal, Shao Kahn gathers purple energy.
+8.60	Liu Kang rises.
+11.20	Fire and lightning clash between them.
+19.80	Liu Kang lunges with a flaming fist. Raiden's lightning engulfs him.
+26.25	Liu Kang collapses, charred and smoking.
+28.80	Raiden kneels and cradles his burned, bloody face.
+38.70	Johnny Cage and Sonya look on. Liu Kang stirs.
+55.50	Liu Kang's head falls back. He is dead.
+59.00	Raiden bows his head, his hat hiding his face.
+66.40	Shao Kahn steps out of the portal, crackling with purple energy.
+75.60	Johnny and Sonya charge at Shao Kahn.
+78.20	Shao Kahn knocks them both flat, and they lie still.
+82.00	Raiden lays Liu Kang down and rises to face the emperor.
+86.40	Raiden bows before Shao Kahn.
+107.00	Shao Kahn seizes Raiden, lifts him overhead, and slams him down.
+111.40	Raiden lies stunned beneath him.
+117.60	Behind him, chunks of the city float skyward.
+125.40	Shao Kahn hauls Raiden up by the collar and pounds him.
+132.00	He hurls Raiden high into the air.
+# unsure: the round medallion that shatters may be Raiden's amulet, but he holds it whole in mk127.
+137.80	A round medallion falls from Raiden and shatters on the rooftop.
+146.50	Raiden crashes onto a ledge and slumps to the rooftop.
+156.10	Kahn holds a green-glowing hammer.
+164.10	Kahn blazes green.
+170.60	Raiden staggers up, and Kahn grabs him.
+176.40	Kahn flings him across the rooftop.
+179.00	Raiden crashes down amid the burning city and lies face down, bloodied.
+199.60	Shao Kahn raises his hammer for the killing blow.
+203.20	Golden lightning strikes the rooftops all around them.
+207.80	Raiden looks up. A blazing light bursts open in the sky.
+213.00	Golden dragons pour out of the light and coil through the city.
+217.60	A dragon streams into Raiden. Wreathed in gold, he rises to his feet.
+223.00	Golden dragons circle him as he lifts into the air, glowing.
+227.60	Shao Kahn stares. Blinding light floods over him.
+241.00	Raiden thrusts out his hands and pours a torrent of golden energy into Shao Kahn.
+246.80	The blast engulfs Kahn's chest, but he stands his ground.
+251.00	The light fades. Kahn stands unharmed.

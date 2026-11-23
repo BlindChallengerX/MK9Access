@@ -1,0 +1,19 @@
+0.10	Kitana has felled a guard.
+6.00	She leaps away into the dark.
+13.00	Kitana creeps down a long stone stairway into the dark.
+19.00	At the bottom, she looks around warily.
+27.30	The Flesh Pits: raw carcasses hang from hooks above pools of blood.
+33.50	Glass tanks of green fluid hold pale, twisted bodies.
+37.20	In one floats a pale, scarred woman.
+41.50	Kitana walks between the tanks, past a table of bloody flesh lit by candles.
+48.40	She passes a tank holding a woman wrapped in white strips.
+52.60	Inside, the woman grins with a mouth of huge yellow fangs.
+# unsure: the grinning fanged woman at 52 to 55 seconds seems to be in a tank, separate from the Mileena on the slab later; she is left unnamed.
+58.60	Kitana's eyes widen.
+61.50	She walks on to a candlelit slab where another woman lies still.
+66.50	This is Mileena: lean and barefoot, long black hair, wrapped only in white cloth strips.
+72.50	Kitana leans over her. Her eyes are closed. Her mouth is a mass of jagged yellow fangs.
+82.60	Kitana stares down at her.
+86.60	Mileena's amber eyes snap open.
+92.50	Mileena sits up on the bloody slab and slides to her feet. Kitana steps back.
+104.00	She circles Kitana.

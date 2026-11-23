@@ -1,0 +1,27 @@
+0.30	On the rooftop, Raiden glows gold, ringed by dragons of light. Shao Kahn kneels before him, bleeding.
+6.80	Golden dragons coil around Kahn as he crouches on all fours.
+12.00	Raiden sends the dragons striking at Kahn. Kahn staggers up, hammer in hand.
+21.00	Kahn snarls through bloody teeth and raises his hammer high.
+29.00	Raiden blazes with light and unleashes a torrent of golden energy.
+33.50	Golden dragons swarm Kahn, burning into him and lifting him off his feet.
+39.00	Fire bursts from Kahn's mouth and chest.
+42.50	Raiden lowers his arms and sags, drained.
+46.00	Kahn burns from within, dragons tearing through his body.
+49.60	He staggers ablaze beside the portal while Raiden sinks to one knee.
+55.00	Shao Kahn explodes in a blinding blast.
+57.80	A streak of light shoots into the sky and bursts.
+61.80	A ring of fire fades in the clouds, and light pours through.
+66.50	Raiden looks up.
+70.50	The light spreads, and the dark clouds roll back to reveal blue sky.
+82.50	Raiden stands alone on the rooftop under clearing skies.
+87.50	He turns and touches the amulet on his chest.
+91.00	In his palm, the amulet's cracks fade, revealing a dragon emblem.
+97.00	Raiden sits, battered, and puts the amulet away.
+100.20	Johnny and Sonya help him up.
+108.50	The three gaze down at Liu Kang's charred body.
+143.80	Lightning crashes down, and the three vanish with Liu Kang's body.
+148.50	The rooftop lies empty.
+152.50	Shao Kahn's skull helmet lies smoking on the ground.
+159.60	Quan Chi lifts the helmet. A ghostly figure rises from it in purple smoke.
+168.00	Shinnok's spirit looms.
+197.80	Shinnok is a ghostly purple phantom: gaunt grey face, glowing eyes, tall dark hood.

@@ -1,0 +1,10 @@
+0.20	A scorched body outline marks the street.
+3.70	Stryker returns with Nightwolf.
+35.20	On a bloodstained table lie surgical tools and a metal breathing mask with tubes.
+41.00	Kano picks a tool from the tray, his red cybernetic eye glowing.
+52.30	Kano lifts the mask.
+59.30	Kabal lies on the table in a black breathing mask with red vents, tubes running down to his back.
+82.70	Kabal feels the mask with both hands.
+102.80	Kano holds up two hooked swords.
+105.30	Kabal gets up: burned, scarred arms, a sleeveless dark vest, air tanks strapped to his back.
+114.10	Kabal turns away from the swords.

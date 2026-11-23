@@ -1,0 +1,6 @@
+0.10	Kitana lies beaten. Smoke walks over to her.
+5.80	Smoke vanishes in a wisp of grey haze.
+# unsure: at 7 seconds Smoke is gone and grey wisps hang where he stood; the vanishing itself is not shown.
+9.40	In a dark forest, Smoke spies on Kano and Shang Tsung beside weapon crates.
+21.10	Kano shoulders a rocket launcher for Shang Tsung.
+32.00	Smoke watches from cover, then steps out into the open behind them.

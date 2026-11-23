@@ -27,12 +27,12 @@ k = None if INDEX_ONLY else Kokoro(os.path.join(KDIR, "kokoro-v1.0.onnx"), os.pa
 # MK character / term names Kokoro tends to mangle, as espeak-style IPA.
 LEXICON = {
     "Sub-Zero": "sˈʌbzˈiəɹoʊ", "Scorpion": "skˈɔːɹpiən", "Kung Lao": "kˈʊŋ lˈaʊ",
-    "Liu Kang": "lˈiːuː kˈɑːŋ", "Kitana": "kɪtˈɑːnə", "Mileena": "mɪlˈiːnə",
+    "Liu Kang": "lˈuː kˈæŋ", "Kitana": "kɪtˈɑːnə", "Mileena": "mɪlˈiːnə",
     "Jade": "dʒˈeɪd", "Sindel": "sˈɪndɛl", "Ermac": "ˈɜːɹmæk", "Kabal": "kˈɑːbɑːl",
     "Sektor": "sˈɛktɔːɹ", "Cyrax": "sˈaɪɹæks", "Baraka": "bɑːɹˈɑːkə", "Sheeva": "ʃˈiːvə",
     "Quan Chi": "kwˈɑːn tʃˈiː", "Shang Tsung": "ʃˈɑːŋ sˈʌŋ", "Noob Saibot": "nˈuːb sˈaɪbɑːt",
     "Nightwolf": "nˈaɪtwʊlf", "Stryker": "stɹˈaɪkɚ", "Kenshi": "kˈɛnʃiː",
-    "Skarlet": "skˈɑːɹlɛt", "Raiden": "ɹˈaɪdɛn", "Reptile": "ɹˈɛptaɪl",
+    "Skarlet": "skˈɑːɹlɛt", "Raiden": "ɹˈeɪdən", "Reptile": "ɹˈɛptaɪl",
     "Cyber Sub-Zero": "sˈaɪbɚ sˈʌbzˈiəɹoʊ", "Kombat": "kˈɑːmbæt",
 }
 _NAME_RE = re.compile("(?<![A-Za-z])(" + "|".join(sorted(LEXICON, key=len, reverse=True)) + ")('s)?(?![A-Za-z])")

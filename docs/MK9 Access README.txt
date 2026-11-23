@@ -1,4 +1,4 @@
-MK9 Access 1.0.3
+MK9 Access 1.0.4
 
 A screen reader and audio mod for Mortal Kombat Komplete Edition on PC, using
 MK9 by Lauta (a fan PC port of the Xbox 360 game, by Lauta / machinebreak).
@@ -10,6 +10,8 @@ MK9 by Lauta (a fan PC port of the Xbox 360 game, by Lauta / machinebreak).
   and whether they are in the air. Short tones tell you when either fighter
   drops below half and a quarter of their health.
 - Every fatality is named and described, yours and the ones done to you.
+- Story Mode's cutscenes are described: a narrator speaks in the pauses
+  between the characters' lines. Skipping a cutscene stops her.
 - In Practice, the port's frame data and its opponent recording are read.
 
 
@@ -232,7 +234,9 @@ MK9Access\update.log.
 
 9. KNOWN LIMITS
 
-- Story Mode has not been tested with the mod.
+- Story Mode descriptions are in English and follow the English voice
+  track's timing. Only the opening chapter has been tried so far; the
+  short scenes before and after each story fight are not described.
 - The port's options window (F2) is read when it opens; moving inside it is
   not read yet.
 - The round timer and the pause screen's match stats are not read.
@@ -247,5 +251,5 @@ MK9 Access by BlindChallengerX.
 MK9 by Lauta: https://github.com/machinebreak/mk9-lauta (GPL).
 Speech: Prism (MPL 2.0). Hooks: MinHook (BSD 2-Clause).
 Krypt footsteps: Kenney (CC0).
-Fatality descriptions voiced with Kokoro.
+Fatality and Story Mode descriptions voiced with Kokoro.
 The licenses are in the licenses folder.

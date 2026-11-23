@@ -103,6 +103,8 @@ void fight_poll(void) {
     /* the hum carries on through Finish Him (state 11) until the fatality starts: range matters there */
     int st = game_state();
     int inplay = (st == GS_PLAY || (st == GS_FATALITY && fatality_finish_him())) && read_fighter(0, &me) && read_fighter(1, &op);
+    /* Story Mode loads the next fight behind its movies (state 8 with both fighters from 3 s in): no cues there */
+    if (story_playing()) inplay = 0;
     if (!inplay) {
         if (s_inplay) { hum_set(0, 110, 0, 0, W_SOFT); hum_trem(0, 0); s_hp[0] = s_hp[1] = -1; log_line("fight: cues off"); }
         s_inplay = 0;

@@ -4,3 +4,4 @@ tools/logs/
 tools/__pycache__/
 tools/ue3unpack.exe
 *.bak
+__pycache__/

@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include "rex_mod.h"
 
-#define MOD_VERSION "1.0.3"
+#define MOD_VERSION "1.0.4"
 
 extern wchar_t g_game_dir[MAX_PATH];   /* folder of mk9.exe, with trailing backslash */
 extern wchar_t g_mod_dir[MAX_PATH];    /* g_game_dir + "MK9Access\" */
@@ -162,6 +162,11 @@ void sysdialog_init(void);
 void sysdialog_shutdown(void);
 void sysdialog_poll(void);
 int sysdialog_recent(void);            /* a system dialog is up, or was shown in the last 2 s */
+
+/* story.c: Story Mode movies described (MK9Access\story) */
+void story_init(void);
+void story_poll(void);
+int story_playing(void);
 
 /* game.c */
 void game_init(void);

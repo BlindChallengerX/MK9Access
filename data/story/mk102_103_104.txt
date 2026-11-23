@@ -1,0 +1,10 @@
+1.60	Smoke runs to the fallen Sub-Zero.
+35.00	Kabal pries open a panel on Sub-Zero's armoured back and works at the wiring inside.
+40.60	Sub-Zero is all blue and silver armour now, dotted with glowing lights.
+54.20	Sub-Zero's blue visor display reboots. A red banner flashes: Override.
+58.20	Text reads: connection failed, command and control module missing.
+62.00	Slaving protocols disengaged. Autonomous command engaged.
+76.30	Later, Sub-Zero sits on a stone slab among the Earthrealm fighters.
+121.90	Later, in Shao Kahn's throne room, Sub-Zero steps out of a green portal.
+133.20	Sektor and Cyrax wait.
+148.90	Sektor turns and strides into a green portal. Sub-Zero follows him through.

@@ -487,3 +487,34 @@ Not done / known gaps:
   Ladder screen, pause menu, move list (English in the game too), quit dialogs, Options > Gameplay, Button
   Configuration; the switch both ways across a real restart. Still English: the mod's own phrases, fatality clips, the
   Fatality Tutorial name match (fatality_try compares English names). Other languages not tried.
+
+## Story Mode audio description (2026-11-23, story.c)
+- Story cutscenes are 64 pre-rendered movies, `game_root\Movies\mk*.wmv` (WMV3 720p 30 fps, 103 minutes; audio tracks
+  ger, spa, ita, fre, eng - English is track 4). The game's own subtitle script with timings is `MK9Story.eng` inside
+  Coalesced.eng: sections `[mk004]` named like the movie files, rows `n=startframe,endframe,text` at 30 fps (1441 lines;
+  `[NIS_*]` sections are the short in-engine pre/post-fight scenes, not described).
+- Data: `data/story/<movie>.txt`, one description per line `SECONDS<TAB>text`, placed in silences between subtitle
+  lines. `tools/story/prep.py` writes `work/story/<movie>/lines.txt` (dialogue + gaps) and contact sheets (1 picture/s
+  in and before gaps, 1/2 s otherwise) for writing; `tools/story/gen_story.py [movie...]` records Kokoro af_heart clips
+  to out/MK9Access/story/<movie>_<n>.wav (speeds up to 1.45x to fit before the next spoken line, reports overruns) and
+  rewrites cues.tsv; deploy.sh and package.py copy that folder. 638 clips, ~86 MB WAV. BRIEF.md in work/story holds the
+  writing rules (major moments, looks with footwear on first appearance, no meta, 2.8 words/s).
+- Runtime: the movie's name from the host open of `...\Movies\<name>.wmv` (MinHook on ntdll NtCreateFile; the port's
+  file system opens it just before the codec starts - the port uses the same signal for its .bik pictures); the time
+  from the XMV codec's GetOutput `82D25390` (the port's FFmpeg replacement; *r8 = picture time in ms, big-endian; time
+  of the first picture = 0); Init `82D255C0` = new movie; Close `82D25280` = ended or skipped (clip stopped). A cue plays
+  when the picture time passes it; it waits while the previous story clip still speaks (dropped after 2.5 s late).
+  Verified 2026-11-23: start-up logos detected by name with a test cue at exactly 1000 ms; Story chapter 1 opening
+  movie mk001_002_003 named and described from 3.2 s.
+- Timing measured by loopback (tools/story/synccheck.py) over all of mk001_002_003: every clip landed 0.18-0.22 s
+  early (the codec hands out pictures ahead of display), so story.c waits LAG_MS 200 after the cue time.
+- The fight is loaded behind each Story movie (game state 8 with both fighters from ~3 s in), so the distance hum and
+  health tones ran through the movies (user report 2026-11-23); fight_poll is off while story_playing().
+  Not yet checked: whether the hum runs during the short in-engine NIS scenes before/after story fights.
+- Names (user 2026-11-23): Raiden = RAY-den (ɹˈeɪdən), Liu Kang = Loo Kang, Kang as in bang (lˈuː kˈæŋ); fixed in
+  gen_story.py and gen_fatalities.py LEXICON, all affected story clips and all fatality clips re-recorded.
+- Writing was done by subagents from the contact sheets; fast fight beats can be misread from 1-2 s sampling
+  (mk117's Sindel kills were wrong and were fixed from 0.5 s frames). mk109's subtitle row "You. You are not worthy"
+  starts at 77.0 in the game's data but is spoken at 107.0.
+- Other game languages: the movie plays that language's track; cues stay on the English timings (dubs mostly follow
+  the same lip timing; not checked).

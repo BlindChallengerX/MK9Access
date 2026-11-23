@@ -1,0 +1,7 @@
+0.30	Raiden faces Scorpion amid Netherrealm fire. Green sorcery engulfs Scorpion, and Quan Chi stands in his place.
+42.80	Quan Chi lets his arms fall and gapes at Raiden.
+62.20	Quan Chi turns and walks away.
+66.80	Quan Chi conjures green fire.
+# Revenants seen: a grey cyborg, Jade, Nightwolf, Sindel, Stryker, Jax, Kung Lao, Kitana, Kabal.
+69.80	The fallen stand as revenants, ashen and cracked, eyes glowing white.
+90.50	Jax and the revenants march on Raiden.

@@ -1,9 +1,9 @@
 /* MK9-specific readers and the mod's keys. */
 #include "access.h"
 
-void game_init(void) { keys_init(); audio_init(); im_init(); menu_init(); fatality_init(); sysdialog_init(); }
+void game_init(void) { keys_init(); audio_init(); im_init(); menu_init(); fatality_init(); sysdialog_init(); story_init(); }
 void game_shutdown(void) { sysdialog_shutdown(); im_shutdown(); menu_shutdown(); hum_all_off(); audio_shutdown(); }
-void game_poll(void) { im_poll(); menu_poll(); fight_poll(); mg_poll(); fatality_poll(); sysdialog_poll(); audio_rec_poll(); }
+void game_poll(void) { im_poll(); menu_poll(); fight_poll(); mg_poll(); fatality_poll(); story_poll(); sysdialog_poll(); audio_rec_poll(); }
 
 void game_key(int vk, int shift, int ctrl) {
     switch (vk) {

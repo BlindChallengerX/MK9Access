@@ -1,0 +1,5 @@
+0.10	Baraka lies beaten.
+5.40	Cyrax walks away. In the arena courtyard, monks and fighters line the floor.
+13.10	He spots Raiden beside Smoke, a ninja in a grey hood and mask.
+# unsure: the grey-masked ninja beside Raiden is taken to be Smoke
+42.70	Cage strides out to fight.

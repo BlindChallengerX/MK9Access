@@ -12,7 +12,9 @@ rm -f "$G/version.dll"
 cp out/MK9Access/MK9Access.dll out/MK9Access/prism.dll "$G/MK9Access/"; cp -r out/MK9Access/movelists "$G/MK9Access/"
 # Described-fatality clips + index (built by tools/gen_fatalities.py).
 [ -d out/MK9Access/fatalities ] && cp -r out/MK9Access/fatalities "$G/MK9Access/"
-[ -d data ] && cp -r data/. "$G/MK9Access/" 2>/dev/null || true
+# Story Mode description clips + cues.tsv (built by tools/story/gen_story.py from data/story).
+[ -d out/MK9Access/story ] && cp -r out/MK9Access/story "$G/MK9Access/"
+GA=$(cd "$G" && pwd); [ -d data ] && (cd data && for x in *; do [ "$x" = story ] || cp -r "$x" "$GA/MK9Access/"; done) 2>/dev/null || true
 # Bread-and-butter combo reference (open in a browser with a screen reader).
 [ -f "docs/MK9 BnB Combos.html" ] && cp "docs/MK9 BnB Combos.html" "$G/MK9 BnB Combos.html"
 # Port updater: the mod starts it hidden at every game start (src/update.c); it downloads a newer

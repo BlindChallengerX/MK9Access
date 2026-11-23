@@ -1,0 +1,10 @@
+0.20	Ermac, Goro and Kintaro lie beaten; Kano stands frozen.
+20.30	Blue and green energy streaks across dead grass.
+23.30	In a graveyard under a burning sky, Noob Saibot gathers crackling energy between his hands.
+32.40	Cyber Sub-Zero hides behind a gravestone. Ahead, Quan Chi draws green light out of kneeling soldiers into his palms.
+45.70	Raiden's vision: a vast storm of souls towers over the Statue of Liberty.
+67.10	Raiden studies his cracked amulet.
+90.70	Sub-Zero rises and creeps between the graves toward green fire.
+95.40	Quan Chi and Noob Saibot stand beside it.
+# lines.txt gives 77.0 as the start of "You. You are not worthy"; it is probably 107.0, so the next line is kept short.
+104.60	Noob Saibot strides toward Sub-Zero.

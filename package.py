@@ -21,7 +21,7 @@ files = [
     ('data/sounds/Kenney-License.txt', 'licenses/Kenney-CC0.txt'),
 ]
 for d, dest in (('out/MK9Access/fatalities', 'MK9Access/fatalities'), ('data/movelists', 'MK9Access/movelists'),
-                ('data/sounds', 'MK9Access/sounds')):
+                ('data/sounds', 'MK9Access/sounds'), ('out/MK9Access/story', 'MK9Access/story')):
     for name in sorted(os.listdir(os.path.join(SRC, d))):
         files.append((d + '/' + name, dest + '/' + name))
 
