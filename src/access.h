@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include "rex_mod.h"
 
-#define MOD_VERSION "1.0.2"
+#define MOD_VERSION "1.0.3"
 
 extern wchar_t g_game_dir[MAX_PATH];   /* folder of mk9.exe, with trailing backslash */
 extern wchar_t g_mod_dir[MAX_PATH];    /* g_game_dir + "MK9Access\" */
@@ -82,6 +82,11 @@ void keys_toggle(void);
 void keys_game_thread(void);
 int keys_pc_on(void);
 int keys_for_button(const char *token, char *out, size_t cap);
+int lang_code(void);                   /* the game's language: 1 English, 5 Spanish, 9 Portuguese, 4 French, 3 German, 6 Italian */
+const wchar_t *lang_file_ext(void);    /* its Coalesced.* extension: eng, spa, ... */
+void lang_cycle(int back);             /* Ctrl+F12 (Ctrl+Shift+F12 back): the game's language at the next start */
+const char *lang_or(void);             /* " or " in the game's language, between its choice words */
+void game_text_utf8(char *s, size_t cap);   /* menu.c: a game text (Windows-1252) as UTF-8, in place */
 
 /* imgui.c: text of the port's own screens */
 void im_init(void);

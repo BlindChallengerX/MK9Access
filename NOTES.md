@@ -472,3 +472,18 @@ Not done / known gaps:
   to mk9.toml; the previous binds go to MK9Access\keys_saved.txt (its presence = PC layout on). Bot-verified: live
   switch both ways, G accepts, Shift and Ctrl press LT / RB, Shift/Ctrl+Right still change a value. Not tried in a
   fight (X-Ray with Shift+Space follows from the same modifier variants).
+
+## Game language (2026-11-23, 1.0.3)
+- Ctrl+F12 / Ctrl+Shift+F12 (keys.c lang_cycle): user_language 1 en, 5 es, 9 pt, 4 fr, 3 de, 6 it, written to mk9.toml
+  with mk9_online_language (es/en/pt; others en); the game reads it at its next start. The language in use is read at
+  mod start with rexruntimerd `rex::cvar::GetFlagByName` (MSVC std::string returned through a hidden pointer: 32 bytes,
+  data inline when capacity <= 15), so a `--user_language=5` command line counts too (handy for tests: the user's
+  mk9.toml stays as it is).
+- The game's 8-bit texts are Windows-1252 (Spanish accents garbled in speech before): game_text_utf8() converts
+  Localize results, SetText, SetVariable and Coalesced values. load_coalesced reads Coalesced.<eng|spa|por|fra|ger|ita>.
+  tidy() title-cases accented capitals (UTF-8 C3 80-9E). Ladder stats match [Ladder] RoundsLost/MatchesLost by key.
+  Message-box choices joined with lang_or() ("Sí o No").
+- Verified in Spanish by bot (test saves): title, main menu + descriptions, Fight menu, character select, difficulty,
+  Ladder screen, pause menu, move list (English in the game too), quit dialogs, Options > Gameplay, Button
+  Configuration; the switch both ways across a real restart. Still English: the mod's own phrases, fatality clips, the
+  Fatality Tutorial name match (fatality_try compares English names). Other languages not tried.

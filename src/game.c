@@ -17,7 +17,9 @@ void game_key(int vk, int shift, int ctrl) {
         else if (!im_practice_record_on()) fight_key(vk, shift, ctrl);
         break;
     case VK_F8: fight_key(vk, shift, ctrl); break;
-    case VK_F12: if (shift) keys_toggle(); else speak_repeat(); break;   /* repeat last; Shift: keyboard layout */
+    case VK_F12:                                  /* repeat last; Shift: keyboard layout; Ctrl: game language */
+        if (ctrl) lang_cycle(shift); else if (shift) keys_toggle(); else speak_repeat();
+        break;
     default: break;
     }
 }

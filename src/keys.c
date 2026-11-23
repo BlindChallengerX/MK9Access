@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdlib.h>
 
 #define NB 20
 static const char *k_cvar[NB] = {
@@ -72,7 +73,7 @@ static void read_binds(char v[NB][320]) {
 }
 
 /* mk9.toml with these keys' lines replaced (or added at the end), every other line kept (as the port's SaveToConfig). */
-static int write_binds(char v[NB][320]) {
+static int toml_set(const char *const *keys, const char *const *vals, int n) {
     wchar_t p[MAX_PATH]; toml_path(p);
     char *buf = NULL; long len = 0;
     FILE *f = _wfopen(p, L"rb");
@@ -82,10 +83,11 @@ static int write_binds(char v[NB][320]) {
         if (!buf) { fclose(f); return 0; }
         len = (long)fread(buf, 1, (size_t)len, f); buf[len] = 0; fclose(f);
     }
-    size_t cap = (size_t)len + NB * 400 + 16, o = 0;
+    size_t cap = (size_t)len + 16, o = 0;
+    for (int i = 0; i < n; i++) cap += strlen(keys[i]) + strlen(vals[i]) + 16;
     char *out = (char *)malloc(cap);
-    if (!out) { free(buf); return 0; }
-    int done[NB] = { 0 };
+    int *done = (int *)calloc((size_t)n, sizeof(int));
+    if (!out || !done) { free(out); free(done); free(buf); return 0; }
     char *s = buf;
     while (s && *s) {
         char *nl = strchr(s, '\n');
@@ -93,24 +95,29 @@ static int write_binds(char v[NB][320]) {
         if (ll && s[ll - 1] == '\r') ll--;
         char *t = s; while (t < s + ll && (*t == ' ' || *t == '\t')) t++;
         int hit = -1;
-        for (int i = 0; i < NB && hit < 0; i++) {
-            size_t kl = strlen(k_cvar[i]);
-            if ((size_t)(s + ll - t) < kl || strncmp(t, k_cvar[i], kl)) continue;
+        for (int i = 0; i < n && hit < 0; i++) {
+            size_t kl = strlen(keys[i]);
+            if ((size_t)(s + ll - t) < kl || strncmp(t, keys[i], kl)) continue;
             char *e = t + kl; while (e < s + ll && (*e == ' ' || *e == '\t')) e++;
             if (e < s + ll && *e == '=') hit = i;
         }
-        if (hit >= 0) { o += (size_t)snprintf(out + o, cap - o, "%s = \"%s\"\r\n", k_cvar[hit], v[hit]); done[hit] = 1; }
+        if (hit >= 0) { o += (size_t)snprintf(out + o, cap - o, "%s = \"%s\"\r\n", keys[hit], vals[hit]); done[hit] = 1; }
         else { memcpy(out + o, s, ll); o += ll; out[o++] = '\r'; out[o++] = '\n'; }
         s = nl ? nl + 1 : NULL;
     }
-    for (int i = 0; i < NB; i++)
-        if (!done[i]) o += (size_t)snprintf(out + o, cap - o, "%s = \"%s\"\r\n", k_cvar[i], v[i]);
-    free(buf);
+    for (int i = 0; i < n; i++)
+        if (!done[i]) o += (size_t)snprintf(out + o, cap - o, "%s = \"%s\"\r\n", keys[i], vals[i]);
+    free(buf); free(done);
     f = _wfopen(p, L"wb");
     int ok = f && fwrite(out, 1, o, f) == o;
     if (f) fclose(f);
     free(out);
     return ok;
+}
+static int write_binds(char v[NB][320]) {
+    const char *vals[NB];
+    for (int i = 0; i < NB; i++) vals[i] = v[i];
+    return toml_set(k_cvar, vals, NB);
 }
 
 /* "T" -> "T,Shift+T,Ctrl+T,Ctrl+Shift+T"; "Shift" -> "Shift+Shift,Ctrl+Shift+Shift"; "Control" -> "Ctrl+Control,Ctrl+Shift+Control". */
@@ -275,9 +282,83 @@ void keys_game_thread(void) {
     }
 }
 
+/* ---------- the game's language (Ctrl+F12) ----------
+ * user_language (XGetLanguage codes, the game's Coalesced.*): 1 English, 5 Spanish, 9 Portuguese, 4 French,
+ * 3 German, 6 Italian. The game reads it at start, so a change is saved in mk9.toml for the next start;
+ * mk9_online_language follows for the port's online screens (Spanish, English or Portuguese only). */
+typedef void *(*getflag_fn)(void *ret, const void *name);   /* std::string (std::string_view): MSVC hidden return */
+static getflag_fn p_getflag;
+static int g_lang = 1, g_lang_next;
+static const struct { int code; const wchar_t *ext; const char *online, *said; } k_lang[] = {
+    { 1, L"eng", "en", "English. The game changes language when you start it again." },
+    { 5, L"spa", "es", "Español. El juego cambia de idioma cuando lo vuelvas a abrir." },
+    { 9, L"por", "pt", "Português. O jogo muda de idioma quando você o abrir de novo." },
+    { 4, L"fra", "en", "Français. Le jeu change de langue au prochain démarrage." },
+    { 3, L"ger", "en", "Deutsch. Das Spiel wechselt die Sprache beim nächsten Start." },
+    { 6, L"ita", "en", "Italiano. Il gioco cambia lingua al prossimo avvio." },
+};
+#define NLANG (int)(sizeof k_lang / sizeof k_lang[0])
+
+static int lang_index(int code) { for (int i = 0; i < NLANG; i++) if (k_lang[i].code == code) return i; return -1; }
+int lang_code(void) { return g_lang; }
+/* between the game's own choice words ("Sí o No") */
+const char *lang_or(void) {
+    switch (g_lang) { case 5: case 6: return " o "; case 9: case 4: return " ou "; case 3: return " oder "; default: return " or "; }
+}
+const wchar_t *lang_file_ext(void) { int i = lang_index(g_lang); return k_lang[i < 0 ? 0 : i].ext; }
+
+/* user_language as the port has it: rex::cvar::GetFlagByName, else mk9.toml, else English */
+static int read_lang(void) {
+    char v[32] = "";
+    if (p_getflag) {
+        _Alignas(16) unsigned char ret[32] = { 0 };
+        SV n = { "user_language", 13 };
+        p_getflag(ret, &n);
+        size_t len = *(size_t *)(ret + 16), cap = *(size_t *)(ret + 24);
+        const char *d = cap > 15 ? *(const char **)ret : (const char *)ret;   /* MSVC std::string: short ones inline */
+        if (d && len < sizeof v) { memcpy(v, d, len); v[len] = 0; }        /* (a long one's heap copy is left: tiny) */
+    }
+    if (!v[0]) {
+        wchar_t p[MAX_PATH]; toml_path(p);
+        FILE *f = _wfopen(p, L"rb");
+        char line[256];
+        while (f && fgets(line, sizeof line, f)) {
+            char *s = line; while (*s == ' ' || *s == '\t') s++;
+            if (strncmp(s, "user_language", 13)) continue;
+            char *e = strchr(s, '='); if (!e) continue;
+            e++; while (*e == ' ' || *e == '"') e++;
+            snprintf(v, sizeof v, "%d", atoi(e));
+        }
+        if (f) fclose(f);
+    }
+    int c = atoi(v);
+    return lang_index(c) >= 0 ? c : 1;
+}
+
+/* Ctrl+F12: the next language (Ctrl+Shift+F12: the one before; English and Spanish are neighbours), said in that
+ * language, saved in mk9.toml for the next start */
+void lang_cycle(int back) {
+    if (!g_lang_next) g_lang_next = g_lang;
+    int i = (lang_index(g_lang_next) + (back ? NLANG - 1 : 1)) % NLANG;
+    g_lang_next = k_lang[i].code;
+    char code[8]; snprintf(code, sizeof code, "%d", k_lang[i].code);
+    const char *keys[2] = { "user_language", "mk9_online_language" }, *vals[2] = { code, k_lang[i].online };
+    int ok = toml_set(keys, vals, 2);
+    log_line("language: next start %s (%s)%s", code, k_lang[i].online, ok ? "" : ", mk9.toml NOT saved");
+    if (!ok) { speak(L"Could not save mk9.toml.", 1); return; }
+    if (g_lang_next == g_lang) {          /* back to the one in use: nothing changes */
+        char m[160]; snprintf(m, sizeof m, "%.*s.", (int)strcspn(k_lang[i].said, "."), k_lang[i].said);
+        speak_utf8(m, 1);
+    } else speak_utf8(k_lang[i].said, 1);
+}
+
 void keys_init(void) {
     HMODULE rt = GetModuleHandleW(L"rexruntimerd.dll");
     p_setflag = rt ? (setflag_fn)(void *)GetProcAddress(rt,
         "?SetFlagByName@cvar@rex@@YA_NV?$basic_string_view@DU?$char_traits@D@std@@@std@@0@Z") : NULL;
-    log_line("keys: %s layout, live switch %s", keys_pc_on() ? "PC" : "port", p_setflag ? "available" : "not available");
+    p_getflag = rt ? (getflag_fn)(void *)GetProcAddress(rt,
+        "?GetFlagByName@cvar@rex@@YA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$basic_string_view@DU?$char_traits@D@std@@@4@@Z") : NULL;
+    g_lang = read_lang();
+    log_line("keys: %s layout, live switch %s; game language %d", keys_pc_on() ? "PC" : "port",
+             p_setflag ? "available" : "not available", g_lang);
 }

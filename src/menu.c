@@ -65,6 +65,31 @@ const char *loc_get(const char *s, const char *k) {
     return NULL;
 }
 
+/* The game's 8-bit texts are Windows-1252 ("automáticamente" in the Spanish tables); speech takes UTF-8. In place. */
+void game_text_utf8(char *s, size_t cap) {
+    static const uint16_t hi[32] = { 0x20AC, 0x81, 0x201A, 0x192, 0x201E, 0x2026, 0x2020, 0x2021, 0x2C6, 0x2030, 0x160,
+        0x2039, 0x152, 0x8D, 0x17D, 0x8F, 0x90, 0x2018, 0x2019, 0x201C, 0x201D, 0x2022, 0x2013, 0x2014, 0x2DC, 0x2122,
+        0x161, 0x203A, 0x153, 0x9D, 0x17E, 0x178 };
+    size_t n = strlen(s), extra = 0;
+    for (size_t i = 0; i < n; i++) if ((uint8_t)s[i] >= 0x80) extra += (uint8_t)s[i] < 0xA0 ? 2 : 1;
+    if (!extra) return;
+    /* already UTF-8 (a text the mod converted before): leave it */
+    if (MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, s, (int)n, NULL, 0) > 0) return;
+    while (n && n + extra >= cap) {             /* too long: drop the tail */
+        uint8_t c = (uint8_t)s[--n]; s[n] = 0;
+        if (c >= 0x80) extra -= c < 0xA0 ? 2 : 1;
+    }
+    size_t o = n + extra;
+    s[o] = 0;
+    for (size_t i = n; i-- > 0;) {
+        uint8_t c = (uint8_t)s[i];
+        unsigned u = c < 0x80 ? c : c < 0xA0 ? hi[c - 0x80] : c;
+        if (u < 0x80) s[--o] = (char)u;
+        else if (u < 0x800) { s[--o] = (char)(0x80 | (u & 0x3F)); s[--o] = (char)(0xC0 | (u >> 6)); }
+        else { s[--o] = (char)(0x80 | (u & 0x3F)); s[--o] = (char)(0x80 | ((u >> 6) & 0x3F)); s[--o] = (char)(0xE0 | (u >> 12)); }
+    }
+}
+
 /* INI text: [Section] then Key=Value lines. */
 static void parse_ini(const char *t, size_t n) {
     char sec[128] = "", line[2048];
@@ -89,7 +114,8 @@ static void parse_ini(const char *t, size_t n) {
         char *v = eq + 1;
         size_t vl = strlen(v);
         if (vl >= 2 && v[0] == '"' && v[vl - 1] == '"') { v[vl - 1] = 0; v++; }
-        loc_put(sec, line, v);
+        char u[2048]; snprintf(u, sizeof u, "%s", v); game_text_utf8(u, sizeof u);
+        loc_put(sec, line, u);
     }
 }
 
@@ -98,15 +124,18 @@ static int rd32be(const uint8_t *p) { return (int)((uint32_t)p[0] << 24 | (uint3
 /* Coalesced.eng (Xbox 360): u32 count, then count x (name, text), each an
  * FString: s32 length with the NUL (negative = UTF-16), then the characters. */
 static void load_coalesced(void) {
-    /* the port keeps a patched copy with its PC texts ("ONLINE (F1)") in cache\localization */
+    /* the game's language (eng, spa, ...: keys.c); the port keeps a patched copy with its PC texts ("ONLINE (F1)")
+     * in cache\localization */
+    const wchar_t *ext = lang_file_ext();
     wchar_t path[MAX_PATH];
-    swprintf(path, MAX_PATH, L"%lscache\\localization\\Coalesced.eng", g_game_dir);
+    swprintf(path, MAX_PATH, L"%lscache\\localization\\Coalesced.%ls", g_game_dir, ext);
     FILE *f = _wfopen(path, L"rb");
     if (!f) {
-        swprintf(path, MAX_PATH, L"%lsgame_root\\Localization\\Coalesced.eng", g_game_dir);
+        swprintf(path, MAX_PATH, L"%lsgame_root\\Localization\\Coalesced.%ls", g_game_dir, ext);
         f = _wfopen(path, L"rb");
     }
-    if (!f) { log_line("menu: no Coalesced.eng"); return; }
+    if (!f) { log_line("menu: no Coalesced.%ls", ext); return; }
+    log_line("menu: texts from Coalesced.%ls", ext);
     fseek(f, 0, SEEK_END); long sz = ftell(f); fseek(f, 0, SEEK_SET);
     uint8_t *d = malloc(sz > 0 ? (size_t)sz : 1);
     if (!d || fread(d, 1, (size_t)sz, f) != (size_t)sz) { fclose(f); free(d); return; }
@@ -153,6 +182,7 @@ static void h_localize(PPCContext *ctx, uint8_t *base) {
     gstr(s, c->sec, sizeof c->sec); gstr(k, c->key, sizeof c->key);
     c->keyaddr = k;
     gstr((uint32_t)ctx->r3, c->val, sizeof c->val);
+    game_text_utf8(c->val, sizeof c->val);
     c->t = GetTickCount();
     g_lq_w++;
     LeaveCriticalSection(&g_lqlock);
@@ -222,14 +252,16 @@ static int g_lad_stage;                 /* Ladder screen: "ladder_main" gotoAndP
 static void h_settext(PPCContext *ctx, uint8_t *base) {
     uint32_t h = (uint32_t)ctx->r3;
     char t[256]; gstr((uint32_t)ctx->r4, t, sizeof t);
+    game_text_utf8(t, sizeof t);
     if (g_debug) log_line("SETTEXT obj %08x |%s|", h, t);
     {
         const char *rw = ml_range_word(t);
         if (rw) { snprintf(g_ml_range, sizeof g_ml_range, "%s", rw); g_ml_range_t = GetTickCount(); }
         /* Ladder screen stats: ladderStats.statN (value) is set just before labelN ("ROUNDS LOST:") */
         static char prev[32];
-        if (!strcmp(t, "ROUNDS LOST:")) snprintf(g_lad_rounds, sizeof g_lad_rounds, "%s", prev);
-        else if (!strcmp(t, "MATCHES LOST:")) snprintf(g_lad_matches, sizeof g_lad_matches, "%s", prev);
+        const char *rl = loc_get("Ladder", "RoundsLost"), *ml = loc_get("Ladder", "MatchesLost");   /* any language */
+        if (!strcmp(t, rl ? rl : "ROUNDS LOST:")) snprintf(g_lad_rounds, sizeof g_lad_rounds, "%s", prev);
+        else if (!strcmp(t, ml ? ml : "MATCHES LOST:")) snprintf(g_lad_matches, sizeof g_lad_matches, "%s", prev);
         snprintf(prev, sizeof prev, "%.31s", t);
         if (strlen(t) >= 20) { snprintf(g_long_settext, sizeof g_long_settext, "%s", t); g_long_settext_t = GetTickCount(); }
     }
@@ -329,6 +361,7 @@ static void h_setvar(PPCContext *ctx, uint8_t *base) {
     uint32_t h = (uint32_t)ctx->r3;
     char p[96], t[256];
     gstr((uint32_t)ctx->r4, p, sizeof p); gstr((uint32_t)ctx->r5, t, sizeof t);
+    game_text_utf8(t, sizeof t);
     if (g_debug) log_line("SETVAR %08x %s |%s|", h, p, t);
     if (p[0]) {
         InterlockedIncrement(&g_inflight);
@@ -385,7 +418,13 @@ static void h_clipevent(PPCContext *ctx, uint8_t *base) {
 static void tidy(const char *in, char *out, size_t cap) {
     size_t n = 0;
     int letters = 0, upper = 0;
-    for (const char *p = in; *p; p++) if (isalpha((unsigned char)*p)) { letters++; if (isupper((unsigned char)*p)) upper++; }
+    /* accented capitals in UTF-8 (Spanish, French...): C3 80-9E upper, C3 A0-BE lower (C3 97 / B7 are signs) */
+#define U8LET(p) ((unsigned char)(p)[0] == 0xC3 && (unsigned char)(p)[1] >= 0x80 && (unsigned char)(p)[1] <= 0xBF && \
+                  (unsigned char)(p)[1] != 0x97 && (unsigned char)(p)[1] != 0xB7)
+    for (const char *p = in; *p; p++) {
+        if (U8LET(p)) { letters++; if ((unsigned char)p[1] < 0xA0) upper++; p++; continue; }
+        if (isalpha((unsigned char)*p)) { letters++; if (isupper((unsigned char)*p)) upper++; }
+    }
     int caps = letters > 1 && upper == letters;
     int word_start = 1;
     for (const char *p = in; *p && n < cap - 1; p++) {
@@ -421,9 +460,16 @@ static void tidy(const char *in, char *out, size_t cap) {
             for (int k = 0; keep[k]; k++) if (strlen(keep[k]) == wl && !strncmp(p, keep[k], wl)) acr = 1;
             if (acr) { for (size_t k = 0; k < wl && n < cap - 1; k++) out[n++] = p[k]; p += wl - 1; word_start = 0; continue; }
         }
+        if (U8LET(p)) {                                     /* "DESAFÍO" -> "Desafío", "SUBTÍTULOS" -> "Subtítulos" */
+            if (n + 2 >= cap) break;
+            unsigned char c2 = (unsigned char)p[1];
+            out[n++] = (char)ch;
+            out[n++] = (char)(caps && !word_start && c2 < 0xA0 ? c2 | 0x20 : c2);
+            p++; word_start = 0; continue;
+        }
         if (caps && isalpha(ch)) { out[n++] = (char)(word_start ? ch : tolower(ch)); word_start = 0; continue; }
         out[n++] = (char)ch;
-        word_start = !isalnum(ch) && ch != '\'';
+        word_start = ch < 0x80 && !isalnum(ch) && ch != '\'';
     }
     while (n && out[n - 1] == ' ') n--;
     out[n] = 0;
@@ -1777,7 +1823,7 @@ Are you sure ..."): the text field got the whole sentence just before */
             int reps = 0;
             for (int j = 0; j < n; j++) if (!_stricmp(g[j].sec, "Options") && !strcmp(g[j].val, g[i].val)) reps++;
             if (reps > 1) continue;
-            if (choices[0]) strncat(choices, " or ", sizeof choices - strlen(choices) - 1);
+            if (choices[0]) strncat(choices, lang_or(), sizeof choices - strlen(choices) - 1);   /* "Sí o No" */
             strncat(choices, t, sizeof choices - strlen(choices) - 1);
         }
         say(b, choices);

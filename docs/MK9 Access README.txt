@@ -1,4 +1,4 @@
-MK9 Access 1.0.2
+MK9 Access 1.0.3
 
 A screen reader and audio mod for Mortal Kombat Komplete Edition on PC, using
 MK9 by Lauta (a fan PC port of the Xbox 360 game, by Lauta / machinebreak).
@@ -69,9 +69,8 @@ port settings the mod needs, then starts mk9.exe:
 - your saves in the "saves" folder inside the game folder. Windows'
   Controlled Folder Access can close the game when it saves in Documents;
 - English game text. The mod sets English once, even if the port was set to
-  Spanish (the port's own default). If you choose another language later,
-  that choice is kept: change user_language in mk9.toml (1 English,
-  5 Spanish, 9 Portuguese, 3 German, 4 French, 6 Italian);
+  Spanish (the port's own default). To play in another language, press
+  Ctrl+F12 in the game (see section 3); that choice is kept;
 - the first time only, the lightest graphics, for smooth play and the least
   input lag. You can change them later in the port's options (F2), and your
   changes are kept.
@@ -132,6 +131,15 @@ Mod keys:
   Shift+F4    Krypt: koffin pings on or off
   F12         repeat the last thing said
   Shift+F12   keyboard: original PC keys or the port's keys
+  Ctrl+F12    game language: English, Spanish, Portuguese, French, German,
+              Italian (Ctrl+Shift+F12 goes the other way, so Spanish and
+              English are one press apart). Each press says the language in
+              that language. The game changes language when you start it
+              again. Menus, dialogs and the game's texts are then read in that
+              language; the mod's own words (like "Main menu", the Challenge
+              Tower cards, the key lists) and the fatality descriptions stay
+              in English. Move lists are in English in every language, as in
+              the game itself.
 
 Port keys:
   F1    online (rooms, quick match, chat)
