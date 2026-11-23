@@ -42,6 +42,19 @@
 #define D_FAR   600.0f
 #define D_NEAR  89.0f
 
+/* Which fighter is the player's. Offline it is player 1. In an online session the game is started again with
+ * --mk9_net_role=host|guest (mk9-lauta session.cpp; a direct test session: --mk9_net_host / --mk9_net_join): the
+ * host's pad is player 1 and the guest's player 2 on both machines (netplay.h), so the guest is player 2. */
+static int me_slot(void) {
+    static int slot = -1;
+    if (slot < 0) {
+        const wchar_t *cl = GetCommandLineW();
+        slot = cl && (wcsstr(cl, L"--mk9_net_role=guest") || wcsstr(cl, L"--mk9_net_join=")) ? 1 : 0;
+        if (slot) log_line("fight: online guest, player 2 is mine");
+    }
+    return slot;
+}
+
 static int s_hum_on = 1, s_hp_tones = 1;
 static float s_hp[2] = { -1, -1 };
 static int s_inplay;
@@ -102,7 +115,8 @@ void fight_poll(void) {
     Fighter me, op;
     /* the hum carries on through Finish Him (state 11) until the fatality starts: range matters there */
     int st = game_state();
-    int inplay = (st == GS_PLAY || (st == GS_FATALITY && fatality_finish_him())) && read_fighter(0, &me) && read_fighter(1, &op);
+    int ms = me_slot();
+    int inplay = (st == GS_PLAY || (st == GS_FATALITY && fatality_finish_him())) && read_fighter(ms, &me) && read_fighter(1 - ms, &op);
     /* Story Mode loads the next fight behind its movies (state 8 with both fighters from 3 s in): no cues there */
     if (story_playing()) inplay = 0;
     if (!inplay) {
@@ -132,12 +146,13 @@ void fight_key(int vk, int shift, int ctrl) {
     (void)ctrl;
     Fighter me, op;
     int st = game_state();
-    int ok = (st == GS_PLAY || (st == GS_FATALITY && fatality_finish_him())) && read_fighter(0, &me) && read_fighter(1, &op);
+    int ms = me_slot();
+    int ok = (st == GS_PLAY || (st == GS_FATALITY && fatality_finish_him())) && read_fighter(ms, &me) && read_fighter(1 - ms, &op);
     char a[64], b[64];
     switch (vk) {
-    case VK_F6:                                   /* health */
+    case VK_F6:                                   /* health: mine first */
         if (!ok) { speak(L"Not in a fight", 1); return; }
-        fighter_name(0, a, sizeof a); fighter_name(1, b, sizeof b);
+        fighter_name(ms, a, sizeof a); fighter_name(1 - ms, b, sizeof b);
         speakf(1, "%s %d percent. %s %d percent.", a, (int)lroundf(clampf(me.hp, 0, 1) * 100),
                b, (int)lroundf(clampf(op.hp, 0, 1) * 100));
         break;

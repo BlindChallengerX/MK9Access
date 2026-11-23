@@ -405,7 +405,7 @@ Tested in game with the bot (speech checked in the log, screens checked by scree
 - Leaving the tower raised the "not signed in" XamShowMessageBoxUI for USER 0 (logged) although the port said every
   controller was signed in - so it is the game re-checking user 0, not a second pad.
 Not done / known gaps:
-- Port F2 overlay is in Spanish and arrow keys do not move its focus (reads the page on open only). Check its
+- (Fixed 2026-11-23, see "Online play": keyboard navigation in F1/F2.) Port F2 overlay language: English via mk9_online_language. Check its
   "Pantalla e idioma" tab for an English option; find how keyboard/pad navigation works there.
 - Pause stats panel (time, difficulty, rounds lost) and fight HUD (health, timer, round results) not read.
 - Header switch DONE 2026-11-19: Up from Fight lands on it ([MainMenu] NumPLayersToggleDesc alone) -> "1 player. Change
@@ -518,3 +518,42 @@ Not done / known gaps:
   starts at 77.0 in the game's data but is spoken at 107.0.
 - Other game languages: the movie plays that language's track; cues stay on the English timings (dubs mostly follow
   the same lip timing; not checked).
+
+## Online play (2026-11-23, imgui.c + fight.c; released in 1.0.5)
+How the port's online works (mk9-lauta docs/online/guia-jugadores.md): F1 window (tabs Rooms, Global chat, Profile,
+Replays; Room once in one). Quick match / public / private room (6-letter code). Both press "I'm ready" -> the game
+restarts itself as a session (--mk9_net_room, --mk9_net_role=host|guest); then the game's own 2 PLAYERS > Versus menus,
+both pads drive the menus (lockstep), no pause in fights, CONTINUE? after the match. Username in game\online_name.txt
+(BlindChallengerX saved 2026-11-23).
+Fixed:
+- Keyboard could not reach F1/F2 at all (the port only sets NavEnableGamepad; the name box could not be focused
+  without a mouse). The mod sets ImGuiConfigFlags_NavEnableKeyboard (io at ctx+0x28 from rexruntimerd GetIO) every
+  poll: arrows, Tab/Shift+Tab (in order), Enter/Space choose, Escape out. While a port window is open the port keeps
+  all input from the game (GameMayRead), so keys don't move the menu behind.
+- Unlabelled items: "text box. Enter to type in it" (wide, empty box), "list. Enter goes into it" (scrolling tables
+  and chats are child windows: Enter goes in, then arrows), "picture button" (square). Item boxes come from ItemAdd.
+- A focused button that disappears (Create private room -> the room opens) left Tab dead until an arrow press: after
+  300 ms the mod moves NavId to the window's first button below the title bar.
+- Table rows: a focused button gets the plain text of its row before it ("Sala de X, X, about 191 ms, playing, 7 min,
+  Watch"), from the last "Label:" on the row. "· 7 min" dot dropped, "~191 ms" -> "about 191 ms", avatar letters
+  (alpha 0xEB, one char) dropped, half-scrolled lines (middle outside ImDrawList._CmdHeader.ClipRect, +96) dropped.
+- Screen changes: lines compared with digits folded (ping, online count, countdowns never re-read); a mostly-same
+  screen speaks only its new lines with their row (chat messages, rooms appearing, status changes, tooltips) after the
+  focused item; a new screen is said after 150 ms of settling (chats scroll to the bottom on frame 2: read once).
+- Session corner (DrawSessionBadge, "vs <rival>", "<ping> ms - delay N", warnings): taken out of the generic reading
+  (it muted the hum all session and re-spoke at every ping change). "Connected to <rival>. F5 reads the connection."
+  once; Unstable connection / Waiting for X / Slow connection / desync said once (again only after 10 s gone);
+  F5 with no port window reads the corner. Text-only windows (corner, toast) no longer count as "port window open".
+- Guest = player 2 (netplay.h: host pad player 1, guest player 2): fight.c me_slot() from --mk9_net_role=guest or
+  --mk9_net_join. Hum pan, health tones (mine/theirs), F6 order follow it.
+Tested 2026-11-23: real lobby (name typed by keyboard, all four tabs, room list entered, private room made + left).
+Local direct session (two copies, --mk9_net_host=7777 / --mk9_net_join=127.0.0.1:7777, --mk9_lobby_url=off, guest
+scripted by --mk9_input_script_file): guest's mod read the synced menus, F6 "Sub-Zero 100. Scorpion 100" (own
+first). A direct session has no corner (needs a lobby room): corner reading checked offline only (scratch harness
+feeding frames to imgui.c). Windows Firewall asked about mk9.exe when the direct host listened (left for the user).
+Open: King of the Hill / 2v2 four-PC sides (me_slot assumes guest = P2; KOTH LocalSide differs); checkbox state not
+spoken (the text above it usually says it); typed characters not echoed by the mod (InputText text is not drawn via
+the hooked AddText); attract-mode "Loading" from the title screen interrupts lobby reading.
+1.0.5 also: the room code is spelled ("Room R V A U J K"; "Sala" too) and the port's own "Copy code" button (it copies
+silently) is confirmed from the clipboard sequence number: "Code copied: R V A U J K. Paste it to the other player;
+they choose Join with a code." ("Copy diagnostics" -> "Diagnostics copied."). F2 options also move by keyboard now.
