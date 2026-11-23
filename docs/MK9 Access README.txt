@@ -1,4 +1,4 @@
-MK9 Access 1.0.1
+MK9 Access 1.0.2
 
 A screen reader and audio mod for Mortal Kombat Komplete Edition on PC, using
 MK9 by Lauta (a fan PC port of the Xbox 360 game, by Lauta / machinebreak).
@@ -98,6 +98,29 @@ Keyboard in the game (a controller works too):
   ;                   flip stance
   Enter               start, pause
 
+Original PC keys: Shift+F12 switches the keyboard to the layout of the 2013
+PC release of Mortal Kombat Komplete Edition, and Shift+F12 again brings back
+the keys you had before. It works at once and is kept for the next start.
+  W A S D or arrows   move, and move in menus
+  T, U, G, J          front punch, back punch, front kick, back kick
+  Left Ctrl           throw
+  Space               block
+  Left Shift          flip stance (Shift + Space is the X-Ray)
+  Tab                 tag
+  1 or Escape         pause
+  4                   the controller's Back button
+  G or Enter          select in menus
+  J or Backspace      back in menus
+Either Ctrl and either Shift work. If Windows is set to switch keyboard
+languages with Ctrl+Shift, throw and flip stance together may switch it:
+remove that shortcut in the Windows language settings.
+
+Other keys: the port's options window (F2, Controls tab) lets you give any
+action another key. Options > Controller in the game is the button
+configuration: each action is read with its key and button. Select starts
+editing; on each action press the key you want for it. The action that had
+that key takes the old one, and both are read.
+
 Mod keys:
   F5          read the port's window that is open (F1 online, F2 options)
   F6          health of both fighters, in percent
@@ -108,6 +131,7 @@ Mod keys:
   F4          Krypt: the other koffins in view
   Shift+F4    Krypt: koffin pings on or off
   F12         repeat the last thing said
+  Shift+F12   keyboard: original PC keys or the port's keys
 
 Port keys:
   F1    online (rooms, quick match, chat)

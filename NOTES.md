@@ -449,3 +449,26 @@ Not done / known gaps:
   first-start window: language/name/graphics/controller). Tested on the 1.4.2 shipped toml, the user's toml
   (unchanged) and no toml; idempotent; UTF-8 without BOM. Fresh install from the port zip + ISO not run end to end
   (7 GB extraction); the installer is a native Win32 window (buttons, progress bar).
+
+## Options screens and keyboard layouts (2026-11-23, 1.0.2)
+- `82a393e0` SetVariable(holder, path, char *text): Options > Gameplay values
+  (`gameplay.optionN.optionText.var_valueTxt` "MEDIUM", "90") and the Button Configuration preset
+  (`btnConfig.presetSlider.preset.var_GamepadPresetToggle`) are set this way, not with SetText. h_setvar stores them in
+  the clip map and queues stop-5 focus events (value said after Left/Right on the row in focus, not on open).
+- Gameplay Options: rows `gameplay.optionN` HighlightOn, label `.optionLabel.varLabel`; header
+  `gameplay.header.var_titletxt` said when its SetText is new ("Gameplay Options. Controller Vibration, On").
+  Was silent on Up/Down before (forum report 2026-11-23: "the menu where you configure subtitles").
+- Button Configuration (Options > Controller), btncfg_event: rows `btnConfig.btnN` (label.var_text,
+  buttonAnim.var_valueBtn "[X]" -> the key from mk9.toml's keybind_x + "X button"). Down from the preset enters the rows;
+  pressing a button on a row gives it to that action (`btnN.selectionFlash` Trigger, the other action takes the old
+  button, all values re-SetText, focus moves on) -> "Front Punch, G, A button. Front Kick, T, X button". Exit dialog no
+  longer lists [Options] KOTHCONTROLS_* legend words as choices.
+- keys.c, Shift+F12: port layout <-> original PC Komplete Edition keys (W A S D/arrows, T U G J, Ctrl throw, Space
+  block, Shift flip, Tab tag, 1/Escape start, 4 back; G/Enter accept, J/Backspace back). Sources: VGTimes 2013 guide +
+  shortcutposters.com (GameFAQs and the Steam guide refused automated fetches). The SDK's binds match modifiers exactly
+  and a bare Shift/Control bind never fires (mnk_input_driver.cpp), so every key is written with Shift+/Ctrl+/Ctrl+Shift+
+  variants and Shift/Ctrl as "Shift+Shift" / "Ctrl+Control" (SDL maps both sides to one VK). Applied live with
+  rexruntimerd `rex::cvar::SetFlagByName` (string_views passed by pointer) on the game thread in h_get_state, and saved
+  to mk9.toml; the previous binds go to MK9Access\keys_saved.txt (its presence = PC layout on). Bot-verified: live
+  switch both ways, G accepts, Shift and Ctrl press LT / RB, Shift/Ctrl+Right still change a value. Not tried in a
+  fight (X-Ray with Shift+Space follows from the same modifier variants).

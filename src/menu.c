@@ -321,6 +321,45 @@ static void h_invoke(PPCContext *ctx, uint8_t *base) {
     CALL_ORIG(o_invoke, ctx, base);
 }
 
+/* SetVariable(holder, ?, "gameplay.option2.optionText.var_valueTxt", value): option values in
+ * Options > Gameplay (On / Medium / 3 / 90) are set this way, not with SetText. */
+#define G_SETVAR 0x82a393e0u
+static guest_fn o_setvar;
+static void h_setvar(PPCContext *ctx, uint8_t *base) {
+    uint32_t h = (uint32_t)ctx->r3;
+    char p[96], t[256];
+    gstr((uint32_t)ctx->r4, p, sizeof p); gstr((uint32_t)ctx->r5, t, sizeof t);
+    if (g_debug) log_line("SETVAR %08x %s |%s|", h, p, t);
+    if (p[0]) {
+        InterlockedIncrement(&g_inflight);
+        EnterCriticalSection(&g_clock);
+        int slot = -1;
+        for (int c = 0; c < NCLIP; c++)
+            if (g_clip[c].parent == h && !strcmp(g_clip[c].path, p)) { slot = c; break; }
+        if (slot < 0) { slot = g_clip_next; g_clip_next = (g_clip_next + 1) % NCLIP; }
+        g_clip[slot].parent = h;
+        memcpy(g_clip[slot].path, p, sizeof p);
+        memcpy(g_clip[slot].text, t, sizeof t);
+        g_clip[slot].seq = ++g_clip_seq;
+        /* a row's value changed: said by the menu thread if that row is in focus (stop 5) */
+        static const char suf[] = ".optionText.var_valueTxt", suf2[] = ".preset.var_GamepadPresetToggle";
+        size_t pl = strlen(p), sl = sizeof suf - 1;
+        if (pl > sizeof suf2 - 1 && !strcmp(p + pl - (sizeof suf2 - 1), suf2)) sl = sizeof suf2 - 1;   /* Button Configuration preset */
+        if (pl > sl && !strcmp(p + pl - sl, sl == sizeof suf - 1 ? suf : suf2) && t[0]) {
+            FocusEv *e = &g_fq[g_fq_w % FQ];
+            e->holder = h;
+            memcpy(e->target, p, pl - sl); e->target[pl - sl] = 0;
+            snprintf(e->arg, sizeof e->arg, "%.31s", t);
+            e->stop = 5;
+            e->t = GetTickCount();
+            g_fq_w++;
+        }
+        LeaveCriticalSection(&g_clock);
+        InterlockedDecrement(&g_inflight);
+    }
+    CALL_ORIG(o_setvar, ctx, base);
+}
+
 /* ClipEvent(holder, name): "FocusGain" / "FocusLost" on a menu item clip (pause menu). */
 #define G_CLIPEVENT 0x82a37f08u
 static guest_fn o_clipevent;
@@ -435,7 +474,8 @@ static int find_record(uint32_t keyaddr, uint32_t *other, uint32_t *rec) {
 static DWORD g_input_t;
 static void watch_input(void) {
     static const int vks[] = { VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, 'W', 'A', 'S', 'D', 'J', 'K', 'L', 'U', 'I', 'O', 'P',
-                               VK_OEM_1, VK_RETURN, VK_SPACE, VK_ESCAPE, VK_BACK, VK_TAB };
+                               VK_OEM_1, VK_RETURN, VK_SPACE, VK_ESCAPE, VK_BACK, VK_TAB,
+                               'T', 'G', '1', '4', VK_SHIFT, VK_CONTROL };   /* the original PC keys (keys.c) too */
     static uint8_t down[sizeof vks / sizeof vks[0]];
     static uint16_t lastbtn;
     DWORD now = GetTickCount();
@@ -593,6 +633,19 @@ static int clip_exact(uint32_t holder, const char *path, char *out, size_t cap) 
         }
     LeaveCriticalSection(&g_clock);
     return found;
+}
+
+/* clip_exact plus the text's sequence number (0 = none): a header set again means the panel reopened. */
+static unsigned g_row_title_seq;
+static unsigned clip_seq(uint32_t holder, const char *path, char *out, size_t cap) {
+    unsigned seq = 0;
+    EnterCriticalSection(&g_clock);
+    for (int c = 0; c < NCLIP; c++)
+        if (g_clip[c].parent == holder && !strcmp(g_clip[c].path, path) && g_clip[c].text[0]) {
+            snprintf(out, cap, "%s", g_clip[c].text); seq = g_clip[c].seq; break;
+        }
+    LeaveCriticalSection(&g_clock);
+    return seq;
 }
 
 /* ---------- Challenge Tower ----------
@@ -930,6 +983,7 @@ static int *val_slot(uint32_t holder, const char *target, int make) {
     return &g_val[i].v;
 }
 static uint32_t g_focus_h; static char g_focus_target[96];   /* the Flash item in focus */
+static DWORD g_focus_said_t;          /* when an option row / Button Configuration item was announced */
 
 static int focus_arg(const char *a) {
     return !_stricmp(a, "BuildOn") || !_stricmp(a, "HighlightOn") || !_stricmp(a, "Highlight") ||
@@ -1127,10 +1181,112 @@ static int slot_event(FocusEv *e) {
     return 0;
 }
 
+/* ---------- Options > Controller (Button Configuration) ----------
+ * Panel btnConfig: header_.var_titletxt, presetSlider (value preset.var_GamepadPresetToggle, SetVariable), rows
+ * btn0..btn7 (label.var_text "FRONT PUNCH", buttonAnim.var_valueBtn "[X]"), saveConfig. Select on the preset
+ * starts editing: on each row the button pressed is given to that action (the action that had it takes the old
+ * one), btnN.selectionFlash plays Trigger, all eight values are set again and focus moves to the next row. */
+static char g_btn_tok[10][16];
+static char g_btn_assign[300];
+static DWORD g_btn_assign_t;
+static unsigned g_btn_hint_seq;
+static int btn_row(const char *t, const char **rest) {
+    if (strncmp(t, "btnConfig.btn", 13) || !isdigit((unsigned char)t[13])) return -1;
+    int n = t[13] - '0';
+    if (isdigit((unsigned char)t[14])) return -1;
+    *rest = t + 14;
+    return n;
+}
+static void btn_said(int n, uint32_t h, char *out, size_t cap) {   /* "Front Punch, T, X button" */
+    char p[64], lab[128] = "", la[128], tok[16] = "", key[160] = "";
+    snprintf(p, sizeof p, "btnConfig.btn%d.label.var_text", n); clip_exact(h, p, lab, sizeof lab);
+    snprintf(p, sizeof p, "btnConfig.btn%d.buttonAnim.var_valueBtn", n); clip_exact(h, p, tok, sizeof tok);
+    tidy(lab, la, sizeof la);
+    if (!keys_for_button(tok, key, sizeof key)) snprintf(key, sizeof key, "%s", tok);
+    snprintf(out, cap, key[0] ? "%s, %s" : "%s", la, key);
+    if (n >= 0 && n < 10) snprintf(g_btn_tok[n], sizeof g_btn_tok[n], "%s", tok);
+}
+static void btn_header(uint32_t h, char *title, size_t cap, unsigned *seq_out) {
+    char t[128] = "";
+    unsigned seq = clip_seq(h, "btnConfig.header_.var_titletxt", t, sizeof t);
+    title[0] = 0;
+    if (seq && seq != g_row_title_seq) { tidy(t, title, cap); g_row_title_seq = seq; }
+    *seq_out = seq;
+}
+static void btn_say(const char *msg) {   /* after an assignment: queued behind it */
+    if (g_btn_assign[0] && GetTickCount() - g_btn_assign_t < 500) say(g_btn_assign, msg);
+    else say(msg, NULL);
+    g_btn_assign[0] = 0;
+}
+static int btncfg_event(FocusEv *e) {
+    const char *rest;
+    int n = btn_row(e->target, &rest);
+    char msg[600], title[128];
+    unsigned seq;
+    if (n >= 0 && !strcmp(rest, ".selectionFlash") && !_stricmp(e->arg, "Trigger")) {   /* a button given to row n */
+        char old[16], a[300], b[300] = "";
+        snprintf(old, sizeof old, "%s", g_btn_tok[n]);
+        btn_said(n, e->holder, a, sizeof a);
+        for (int m = 0; m < 8; m++) {
+            char p[64], tok[16] = "";
+            if (m == n) continue;
+            snprintf(p, sizeof p, "btnConfig.btn%d.buttonAnim.var_valueBtn", m); clip_exact(e->holder, p, tok, sizeof tok);
+            if (old[0] && strcmp(old, g_btn_tok[n]) && !strcmp(tok, old)) { btn_said(m, e->holder, b, sizeof b); break; }
+        }
+        snprintf(g_btn_assign, sizeof g_btn_assign, b[0] ? "%s. %s" : "%s", a, b);
+        g_btn_assign_t = GetTickCount();
+        return 1;
+    }
+    if (!focus_arg(e->arg)) return 0;
+    if (n >= 0 && !*rest) {                                    /* a row in focus (editing) */
+        char row[300];
+        btn_said(n, e->holder, row, sizeof row);
+        btn_header(e->holder, title, sizeof title, &seq);
+        if (seq != g_btn_hint_seq) {                           /* editing just started: how it works, once */
+            g_btn_hint_seq = seq;
+            snprintf(msg, sizeof msg, "%s%sPress the key you want for each action. %s", title, title[0] ? ". " : "", row);
+        } else snprintf(msg, sizeof msg, "%s", row);
+        btn_say(msg);
+        g_focus_h = e->holder; snprintf(g_focus_target, sizeof g_focus_target, "%s", e->target);
+        g_focus_holder = e->holder; g_focus_said_t = GetTickCount();
+        return 1;
+    }
+    if (!strcmp(e->target, "btnConfig.presetSlider")) {
+        char lab[128] = "Controller preset", raw[128], val[32] = "";
+        if (clip_exact(e->holder, "btnConfig.presetSlider.presetLabel.var_PRESET", raw, sizeof raw)) tidy(raw, lab, sizeof lab);
+        clip_exact(e->holder, "btnConfig.presetSlider.preset.var_GamepadPresetToggle", val, sizeof val);
+        btn_header(e->holder, title, sizeof title, &seq);
+        if (title[0]) snprintf(msg, sizeof msg, "%s. %s, %s. Select edits it.", title, lab, val);
+        else snprintf(msg, sizeof msg, "%s, %s", lab, val);
+        say(msg, NULL);
+        g_focus_h = e->holder; snprintf(g_focus_target, sizeof g_focus_target, "%s", e->target);
+        g_focus_holder = e->holder; g_focus_said_t = GetTickCount();
+        return 1;
+    }
+    if (!strcmp(e->target, "btnConfig.saveConfig")) {
+        char raw[128] = "", s[128];
+        clip_exact(e->holder, "btnConfig.saveConfig.text.var_text", raw, sizeof raw);
+        tidy(raw[0] ? raw : "Save configurations", s, sizeof s);
+        btn_say(s);
+        g_focus_h = e->holder; snprintf(g_focus_target, sizeof g_focus_target, "%s", e->target);
+        g_focus_holder = e->holder; g_focus_said_t = GetTickCount();
+        return 1;
+    }
+    return 0;
+}
+
 static void on_focus_event(FocusEv *e) {
     if (g_debug) log_line("FOCUS %08x %s %s%s", e->holder, e->target, e->arg, e->stop ? " (stop)" : "");
     size_t tl0 = strlen(e->target);
     if (e->stop == 2) { ml_highlight(atoi(e->arg), e->t); return; }   /* said once the move's events are in */
+    if (e->stop == 5) {                       /* an option row's new value (Options > Gameplay), after Left/Right */
+        /* not the value set while the screen opens: the row's own announcement has it */
+        if (e->holder == g_focus_h && !strcmp(e->target, g_focus_target) && GetTickCount() - g_input_t < 1000 &&
+            GetTickCount() - g_focus_said_t > 300) {
+            char v[64]; tidy(e->arg, v, sizeof v); say(v, NULL);
+        }
+        return;
+    }
     if (slot_event(e)) return;
     /* challenge / minigame result (Challenge Tower, Test Your Might, Sight, Strike) */
     if (!strcmp(e->target, "practiceHUD") && (!_stricmp(e->arg, "Success") || !_stricmp(e->arg, "Failure"))) {
@@ -1285,22 +1441,43 @@ static void on_focus_event(FocusEv *e) {
         }
         return;                                                    /* other challengeInfo events: ignore */
     }
+    if (!strncmp(e->target, "btnConfig.", 10) && btncfg_event(e)) return;
     /* Option rows (Practice Options, AI Options): the row clip gains focus with
      * an empty sub-path (Invoke "gotoAndPlay" HighlightOn on the row itself). The
      * label and value are children set when the panel opened:
-     * optionLabel.label ("DAMAGE INFO:") and optionText.valueTxt ("ON"). */
-    if (!e->target[0] && focus_arg(e->arg)) {
-        char lab[256], val[128], la[256], va[128], msg[500];
-        if (clip_text(e->holder, "optionLabel.label", lab, sizeof lab)) {
+     * optionLabel.label ("DAMAGE INFO:") and optionText.valueTxt ("ON").
+     * Options > Gameplay: the row is a sub-path of the panel ("gameplay.option2" HighlightOn),
+     * label gameplay.option2.optionLabel.varLabel (SetText), value
+     * gameplay.option2.optionText.var_valueTxt (SetVariable, h_setvar). */
+    if (focus_arg(e->arg)) {
+        char lab[256], val[128], la[256], va[128], msg[700], lp[128], vp[128];
+        if (e->target[0]) {
+            snprintf(lp, sizeof lp, "%s.optionLabel", e->target);
+            snprintf(vp, sizeof vp, "%s.optionText", e->target);
+        } else {
+            snprintf(lp, sizeof lp, "optionLabel.label");
+            snprintf(vp, sizeof vp, "optionText.valueTxt");
+        }
+        if (clip_text(e->holder, lp, lab, sizeof lab)) {
             tidy(lab, la, sizeof la);
             size_t ll = strlen(la);                                   /* drop the label's trailing colon */
             while (ll && (la[ll - 1] == ':' || la[ll - 1] == ' ')) la[--ll] = 0;
-            if (clip_text(e->holder, "optionText.valueTxt", val, sizeof val)) {
+            char title[256] = "";
+            if (e->target[0]) {                                       /* panel just opened: its header first */
+                char hp[128], t[256] = "";
+                const char *dot = strchr(e->target, '.');
+                int n = dot ? (int)(dot - e->target) : (int)strlen(e->target);
+                snprintf(hp, sizeof hp, "%.*s.header.var_titletxt", n, e->target);
+                unsigned seq = clip_seq(e->holder, hp, t, sizeof t);
+                if (seq && seq != g_row_title_seq) { tidy(t, title, sizeof title); g_row_title_seq = seq; }
+            }
+            if (clip_text(e->holder, vp, val, sizeof val)) {
                 tidy(val, va, sizeof va);
-                snprintf(msg, sizeof msg, "%s, %s", la, va);
-            } else snprintf(msg, sizeof msg, "%s", la);
+                snprintf(msg, sizeof msg, title[0] ? "%s. %s, %s" : "%s%s, %s", title, la, va);
+            } else snprintf(msg, sizeof msg, title[0] ? "%s. %s" : "%s%s", title, la);
             say(msg, NULL);
-            g_focus_h = e->holder; g_focus_target[0] = 0;
+            g_focus_h = e->holder; snprintf(g_focus_target, sizeof g_focus_target, "%s", e->target);
+            g_focus_said_t = GetTickCount();
             snprintf(g_focus_label, sizeof g_focus_label, "%s", la);
             return;
         }
@@ -1593,6 +1770,7 @@ Are you sure ..."): the text field got the whole sentence just before */
         }
         for (int i = 0; i < n; i++) {
             if (i == body || _stricmp(g[i].sec, "Options")) continue;
+            if (!_strnicmp(g[i].key, "KOTH", 4)) continue;   /* Button Configuration's King of the Hill legend */
             char t[64]; tidy(g[i].val, t, sizeof t);
             if (!t[0] || strlen(t) > 20) continue;
             /* a legend redrawn with the dialog (King of the Hill's "Invite Friends", 8 times) is not a choice */
@@ -1674,9 +1852,11 @@ void menu_poll(void) {
     }
     {   /* Select on a koffin you can't afford does nothing on screen: say so */
         static int prev_sel;
-        int sel = (game_has_focus() && GetAsyncKeyState('J') < 0) || (g_pad_buttons & 0x1000);
-        /* Back (K / B) opens the exit question: Select there is not a purchase */
-        if ((game_has_focus() && GetAsyncKeyState('K') < 0) || (g_pad_buttons & 0x2000)) g_krypt_locked = 0;
+        /* Select = the A button (J, or G / Enter with the original PC keys); Back = B (K, or J) */
+        int pc = keys_pc_on();
+        int sel = (game_has_focus() && GetAsyncKeyState(pc ? 'G' : 'J') < 0) || (g_pad_buttons & 0x1000);
+        /* Back opens the exit question: Select there is not a purchase */
+        if ((game_has_focus() && GetAsyncKeyState(pc ? 'J' : 'K') < 0) || (g_pad_buttons & 0x2000)) g_krypt_locked = 0;
         if (sel && !prev_sel && g_krypt_locked && GetTickCount() - g_krypt_active_t < 600000) {
             g_krypt_select_t = GetTickCount();
             if (g_krypt_price > 0 && g_krypt_balance >= 0 && g_krypt_price > g_krypt_balance) {
@@ -1730,6 +1910,7 @@ void menu_init(void) {
     guest_hook(G_RESOLVE, (void *)h_resolve, (void **)&o_resolve);
     guest_hook(G_INVOKE, (void *)h_invoke, (void **)&o_invoke);
     guest_hook(G_CLIPEVENT, (void *)h_clipevent, (void **)&o_clipevent);
+    guest_hook(G_SETVAR, (void *)h_setvar, (void **)&o_setvar);
 }
 
 void menu_shutdown(void) {}

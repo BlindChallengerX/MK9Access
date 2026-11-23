@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include "rex_mod.h"
 
-#define MOD_VERSION "1.0.1"
+#define MOD_VERSION "1.0.2"
 
 extern wchar_t g_game_dir[MAX_PATH];   /* folder of mk9.exe, with trailing backslash */
 extern wchar_t g_mod_dir[MAX_PATH];    /* g_game_dir + "MK9Access\" */
@@ -75,6 +75,13 @@ extern volatile uint16_t g_pad_buttons;
 extern volatile LONG g_pad_moves;
 extern volatile uint8_t g_pad_lt, g_pad_rt;
 extern volatile int16_t g_pad_lx, g_pad_ly, g_pad_rx, g_pad_ry;
+
+/* keys.c: keyboard layouts (Shift+F12: port keys / original PC keys) */
+void keys_init(void);
+void keys_toggle(void);
+void keys_game_thread(void);
+int keys_pc_on(void);
+int keys_for_button(const char *token, char *out, size_t cap);
 
 /* imgui.c: text of the port's own screens */
 void im_init(void);

@@ -138,7 +138,8 @@ void sysdialog_poll(void) {
     if (g_press >= 0) return;                     /* waiting for the next draw */
     int move = 0, ok = 0;
     if (game_has_focus()) {
-        static const int keys[7] = { VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN, VK_RETURN, VK_SPACE, 'J' };
+        /* the last two: the keys that press A (original PC keys: G; the port's: J and Space) */
+        int keys[7] = { VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN, VK_RETURN, keys_pc_on() ? 'G' : VK_SPACE, keys_pc_on() ? 'G' : 'J' };
         for (int i = 0; i < 7; i++) {
             int d = GetAsyncKeyState(keys[i]) < 0;
             if (d && !kdown[i]) { if (i < 2) move = -1; else if (i < 4) move = 1; else ok = 1; }
