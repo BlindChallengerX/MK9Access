@@ -10,7 +10,7 @@ Screen reader mod for MK9 by Lauta (fan PC recomp of Mortal Kombat Komplete Edit
   removes any old version.dll, writes MK9 Access launch.cmd, ensures mk9_plugins = true). With `MK9Access\devreload.txt`
   present the plugin hot-swaps a rebuilt MK9Access.dll: just copy it in.
 - Release: `python package.py` (after build.sh) -> Downloads\MK9Access-<MOD_VERSION>.zip, unzipped next to mk9.exe
-  (README in docs/, launch.cmd + setup.ps1 + mk9update.ps1 in dist/). 1.0.0 built 2026-11-22.
+  (README in docs/, launch.cmd + setup.ps1 + mk9update.ps1 in dist/). 1.0.0 built 2026-11-22; 1.0.1 (first-install port download, English once) 2026-11-22.
 - Tools: `tools/mk9.py` (launch, keys, click, screenshots to `$MK9_SHOTS` or `%TEMP%\mk9shots`, guest reads),
   `tools/cmd.py` (send RE commands to the mod, read `counts.txt` / log lines), `tools/snap.py` (memory snapshots,
   `track()`), `tools/ue3unpack.exe`, `tools/movelists.py`.
@@ -213,6 +213,11 @@ asked user in MK9Access.log (`sysdialog: user N`); then make the mod skip it for
   waits for every mk9.exe from the folder to exit -> copies (mk9.exe first, backup + restore on failure, keeps
   mk9.toml) -> "applied X" (mod at next start, after "MK9 Access loaded": "Game updated to version X.") or "failed X".
   One instance at a time (MK9Access\update.lock). Log: MK9Access\update.log (one line per check). MK9A_NOUPDATE=1 skips.
+- First install (1.0.1): the launch .cmd runs mk9update.ps1 in its own console when the folder has no mk9.exe (mod
+  zip unzipped into an empty folder): Installed = 0.0.0, progress lines printed for the screen reader, the port's
+  mk9.toml copied (kept only when one exists), no update_status. Failure prints the reason, pauses, exits 1.
+  Tested 2026-11-22 in a scratch folder: 1.4.2 downloaded (74 MB, ~5 s) and installed, setup wrote English etc.;
+  404 path tested with a bad repo name.
 - The launch .cmd no longer runs the updater (it was a silent 30 s wait); it only passes --user_data_root.
 - Verified 2026-11-18 on the user's folder: bare mk9.exe start on 1.4.0 -> download 3 s, "ready 1.4.1" spoken; game
   closed -> 53 files installed 2 s later, mk9.toml kept; relaunch -> port 1.4.1, 5 hooks, "Game updated to version
@@ -437,7 +442,9 @@ Not done / known gaps:
   ends it (port behaviour). All verified by bot; hum measured in Practice with audiorec (-28 dBFS RMS).
 - setup.ps1 (run by "MK9 Access launch.cmd" before mk9.exe; the cmd also passes --mk9_plugins=true so even a first
   start loads the plugin): forces mk9_plugins = true and mk9_update_check = false; adds user_data_root (game\saves),
-  user_language "1" + mk9_online_language "en" when missing; when mk9_preset_detected is missing (fresh toml, before
+  user_language "1" + mk9_online_language "en" when missing (1.0.1: forced ONCE per install even over a saved
+  Spanish - the port's built-in default is user_language 5 and its first-start window saves Spanish if accepted;
+  MK9Access\english_set.txt marks it done, so a later F2/toml choice is kept); when mk9_preset_detected is missing (fresh toml, before
   the port's hardware detect) writes the Muy baja preset + mk9_first_run_done = true (skips the port's 4-step
   first-start window: language/name/graphics/controller). Tested on the 1.4.2 shipped toml, the user's toml
   (unchanged) and no toml; idempotent; UTF-8 without BOM. Fresh install from the port zip + ISO not run end to end

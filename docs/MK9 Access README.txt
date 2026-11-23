@@ -1,4 +1,4 @@
-MK9 Access 1.0.0
+MK9 Access 1.0.1
 
 A screen reader and audio mod for Mortal Kombat Komplete Edition on PC, using
 MK9 by Lauta (a fan PC port of the Xbox 360 game, by Lauta / machinebreak).
@@ -32,17 +32,18 @@ CONTENTS
 You need:
 - Your own copy of Mortal Kombat Komplete Edition for Xbox 360, European
   version, as an .iso file.
-- MK9 by Lauta, version 1.4.2 or newer:
-  https://github.com/machinebreak/mk9-lauta/releases
-  Download mk9-lauta-v1.4.2-windows-x64.zip (or the newest version).
-- About 8 GB of free disk space.
+- An internet connection the first time, and about 8 GB of free disk space.
 
-If you don't have the port yet:
-1. Unzip the MK9 by Lauta zip into a folder of its own, for example
-   Documents\MK9.
-2. Unzip this zip into the same folder, next to mk9.exe. Say yes if Windows
-   asks to replace files.
-3. Start "MK9 Access launch.cmd" in that folder.
+MK9 by Lauta, the port, is downloaded for you. If you don't have it yet:
+1. Unzip this zip into a new, empty folder, for example Documents\MK9.
+2. Start "MK9 Access launch.cmd" in that folder.
+3. A console window says "Getting MK9 by Lauta" and downloads the newest
+   version of the port from its GitHub page (about 75 MB), unpacks it into the
+   folder and says when it is done. Your screen reader reads each step. If
+   the download fails, the window says why; press any key to close it and
+   start the .cmd again. You can also download the port yourself from
+   https://github.com/machinebreak/mk9-lauta/releases (the
+   windows-x64.zip) and unzip it into the same folder.
 4. The first time, the port opens its "mk9-lauta - Setup" window, a normal
    Windows window: Tab moves between its buttons. Choose "Choose the ISO...",
    pick your .iso file in the Open window and press Enter. The port checks the
@@ -67,7 +68,10 @@ port settings the mod needs, then starts mk9.exe:
   banner off (the mod updates the port itself, see section 8);
 - your saves in the "saves" folder inside the game folder. Windows'
   Controlled Folder Access can close the game when it saves in Documents;
-- English game text, unless you already chose a language;
+- English game text. The mod sets English once, even if the port was set to
+  Spanish (the port's own default). If you choose another language later,
+  that choice is kept: change user_language in mk9.toml (1 English,
+  5 Spanish, 9 Portuguese, 3 German, 4 French, 6 Italian);
 - the first time only, the lightest graphics, for smooth play and the least
   input lag. You can change them later in the port's options (F2), and your
   changes are kept.

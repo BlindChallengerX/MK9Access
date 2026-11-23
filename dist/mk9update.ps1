@@ -12,6 +12,11 @@
 #      says "Game updated to version X.Y.Z" on the next start).
 # Without -WaitPid (run by hand with the game closed) it installs at once.
 #
+# First install: "MK9 Access launch.cmd" runs this in its console window when
+# the folder has no mk9.exe yet (the mod zip was unzipped into an empty
+# folder). It then downloads the latest port, unpacks it here and says each
+# step in the console, so the screen reader reads it.
+#
 # The port's own in-game banner is turned off (mk9_update_check = false): it
 # only works with a mouse, and its installer failed here (in-use DLLs).
 # Kept: mk9.toml (mk9_plugins = true, the user's settings) and everything the
@@ -38,7 +43,9 @@ function Log($msg) {
         if ($lines.Count -gt 300) { Set-Content -Path $logFile -Encoding utf8 -Value ($lines | Select-Object -Last 200) }
     } catch {}
 }
-function Set-Status($text) { Set-Content -Path $status -Encoding ascii -Value $text }
+$fresh = -not (Test-Path (Join-Path $GameDir 'mk9.exe'))   # first install: no port in this folder yet
+function Say($msg) { Log $msg; if ($fresh) { Write-Host $msg } }
+function Set-Status($text) { if (-not $fresh) { Set-Content -Path $status -Encoding ascii -Value $text } }
 
 function Get-LoggedVersion {
     # the port logs "this program X.Y.Z" every launch; read the newest log.
@@ -69,6 +76,7 @@ try {
 } catch { exit 0 }
 
 try {
+    if ($fresh) { $Installed = '0.0.0'; Say 'MK9 by Lauta is not in this folder yet. Asking GitHub for its latest version.' }
     if (-not $Installed) { $Installed = Get-LoggedVersion }
     if (-not $Installed) { Log 'no installed version known yet: nothing to do'; exit 0 }
     $installedV = [version]$Installed
@@ -91,14 +99,16 @@ try {
     $done    = Join-Path $pending 'complete'
     if (-not (Test-Path $done)) {
         $asset = $rel.assets | Where-Object { $_.name -like '*windows-x64.zip' } | Select-Object -First 1
-        if (-not $asset) { Log "check: $latest has no windows-x64.zip"; exit 0 }
+        if (-not $asset) { Log "check: $latest has no windows-x64.zip"; if ($fresh) { throw "version $latest has no Windows download yet" }; exit 0 }
         Log "update $Installed -> $latest : downloading $($asset.name)"
+        if ($fresh) { Write-Host ("Downloading MK9 by Lauta $latest, {0} MB. This can take a few minutes." -f [math]::Round($asset.size / 1MB)) }
         if (Test-Path $pendingRoot) { Remove-Item -Path $pendingRoot -Recurse -Force }
         New-Item -ItemType Directory -Path $pending -Force | Out-Null
         $zip = Join-Path $pending 'port.zip'
         $ProgressPreference = 'SilentlyContinue'                  # PS 5.1's progress bar slows downloads a lot
         Invoke-WebRequest -Uri $asset.browser_download_url -OutFile $zip -Headers $headers -TimeoutSec 1800 -UseBasicParsing
         if ((Get-Item $zip).Length -ne $asset.size) { throw "download is $((Get-Item $zip).Length) bytes, expected $($asset.size)" }
+        if ($fresh) { Write-Host 'Download finished. Unpacking.' }
         Expand-Archive -Path $zip -DestinationPath $files -Force
         Remove-Item -Path $zip -Force
         # the release lays files at the zip root; be robust if a future zip wraps them in a folder.
@@ -126,8 +136,8 @@ try {
         $items = Get-ChildItem -Path $root -Recurse -File | Sort-Object { if ($_.Name -ieq 'mk9.exe') { 0 } else { 1 } }
         foreach ($f in $items) {
             $relPath = $f.FullName.Substring($root.Length).TrimStart('\')
-            if ($keep -contains $relPath) { continue }
             $target = Join-Path $GameDir $relPath
+            if (($keep -contains $relPath) -and (Test-Path $target)) { continue }   # a first install takes the port's mk9.toml
             if (Test-Path $target) {
                 $b = Join-Path $backup $relPath
                 New-Item -ItemType Directory -Path (Split-Path -Parent $b) -Force | Out-Null
@@ -155,8 +165,10 @@ try {
     Remove-Item -Path $pendingRoot -Recurse -Force -ErrorAction SilentlyContinue
     Set-Status "applied $latest"
     Log "update to $latest installed ($($copied.Count) files)"
+    if ($fresh) { Write-Host "MK9 by Lauta $latest is installed. Starting the game." }
 } catch {
     Log ('update check failed: ' + $_.Exception.Message)   # offline, GitHub down: try again next start
+    if ($fresh) { Write-Host ('The download did not work: ' + $_.Exception.Message); exit 1 }
 } finally {
     if ($lock) { $lock.Close() }
 }

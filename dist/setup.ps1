@@ -2,7 +2,9 @@
 # ("MK9 Access launch.cmd" runs this every time; it only changes what is missing or wrong).
 #   always:            mk9_plugins = true (the mod is a code plugin), mk9_update_check = false (the mod updates the port)
 #   when missing:      user_data_root = <game>\saves (Controlled Folder Access can crash the game when it saves in
-#                      Documents), English (user_language = "1", mk9_online_language = "en")
+#                      Documents)
+#   once per install:  English (user_language = "1", mk9_online_language = "en"), even over a saved Spanish;
+#                      MK9Access\english_set.txt marks it done, so a language picked later is kept
 #   first start only:  the lightest graphics preset ("Muy baja": smooth play and low input lag) and the port's
 #                      first-start steps marked done (language and graphics are set here; the mod speaks the
 #                      username window). Detected by mk9_preset_detected missing; later F2 changes are kept.
@@ -39,8 +41,18 @@ Set-Key 'mk9_plugins' 'true' 'MK9 Access: load game\plugins\*.dll'
 Set-Key 'mk9_update_check' 'false' 'MK9 Access updates the port itself (MK9Access\mk9update.ps1)'
 $saves = (Join-Path $GameDir 'saves') -replace '\\', '/'
 Add-Key 'user_data_root' ('"' + $saves + '"') 'MK9 Access: saves in the game folder'
-Add-Key 'user_language' '"1"' 'MK9 Access: English'
-Add-Key 'mk9_online_language' '"en"'
+# English: set once per install, whatever was there (the port's own default is Spanish, and its first-start window
+# saves Spanish when the player just accepts it). MK9Access\english_set.txt records it, so a language chosen
+# afterwards (F2 or mk9.toml) is kept.
+$englishMark = Join-Path $GameDir 'MK9Access\english_set.txt'
+$setEnglish = -not (Test-Path -LiteralPath $englishMark)
+if ($setEnglish) {
+    Set-Key 'user_language' '"1"' 'MK9 Access: English (5 Spanish, 9 Portuguese; a change here is kept)'
+    Set-Key 'mk9_online_language' '"en"'
+} else {
+    Add-Key 'user_language' '"1"' 'MK9 Access: English'
+    Add-Key 'mk9_online_language' '"en"'
+}
 if ((Find-Key 'mk9_preset_detected') -lt 0) {
     Set-Key 'renut_resolution' '"480p"'
     Set-Key 'renut_shadow_resolution' '"1x"'
@@ -54,4 +66,7 @@ if ((Find-Key 'mk9_preset_detected') -lt 0) {
 }
 if ($changed) {
     [IO.File]::WriteAllText($toml, (($lines -join "`r`n") + "`r`n"), (New-Object System.Text.UTF8Encoding($false)))
+}
+if ($setEnglish -and (Test-Path -LiteralPath (Split-Path -Parent $englishMark))) {
+    [IO.File]::WriteAllText($englishMark, "MK9 Access set English in mk9.toml on $(Get-Date -Format 'yyyy-MM-dd'). Delete this file to have it set English again.`r`n")
 }
