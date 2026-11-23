@@ -1,0 +1,69 @@
+# BASIC ATTACKS
+Front Punch | [FP]
+Back Punch | [BP]
+Front Kick | [FK]
+Back Kick | [BK]
+Uppercut | [Down][+][BP]
+Straight Stab | [Away][+][FP]
+Backfist | [Towards][+][FP]
+Chest Swipe | [Away][+][BP]
+Head Chop | [Towards][+][BP]
+Spinning Low Kick | [Away][+][FK]
+Back Spin Kick | [Towards][+][BK]
+Splits Attack | [Up][+][BK]
+Sweep | [Away][+][BK]
+Throw (Away) | [THROW]
+Throw (Towards) | [Towards][+][THROW]
+# KOMBO ATTACKS
+Cyborg Assault | [FP][,][FP][,][FP]
+Automation | [FP][,][FP][,][BP]
+Drive Power | [FP][,][FP][,][Towards][+][BK]
+Freezing Pain | [Towards][+][FP][,][BK]
+Cryo Bash | [Towards][+][BP][,][BP][,][FP]
+Frost | [Away][+][FP][,][BP]
+Wildcard | [Away][+][BP][,][BP]
+Upload | [Away][+][BP][,][BK]
+Nano Smash | [BP][,][FP][,][FP][+][BP]
+System Error | [FK][,][FK][,][BP]
+Reboot | [FK][,][BK]
+Blizzard | [Away][+][FK][,][BP][,][FP]
+# FAST TAGS
+Dual Core | [FK][,][BK][,][TAG]
+Meltdown | [Away][+][FK][,][BP][,][TAG]
+# TAG KOMBOS
+Dry Ice | [FP][,][FP][,][TAG]
+Glacier | [BP][,][FP][,][TAG]
+Ice Over | [Towards][+][BP][,][BP][,][TAG]
+# SPECIAL ATTACKS
+Ice Ball | [Down][Towards][FP]
+Ice Bomb (Close) | [Away][Away][FK]
+Ice Bomb (Medium) | [Towards][Towards][FK]
+Ice Bomb (Far) | [Away][Away][Towards][FK]
+Slide | [Away][Towards][BK]
+Teleport | [Down][Away][FP] | Can be done in the air
+Ice Parry | [Down][Away][BP]
+Divekick (Close) | [Down][FK] | While in the air
+Divekick (Far) | [Down][BK]
+# ENHANCED ATTACKS
+  note: Uses one bar of super
+Ice Beam | [Down][Towards][FP][+][BLOCK]
+Cryo bomb (Close) | [Away][Away][FK][+][BLOCK]
+Cryo Bomb (Medium) | [Towards][Towards][FK][+][BLOCK]
+Cryo Bomb (Far) | [Away][Away][Towards][FK][+][BLOCK]
+Cyber-Slide | [Away][Towards][BK][+][BLOCK]
+Bangport | [Down][Away][FP][+][BLOCK]
+Frozen Parry | [Down][Away][BP][+][BLOCK]
+Powerkick (Close) | [Down][FK][+][BLOCK]
+Powerkick (Far) | [Down][BK][+][BLOCK]
+# TAG SPECIALS
+Tag Out | [TAG]
+Tag Attack | [Down][,][Towards][+][TAG]
+Tag Assist | [Down][,][Away][+][TAG]
+# X-RAY ATTACK
+  note: Uses three bars of super
+Cool Down | [L2][+][BLOCK]
+# FINISHING MOVES
+Kold Fusion | [Down][Away][Down][Towards][BP] | Jump
+Brain Freeze | [Down][Down][Away][Down][FP]
+Stage Fatality | [Down][Down][Up][BLOCK] | Varies
+Babality | [Down][Away][Towards][BLOCK]

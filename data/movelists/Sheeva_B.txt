@@ -1,0 +1,60 @@
+# BASIC ATTACKS
+Front Punch | [FP]
+Back Punch | [BP]
+Front Kick | [FK]
+Back Kick | [BK]
+Uppercut | [Down][+][BP]
+Big Swing | [Away][+][FP]
+Step Palms | [Towards][+][BP]
+Low Swipe | [Away][+][BP]
+Knee Kick | [Towards][+][FK]
+Swinging Leg | [Towards][+][BK]
+Sweep | [Away][+][BK]
+Throw (Away) | [THROW]
+Throw (Towards) | [Towards][+][THROW]
+# KOMBO ATTACKS
+Shokan Fury | [FP][,][BP][,][Away][+][FP]
+Blood Lust | [FP][,][Away][+][BP][,][Towards][+][FP]
+Darkness | [Away][+][FP][,][BP][,][FP][+][BP]
+Four-Way | [BP][,][FP][,][BP][,][Towards][+][FP]
+Sheeva Rush | [BP][,][FP][,][BP][,][Away][+][FP]
+Quad Toss | [Away][+][BP][,][FP][+][BP]
+Demolish | [Towards][+][BP][,][Away][+][FP]
+Turmoil | [FK][,][FK]
+Swiper | [Towards][+][FK][,][Away][+][FP]
+Rehabilitated | [Towards][+][FK][,][BP]
+# FAST TAGS
+Perfect Match | [FP][,][BP][,][Away][+][FP][,][TAG]
+Better Than | [BP][,][FP][,][BP][,][Towards][+][FP][,][TAG]
+# TAG KOMBOS
+Helping Hands | [FP][,][BP][,][TAG]
+Protector | [FP][,][Away][+][BP][,][TAG]
+Distrustful | [Away][+][FP][,][BP][,][TAG]
+Destruction | [BP][,][FP][,][BP][,][TAG]
+# SPECIAL ATTACKS
+Fireball | [Down][Towards][BP]
+Jump Stomp | [Down][Up]
+Ground Pound | [Down][Away][BK]
+Grab N Punch | [Away][Towards][FK]
+Anti-Air Grab | [Down][Towards][FP]
+Low Grab | [Down][Away][FK]
+# ENHANCED ATTACKS
+  note: Uses one bar of super
+Fire Blast | [Down][Towards][BP][+][BLOCK]
+Jump Crush | [Down][Up][BLOCK]
+Ground Smash | [Down][Away][BK][+][BLOCK]
+Untamed Fury | [Away][Towards][FK][+][BLOCK]
+Power Anti-Air | [Down][Towards][FP][+][BLOCK]
+Anti-Duck Throw | [Down][Away][FK][+][BLOCK]
+# TAG SPECIALS
+Tag Out | [TAG]
+Tag Attack | [Down][,][Towards][+][TAG]
+Tag Assist | [Down][,][Away][+][TAG]
+# X-RAY ATTACK
+  note: Uses three bars of super
+Slam Dance | [L2][+][BLOCK]
+# FINISHING MOVES
+Stripped Down | [Towards][Down][Down][Towards][FP]
+Lend A Hand | [Towards][Away][Towards][Away][BK]
+Stage Fatality | [Down][Down][Down][Down][FP] | Varies
+Babality | [Down][Down][Down][Away][BK] | Jump

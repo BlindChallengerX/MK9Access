@@ -1,0 +1,55 @@
+# BASIC ATTACKS
+Front Punch | [FP]
+Back Punch | [BP]
+Front Kick | [FK]
+Back Kick | [BK]
+Uppercut | [Down][+][BP]
+Axe Hand | [Away][+][FP]
+Side Swipe | [Away][+][BP]
+Stepping Sidekick | [Away][+][FK]
+Sweep | [Away][+][BK]
+Throw (Away) | [THROW]
+Throw (Towards) | [Towards][+][THROW]
+It Pours | [FP][,][FP]
+Right As Rain | [FP][,][BP][,][Towards][+][BK]
+Dehydrate | [BP][,][BK]
+Watery Grave | [Away][+][BP][,][FK]
+Waterfall | [Away][+][BP][,][FP][+][BP]
+Spill Over | [FK][,][FK][,][BK]
+Moisturize Me | [BK][,][FK][,][Away][+][BK]
+# FAST TAGS
+Thicker Than Water | [FP][,][BP][,][Towards][+][BK][,][TAG]
+Rain Or Shine | [Away][+][BP][,][FP][+][BP][,][TAG]
+# TAG KOMBOS
+Rain And Suffering | [FP][,][FP][,][TAG]
+No Rain, No Gain | [FK][,][FK][,][TAG]
+Dead In The Water | [BK][,][FK][,][TAG]
+# SPECIAL ATTACKS
+Water-Port | [Down][Up] | While in the air
+Super Kick | [Down][Away][BK]
+Water Bubble | [Down][Towards][FK]
+Geyser Kick | [Down][Away][FK]
+Lightning | [Down][Away][BP]
+Aqua Splash | [Away][Towards][FP]
+H2O Boost | [Towards][Down][Away][FP]
+# ENHANCED ATTACKS
+  note: Uses one bar of super
+Aqua-Port | [Down][Up][+][BLOCK]
+Power Kick | [Down][Away][BK][+][BLOCK]
+Thermal Spring | [Down][Away][FK][+][BLOCK]
+Hydro Bubble | [Down][Towards][FK][+][BLOCK]
+Thunder Storm | [Down][Away][BP][+][BLOCK]
+Aqua Blast | [Away][Towards][FP][+][BLOCK]
+H2O Buff | [Towards][Down][Away][FP][+][BLOCK]
+# TAG SPECIALS
+Tag Out | [TAG]
+Tag Attack | [Down][,][Towards][+][TAG]
+Tag Assist | [Down][,][Away][+][TAG]
+# X-RAY ATTACK
+  note: Uses three bars of super
+Rain Check | [L2][+][BLOCK]
+# FINISHING MOVES
+Bubble Burst | [Away][Towards][Down][Away][BLOCK] | Jump
+Does It Sting | [Up][Down][Away][Towards][BP]
+Stage Fatality | [Towards][Down][Towards][BK] | Varies
+Babality | [Away][Down][Towards][FP]

@@ -1,0 +1,61 @@
+# BASIC ATTACKS
+Front Punch | [FP]
+Back Punch | [BP]
+Front Kick | [FK]
+Back Kick | [BK]
+Uppercut | [Down][+][BP]
+Fan Slice | [Away][+][FP]
+Uprise | [Away][+][BP]
+Shin Kick | [Away][+][FK]
+Fan Stab | [Towards][+][BP]
+Hop Kick | [Towards][+][FK]
+Spin Kick | [Towards][+][BK]
+Sweep | [Away][+][BK]
+Throw (Away) | [THROW]
+Throw (Towards) | [Towards][+][THROW]
+# KOMBO ATTACKS
+Royal Pain | [FP][,][FP][,][BP]
+Dignified | [Away][+][FP][,][BP]
+Majestic | [BP][,][FP][,][BP]
+Noble Lift | [Towards][+][BP][,][FP]
+Regal Assault | [FK][,][FK][,][FK]
+Blue Blood | [Away][+][FK][,][FK]
+Power Intrusion | [Towards][+][FK][,][FP][,][BP]
+Deadly Rush | [Towards][+][BK][,][FP]
+Pure Kicks | [Towards][+][BK][,][FK]
+Deception | [Towards][+][BK][,][Away][+][BK]
+# FAST TAGS
+Truth Be Told | [Towards][+][BP][,][FP][,][TAG]
+Effortless | [Towards][+][FK][,][FP][,][BP][,][TAG]
+Big Fan | [Away][Away][BP][,][TAG]
+# TAG KOMBOS
+Pretty Princess | [Away][+][FP][,][TAG]
+Mesmerizing | [BP][,][FP][,][TAG]
+Magnificent | [FK][,][FK][,][TAG]
+Disrespect | [Towards][+][FK][,][FP][,][TAG]
+# SPECIAL ATTACKS
+Fan Toss | [Down][Towards][FP] | Can be done in the air
+Upraise | [Away][Away][BP]
+Cutting Fan | [Down][Towards][BP]
+Square Boost | [Down][Away][FP]
+Pretty Kick | [Down][Away][FK]
+Fake Out Kick | [Down][Away][BK]
+# ENHANCED ATTACKS
+  note: Uses one bar of super
+Charged Fan | [Down][Towards][FP][+][BLOCK] | Hold [FP] To charge
+Uplift | [Away][Away][BP][+][BLOCK]
+Fan Dice | [Down][Towards][BP][+][BLOCK]
+Square Wave | [Down][Away][FP][+][BLOCK]
+Pretty Legs | [Down][Away][FK][+][BLOCK]
+# TAG SPECIALS
+Tag Out | [TAG]
+Tag Attack | [Down][,][Towards][+][TAG]
+Tag Assist | [Down][,][Away][+][TAG]
+# X-RAY ATTACK
+  note: Uses three bars of super
+Fan-Tastic | [L2][+][BLOCK]
+# FINISHING MOVES
+Fan Opener | [Down][Down][Away][Towards][BP]
+Splitting Headache | [Towards][Down][Towards][Away][FK]
+Stage Fatality | [Towards][Down][Down][FK] | Varies
+Babality | [Towards][Down][Towards][BK] | Jump

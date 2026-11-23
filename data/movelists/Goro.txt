@@ -1,0 +1,21 @@
+# BASIC ATTACKS
+Front Punch | [FP]
+Back Punch | [BP]
+Front Kick | [FK]
+Back Kick | [BK]
+Cross Strike | [Away][+][FP]
+Upward Fist | [Away][+][BP]
+Low Kick | [Away][+][FK]
+Side Kick | [Away][+][BK]
+# KOMBO ATTACKS
+Shokan Strikes | [FP][,][FP]
+# SPECIAL ATTACKS
+Fireball | [Down][Towards][FP]
+Stomp | [Down][Away][BK]
+Ground Pound | [Down][Away][FK]
+Taunt | [Away][Towards][FK]
+Goro Grab | [Down][Towards][BP]
+Arm Spin | [Away][Towards][BK]
+# X-RAY ATTACK
+  note: Uses three bars of super
+Crusher | [L2][+][BLOCK]

@@ -1,0 +1,61 @@
+# BASIC ATTACKS
+Front Punch | [FP]
+Back Punch | [BP]
+Front Kick | [FK]
+Back Kick | [BK]
+Uppercut | [Down][+][BP]
+Afterburn | [Away][+][FP]
+Gut Crusher | [Away][+][BP]
+Toe Kick | [Away][+][FK]
+Rising Knee | [Towards][+][BK]
+Charging Elbow | [Towards][+][BP]
+Sweep | [Away][+][BK]
+Throw (Away) | [THROW]
+Throw (Towards) | [Towards][+][THROW] | [Up][+][FK]; From Leg Lift
+Sneaky Kicks | [FK][,][BK]
+# KOMBO ATTACKS
+Artificial Intelligence | [FP][,][FP][,][Away][+][FP]
+System Overload | [FP][,][BP][,][Away][+][FP]
+Hard Crash | [FP][,][BP][,][BP]
+Malfunction | [Towards][+][BP][,][Away][+][FP]
+Fusion Force | [FP][,][BP][,][BK]
+Access Denied | [FP][,][FK]
+Demolition | [BP][,][FP][,][BK]
+Drive Power | [Away][+][BP][,][FP]
+Run Down | [Away][+][FK][,][BK]
+User Error | [Towards][+][BK][,][FK]
+Fatal Error | [Towards][+][BK][,][BK]
+# FAST TAGS
+Intersect | [Down][Towards][BK][,][TAG]
+Partition | [Down][Towards][BK][+][BLOCK][,][TAG]
+  note: Uses one bar of super
+System Lock | [FP][,][BP][,][Away][+][FP][,][TAG]
+# TAG KOMBOS
+Detached | [FP][,][BP][,][TAG]
+Spare Parts | [BP][,][FP][,][TAG]
+Branch Off | [Away][+][BP][,][TAG]
+System Backup | [Towards][,][BK][,][TAG]
+# SPECIAL ATTACKS
+Flame Burner | [Away][Towards][BP]
+Teleport Uppercut | [Down][Towards][BK]
+Straight Missile | [Away][Towards][FP]
+Up Missile (Above) | [Down][Away][FK] | Lands on top
+Up Missile (Behind) | [Down][Away][Towards][FK] | Lands from behind
+Up Missile (In Front) | [Down][Towards][Away][FK] | Lands in front
+# ENHANCED ATTACKS
+Flame Thrower | [Away][Towards][BP][+][BLOCK]
+Metal Uppercut | [Down][Towards][BK][+][BLOCK]
+Double Missile | [Away][Towards][FP][+][BLOCK]
+Homing Missile | [Down][Away][FK][+][BLOCK]
+# TAG SPECIALS
+Tag Out | [TAG]
+Tag Attack | [Down][,][Towards][+][TAG]
+Tag Assist | [Down][,][Away][+][TAG]
+# X-RAY ATTACK
+  note: Uses three bars of super
+Massive Missile | [L2][+][BLOCK]
+# FINISHING MOVES
+Robo-Sek | [Towards][Down][Away][Towards][FK] | Fullscreen
+The Scarecrow | [Down][Down][Towards][Away][FP]
+Stage Fatality | [Down][Towards][Down][BLOCK] | Varies
+Babality | [Away][Down][Down][Down][BK] | Jump

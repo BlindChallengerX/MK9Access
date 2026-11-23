@@ -1,0 +1,64 @@
+# BASIC ATTACKS
+Front Punch | [FP]
+Back Punch | [BP]
+Front Kick | [FK]
+Back Kick | [BK]
+Uppercut | [Down][+][BP]
+Hand Sweep | [Away][+][FP]
+Face Chop | [Towards][+][FP]
+Rising Fist | [Away][+][BP] | [Towards][+][FK]
+Hand Plant Heel | [Away][+][FK]
+Split Kick | [Up][+][FK]
+Arise | [Up][+][BK]
+Sweep | [Away][+][BK]
+Throw (Away) | [THROW]
+Throw (Towards) | [Towards][+][THROW]
+# KOMBO ATTACKS
+Undead Bride | [FP][,][FP][,][FP]
+Royal Pain | [FP][,][FP][,][Away][+][BP][,][BK]
+Rebirth | [Away][+][FP][,][BP]
+Confronted | [Towards][+][FP][,][BP][,][BK]
+Anguish | [BP][,][FP][,][BP]
+Sadness | [BP][,][FP][,][Away][+][FK]
+Conqueror | [Away][+][BP][,][BK]
+Queen's Anger | [FK][,][FP][,][FP]
+Rise To Power | [FK][,][FP][,][Away][+][BP]
+Unforgettable | [Away][+][FK][,][Towards][+][BP]
+Child's Play | [BK][,][BK][,][Up][+][FK]
+# FAST TAGS
+Royal Flush | [FP][,][FP][,][Away][+][BP][,][TAG]
+Regal Ruin | [Away][+][FP][,][BP][,][TAG]
+Cataclysm | [Away][+][BP][,][TAG]
+Graceful Dead | [Away][+][FK][,][Towards][+][BP][,][TAG]
+# TAG KOMBOS
+Bow To Me | [FP][,][FP][,][TAG]
+Worthless | [Towards][+][FP][,][BP][,][TAG]
+Majestic Mash | [BP][,][FP][,][TAG]
+Queen's Sorrow | [FK][,][FP][,][TAG]
+That Was Fun! | [BK][,][BK][,][TAG]
+# SPECIAL ATTACKS
+Fireball | [Down][Towards][FP] | Can be done in the air
+Low Fireball | [Down][Towards][FK]
+Yell | [Down][Away][BP]
+Levitate | [Down][Down][Up]
+Hair Whip | [Down][Towards][BP]
+Step Up | [Down][Towards][BK]
+# ENHANCED ATTACKS
+  note: Uses one bar of super
+Power Fireball | [Down][Towards][FP][+][BLOCK]
+Low Fire | [Down][Towards][FK][+][BLOCK]
+Scream | [Down][Away][BP][+][BLOCK]
+Hair Toss | [Down][Towards][BP][+][BLOCK]
+Step Over | [Down][Towards][BK][+][BLOCK]
+# TAG SPECIALS
+Tag Out | [TAG]
+Tag Attack | [Down][,][Towards][+][TAG]
+Tag Assist | [Down][,][Away][+][TAG]
+# X-RAY ATTACK
+  note: Uses three bars of super
+Queen B | [L2][+][BLOCK]
+# FINISHING MOVES
+Migraine | [Away][Towards][Down][Towards][FP]
+Mouthful | [Away][Towards][Up][BP]
+Stage Fatality | [Down][Down][Down][FP] | Varies
+Babality | [Down][Down][Down][Up] | Jump

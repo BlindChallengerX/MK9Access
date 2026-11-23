@@ -1,0 +1,51 @@
+# BASIC ATTACKS
+Front Punch | [FP]
+Back Punch | [BP]
+Front Kick | [FK]
+Back Kick | [BK]
+Uppercut | [Down][+][BP]
+Side Chop | [Away][+][FP]
+Leaping Sai | [Away][+][BP]
+Sai Impale | [Towards][+][BP]
+Lunge Kick | [Towards][+][FK]
+Sneaky Kick | [Away][+][FK]
+Splits | [Up][+][BK]
+Sweep | [Away][+][BK]
+Throw (Away) | [THROW]
+Throw (Towards) | [Towards][+][THROW]
+# KOMBO ATTACKS
+Smacked Around | [FP][,][FP][,][BP]
+Boot Down | [Away][+][FP][,][BK]
+Bones | [BP][,][FK][,][BK]
+Pretty Slasher | [Towards][+][FK][,][FP][+][BP]
+Killer Heels | [FK][,][BK]
+Getaway Sticks | [Away][+][FK][,][Away][+][BK]
+Fiendly Kiss | [BK][,][BP]
+# FAST TAGS
+Malice | [Up][+][BK][,][TAG]
+# TAG KOMBOS
+Malevolence | [FP][,][FP][,][TAG]
+Fiendish | [BP][,][FK][,][TAG]
+# SPECIAL ATTACKS
+Sai Blast | [Away][Towards][FP] | Can be done in the air
+Teleport Drop | [Towards][Towards][FK]
+Leaping Neckbite | [Away][Towards][BP]
+Ball Roll | [Away][Down][BK]
+# ENHANCED ATTACKS
+  note: Uses one bar of super
+Sai Bursts | [Away][Towards][FP][+][BLOCK]
+Tricky Teleport | [Towards][Towards][FK][+][BLOCK]
+Leaping Lunch | [Away][Towards][BP][+][BLOCK]
+Smashing Roll | [Away][Down][BK][+][BLOCK]
+# TAG SPECIALS
+Tag Out | [TAG]
+Tag Attack | [Down][,][Towards][+][TAG]
+Tag Assist | [Down][,][Away][+][TAG]
+# X-RAY ATTACK
+  note: Uses three bars of super
+Femme Fatale | [L2][+][BLOCK]
+# FINISHING MOVES
+Be Mine | [Away][Towards][Away][Towards][BP] | Jump
+Rip Off | [Away][Towards][Away][Down][FK]
+Stage Fatality | [Down][Down][Down][FP] | Varies
+Babality | [Down][Down][Towards][Away][BP]

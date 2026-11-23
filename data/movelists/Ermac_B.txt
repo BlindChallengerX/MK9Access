@@ -1,0 +1,63 @@
+# BASIC ATTACKS
+Front Punch | [FP]
+Back Punch | [BP]
+Front Kick | [FK]
+Back Kick | [BK]
+Uppercut | [Down][+][BP]
+Back Fist | [Towards][+][FP]
+Wind Strikes | [Away][+][FP]
+Fist Smash | [Towards][+][BP]
+Psychic Palm | [Away][+][BP] | Hold [BP] To charge
+Quick Kick | [Away][+][FK]
+2-hit Kick | [Towards][+][BK]
+Low Leg | [Up][+][BK]
+Sweep | [Away][+][BK]
+Throw (Away) | [THROW]
+Throw (Towards) | [Towards][+][THROW]
+# KOMBO ATTACKS
+Ermac Rush | [FP][,][BP][,][FP]
+Mysterious Mash | [Towards][+][FP][,][FP][,][BK]
+Fusion | [Away][+][FP][,][FP][,][BK]
+We Win | [Away][+][FP][,][BP][,][Towards][+][FP]
+Nether Pain | [BP][,][BP]
+Psychic Strikes | [Away][+][BP][,][Away][+][FP]
+Lost Souls | [Away][+][BP][,][FP][,][Towards][+][BP]
+Relinquish | [FK][,][FK]
+Surrender | [FK][,][FP][,][BP]
+Disoriented | [Away][+][FK][,][BK]
+Controlled Chaos | [Towards][+][BK][,][Away][+][BP]
+# FAST TAGS
+Breakdown | [Towards][+][BP][,][TAG]
+Brain Freeze | [Away][+][BP][,][TAG]
+Mind-Blowing | [Away][+][FP][,][BP][,][Towards][+][FP][,][TAG]
+# TAG KOMBOS
+Clear Your Mind | [Towards][+][FP][,][FP][,][TAG]
+Subconscious | [Away][+][FP][,][FP][,][TAG]
+Lucidity | [FK][,][FP][,][TAG]
+# SPECIAL ATTACKS
+Force Ball | [Down][Away][BP]
+Airblast |  | While in the air
+Force Port | [Down][Away][BK] | Can be done in the air
+Force Lift | [Down][Away][FP]
+Hover Slam | [Down][Down][Up] | Hold [BLOCK] to delay
+Force Push | [Away][Towards][FP]
+# ENHANCED ATTACKS
+  note: Uses one bar of super
+Focus Ball | [Down][Away][BP][+][BLOCK]
+Force Blast | 
+Teleport | [Down][Away][BK][+][BLOCK]
+Telelift | [Down][Away][FP][+][BLOCK]
+Levitate Smash | [Down][Down][Up][+][BLOCK]
+Telepush | [Away][Towards][FP][+][BLOCK]
+# TAG SPECIALS
+Tag Out | [TAG]
+Tag Attack | [Down][,][Towards][+][TAG]
+Tag Assist | [Down][,][Away][+][TAG]
+# X-RAY ATTACK
+  note: Uses three bars of super
+Cannonball Slam | [L2][+][BLOCK]
+# FINISHING MOVES
+Mind Over Splatter | [Down][Up][Down][Down][BLOCK] | Jump
+Pest Control | [Towards][Away][Towards][Down][BK]
+Stage Fatality | [Down][Up][Down][Down][FK] | Varies
+Babality | [Down][Down][Away][Down][BP]

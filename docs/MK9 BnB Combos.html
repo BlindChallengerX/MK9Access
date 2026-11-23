@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mortal Kombat 9 Bread and Butter Combos</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #16181d;
+    --muted: #4a4f5a;
+    --accent: #8a1414;
+    --accent-fg: #ffffff;
+    --card: #f4f5f7;
+    --border: #c9ccd3;
+    --link: #0b4fb5;
+    --code-bg: #eceef2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #121317;
+      --fg: #eceef2;
+      --muted: #b4bac6;
+      --accent: #ff5a5a;
+      --accent-fg: #121317;
+      --card: #1c1e24;
+      --border: #3a3e47;
+      --link: #79b0ff;
+      --code-bg: #24262d;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    padding: 0 16px 64px;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 18px;
+    line-height: 1.55;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+  }
+  .wrap { max-width: 820px; margin: 0 auto; }
+  h1 {
+    font-size: 1.7rem;
+    line-height: 1.25;
+    margin: 28px 0 8px;
+  }
+  h2 {
+    font-size: 1.35rem;
+    margin: 44px 0 4px;
+    padding-top: 12px;
+    border-top: 3px solid var(--accent);
+  }
+  h3 {
+    font-size: 1.08rem;
+    margin: 20px 0 6px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  p { margin: 10px 0; }
+  a { color: var(--link); }
+  a:focus { outline: 3px solid var(--link); outline-offset: 2px; }
+  .lead { color: var(--muted); }
+  .legend, .toc {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin: 20px 0;
+  }
+  .legend dt { font-weight: 700; margin-top: 10px; }
+  .legend dd { margin: 2px 0 0; color: var(--fg); }
+  .legend dl { margin: 6px 0 0; }
+  ul.combos { margin: 6px 0; padding-left: 22px; }
+  ul.combos li { margin: 8px 0; }
+  .dmg { color: var(--muted); font-weight: 400; }
+  .tag {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--accent-fg);
+    vertical-align: middle;
+    margin-left: 2px;
+  }
+  .meter { background: var(--code-bg); color: var(--fg); border: 1px solid var(--border); }
+  .src {
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin: 8px 0 0;
+  }
+  nav ul { columns: 2; column-gap: 24px; padding-left: 20px; margin: 8px 0; }
+  @media (max-width: 480px) { nav ul { columns: 1; } body { font-size: 17px; } }
+  nav li { margin: 4px 0; break-inside: avoid; }
+  .back { font-size: 0.9rem; }
+  code, .combo-move {
+    background: var(--code-bg);
+    padding: 0 3px;
+    border-radius: 4px;
+  }
+  hr { border: none; border-top: 1px solid var(--border); margin: 0; }
+  .note { font-size: 0.95rem; color: var(--muted); }
+  footer { margin-top: 48px; color: var(--muted); font-size: 0.9rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Mortal Kombat 9 (2011) &ndash; Bread and Butter Combos</h1>
+<p class="lead">A screen-reader-friendly reference for every character in <em>Mortal Kombat Komplete Edition</em>: the most useful kombo strings and what each one is for, practical "bread and butter" (BnB) combos from several different starters, and a short how-to-play summary. 31 characters are covered: the 27 base roster plus the four DLC fighters (Skarlet, Kenshi, Rain, Freddy Krueger).</p>
+<p class="note">Each character has three parts: Useful strings, Combos, and How to play. String names and inputs match the game's own move list. Damage percentages are approximate and come from community combo lists; exact values vary with spacing, hit-confirms and game patch, and a number is left out when no source gave one. Combos are listed one per line, each labelled with its starter. Where a combo needs the corner or super meter, it says so.</p>
+
+<section class="legend" aria-labelledby="legend-heading">
+<h2 id="legend-heading" style="border-top:none;margin-top:8px;padding-top:0;">Notation &amp; legend</h2>
+<p>MK9 uses four attack buttons. This guide uses the standard numeric notation with directions and spelled-out special-move names.</p>
+<dl>
+  <dt>1 = Front Punch</dt><dd>The quick/lead punch.</dd>
+  <dt>2 = Back Punch</dt><dd>The strong/rear punch.</dd>
+  <dt>3 = Front Kick</dt><dd>The quick/lead kick.</dd>
+  <dt>4 = Back Kick</dt><dd>The strong/rear kick.</dd>
+  <dt>Directions: Forward, Back, Up, Down</dt><dd>Forward means toward the opponent, Back means away. "Back+2" means hold Back and press Back Punch. "Forward+3" means Forward Front Kick.</dd>
+  <dt>Special move inputs</dt><dd>Written the way the game's move list shows them: directions tapped one after another, then the button. Example: "Down, Back, 3" means tap Down, tap Back, press Front Kick. Each character's Combos section lists the inputs for the specials it uses.</dd>
+  <dt>Motions (a few community posts)</dt><dd>QCF = quarter-circle forward (Down, then Down-Forward, then Forward). QCB = quarter-circle back (Down, Down-Back, Back). This page writes special inputs in full instead.</dd>
+  <dt>xx</dt><dd>Cancel: cancel the string directly into the special move that follows.</dd>
+  <dt>EX (enhanced)</dt><dd>Enhanced special move: the special's input plus the Block button. Costs 1 bar of super meter. This page gives the enhanced move's in-game name with "(EX)" after it, for example "Flame Spear (EX Spear)".</dd>
+  <dt>X-Ray</dt><dd>The character's X-Ray super move. Costs all 3 bars of super meter.</dd>
+  <dt>jump-in Punch (a.k.a. ji1 / JP / JPS)</dt><dd>Jump toward the opponent and press a Punch to start the combo. "Jump Kick" (JK) is the same with a kick.</dd>
+  <dt>NJP</dt><dd>Neutral Jump Punch: jump straight up and press Punch (used to re-launch a juggled opponent).</dd>
+  <dt>dash</dt><dd>Quickly dash forward (Forward, Forward) to stay in range for the next hit.</dd>
+  <dt>OTG</dt><dd>Off The Ground: a move that hits the opponent while they are lying downed.</dd>
+  <dt>Air Throw</dt><dd>A throw performed while both players are airborne.</dd>
+  <dt>Uppercut</dt><dd>Down + Back Punch (Down+2), the universal launching uppercut.</dd>
+  <dt>,</dt><dd>Separates inputs done in sequence. In a string name such as "Torment (1, 1, 1)" the commas are the hits of the string.</dd>
+  <dt>Hit levels: high, mid, low, overhead</dt><dd>High: hits standing opponents and misses many crouching ones. Mid: block standing or crouching. Low: must be blocked crouching. Overhead: must be blocked standing.</dd>
+  <dt>Safe / unsafe on block</dt><dd>Safe means the opponent cannot punish you after blocking it. Unsafe or punishable means they can.</dd>
+  <dt>Frames</dt><dd>Start-up speed. 60 frames is one second; a lower number is faster. Most jabs are 8 to 12 frames.</dd>
+  <dt>Starts combos</dt><dd>A label on strings that lead into a full combo on hit.</dd>
+  <dt>Juggle starter / launcher / pop-up</dt><dd>A hit that knocks the opponent into the air so you can keep hitting them.</dd>
+</dl>
+<p class="note">Button mapping reminder: on a pad, Front Punch / Back Punch / Front Kick / Back Kick are the four face buttons; the Block button is separate and is used (with a punch or kick) for Enhanced and X-Ray inputs.</p>
+</section>
+
+<nav class="toc" aria-labelledby="toc-heading">
+<h2 id="toc-heading" style="border-top:none;margin-top:8px;padding-top:0;">Characters</h2>
+<ul>
+  <li><a href="#johnny-cage">Johnny Cage</a></li>
+  <li><a href="#sonya">Sonya Blade</a></li>
+  <li><a href="#sub-zero">Sub-Zero</a></li>
+  <li><a href="#scorpion">Scorpion</a></li>
+  <li><a href="#cyrax">Cyrax</a></li>
+  <li><a href="#sektor">Sektor</a></li>
+  <li><a href="#smoke">Smoke</a></li>
+  <li><a href="#reptile">Reptile</a></li>
+  <li><a href="#kano">Kano</a></li>
+  <li><a href="#jax">Jax</a></li>
+  <li><a href="#mileena">Mileena</a></li>
+  <li><a href="#nightwolf">Nightwolf</a></li>
+  <li><a href="#kitana">Kitana</a></li>
+  <li><a href="#jade">Jade</a></li>
+  <li><a href="#baraka">Baraka</a></li>
+  <li><a href="#kung-lao">Kung Lao</a></li>
+  <li><a href="#liu-kang">Liu Kang</a></li>
+  <li><a href="#raiden">Raiden</a></li>
+  <li><a href="#ermac">Ermac</a></li>
+  <li><a href="#noob-saibot">Noob Saibot</a></li>
+  <li><a href="#sindel">Sindel</a></li>
+  <li><a href="#kabal">Kabal</a></li>
+  <li><a href="#stryker">Stryker</a></li>
+  <li><a href="#shang-tsung">Shang Tsung</a></li>
+  <li><a href="#quan-chi">Quan Chi</a></li>
+  <li><a href="#sheeva">Sheeva</a></li>
+  <li><a href="#cyber-sub-zero">Cyber Sub-Zero</a></li>
+  <li><a href="#skarlet">Skarlet (DLC)</a></li>
+  <li><a href="#kenshi">Kenshi (DLC)</a></li>
+  <li><a href="#rain">Rain (DLC)</a></li>
+  <li><a href="#freddy">Freddy Krueger (DLC)</a></li>
+</ul>
+</nav>
+
+<hr>
+
+<!-- JOHNNY CAGE -->
+<h2 id="johnny-cage">Johnny Cage</h2>
+<h3>Useful strings</h3>
+<ul class="combos">
+  <li><strong>Widescreen (2, 1, Forward+2)</strong>: his main string. First two hits high, last hit an overhead that pops the opponent up. 2 is fast (9 frames) and the string is fairly safe on block. <span class="tag">Starts combos</span></li>
+  <li><strong>Director's Cut (2, 1, Back+4)</strong>: same start, but the last hit is low. Use it when they block the 2, 1, Forward+2. Nothing combos after it.</li>
+  <li><strong>Take Two (Forward+3, 2)</strong>: both hits high. Leaves Johnny ahead on hit and on block, so you can repeat it as a frame trap; the opponent's only clean way out is to jump.</li>
+  <li><strong>That's The Ticket (Forward+3, 3, Back+3)</strong>: fast poke; Forward+3, 3 hits high and cancels into Nut Punch or Flipkick. The last hit, Back+3, is an overhead. <span class="tag">Starts combos</span></li>
+  <li><strong>Money Shot (4, 4)</strong>: high, safe on block. Used in the middle of juggles before a special. On hit you get a safe jump-in or a free throw attempt.</li>
+  <li><strong>Cross Cutting (1, 3, 2)</strong>: first hit high, last two mid; leaves Johnny ahead on hit.</li>
+  <li><strong>Pop Up (Back+3)</strong>: 11 frames, pops the opponent straight up. His quick launcher. <span class="tag">Starts combos</span></li>
+  <li><strong>Axe Kick (Forward+4)</strong>: overhead that pops up. Slow (28 frames), so use it as a mix-up or after a jump-in. Johnny is ahead if it is blocked. <span class="tag">Starts combos</span></li>
+</ul>
+<h3>Combos</h3>
+<p class="note">Specials used: Flipkick (Down, Back, 3), Shadow Kick (Back, Forward, 4), Nut Punch (Back, Down, 1). Enhanced: Ultra Flipkick, Nutcracker.</p>
+<ul class="combos">
+  <li><strong>Fast string:</strong> 2, 1, Forward+2, 4, 4 xx Flipkick <span class="dmg">(~30%)</span></li>
+  <li><strong>Frame trap:</strong> Forward+3, 3 xx Nut Punch <span class="dmg">(~21%; ~25% with Nutcracker, EX Nut Punch)</span></li>
+  <li><strong>Pop-up:</strong> Back+3, dash, 2, 1, Forward+2, dash, 4, 4 xx Flipkick <span class="dmg">(~31%; ~35% with Ultra Flipkick, EX Flipkick)</span></li>
+  <li><strong>Pop-up, keeps them standing:</strong> Back+3, dash, 1, 1, dash, 4, 4 xx Nut Punch <span class="dmg">(~27%; Nut Punch leaves them standing, so no wake-up attack)</span></li>
+  <li><strong>Overhead:</strong> Forward+4, dash, 2, 1, Forward+2, dash, 4, 4 xx Flipkick <span class="dmg">(~34%)</span></li>
+  <li><strong>Overhead, long:</strong> Forward+4, dash, Back+3, dash, 2, 1, Forward+2, dash, 4, 4 xx Flipkick (or Shadow Kick) <span class="dmg">(~38%)</span></li>
+  <li><strong>Jump-in:</strong> jump-in Punch, Forward+4, dash, 2, 1, Forward+2, Forward+3, Shadow Kick <span class="dmg">(~32%)</span></li>
+  <li><strong>Quick punish:</strong> Forward+4, Back+3 xx Shadow Kick <span class="dmg">(~21&ndash;25%)</span></li>
+  <li><strong>X-Ray (parry):</strong> X-Ray, dash, Back+3, dash, 2, 1, Forward+2, dash, 4, 4 xx Flipkick <span class="dmg">(~52%, 3 bars; his X-Ray is a parry, so it starts this when it catches an attack)</span></li>
+</ul>
+<h3>How to play</h3>
+<p>Johnny Cage is a rushdown / pressure character. Fast strings (2, 1, Forward+2) and his Nut Punch keep opponents pinned up close; Shadow Kick and Flipkick are strong combo enders and whiff punishers, Flipkick is one of the best anti-airs in the game, and the Forceballs control space from range. Get in, stagger strings, and bully with the Forward+3, 2 frame trap. Ending combos with Nut Punch leaves the opponent standing, so they can't use a wake-up attack.</p>
+<p class="src">Sources: MortalKombatOnline "Kombo Workshop" combo list; GameFAQs community Mortal Kombat Character Guide (2011); tectactoe's Johnny Cage Guide (GameFAQs); swiftninja's Midscreen Combo FAQ (GameFAQs).</p>
+
+<!-- SONYA -->
+<h2 id="sonya">Sonya Blade</h2>
+<h3>Useful strings</h3>
+<ul class="combos">
+  <li><strong>Drop Zone (2, 1, Back+3)</strong>: 2, 1 cancels into Kartwheel for her standard juggle. <span class="tag">Starts combos</span></li>
+  <li><strong>Mess Hall (Back+2, 1, Forward+2)</strong>: Back+2 launches and is a strong punisher (17 frames); the string ends in a pop-up you can juggle from. <span class="tag">Starts combos</span></li>
+  <li><strong>Fierce Assault (1, 1, 4)</strong>: starts with her 7-frame jab, so it punishes moves with very short recovery. 1, 1, 4 cancels into Kartwheel. <span class="tag">Starts combos</span></li>
+  <li><strong>Power Rush (Forward+2, 2, 4)</strong>: Forward+2, 2 cancels into Kartwheel, or into Military Stance for a mix-up (Lift Off launcher, Tackle, or the Hit The Deck sweep). <span class="tag">Starts combos</span></li>
+  <li><strong>Play Time (3, 1, 2)</strong>: her follow-up after a jump-in Air Drop; 3, 1 cancels into Leg Grab or Kartwheel. <span class="tag">Starts combos</span></li>
+  <li><strong>Heel Bash (Forward+4)</strong>: overhead with a lot of hit stun. Use it to stop crouch-blocking.</li>
+</ul>
+<h3>Combos</h3>
+<p class="note">Specials used: Kartwheel (Down, Forward, 3), Leg Grab (Back, Forward, 4), Kiss (Down, Back, 1), Military Stance (Down, Back, 2; then Back+2 for Lift Off, or 1+3, 1+2 for Tackle), Air Drop (Down+4 in the air). Enhanced: Krazy Legs (EX Leg Grab).</p>
+<ul class="combos">
+  <li><strong>Fast string:</strong> 2, 1 xx Kartwheel, dash, Back+2, 1, Forward+2, Jump Kick xx Air Throw (or Air Drop) <span class="dmg">(~31%)</span></li>
+  <li><strong>Fast string, X-Ray:</strong> 2, 1 xx Kartwheel, dash, Back+2, 1, Forward+2, 2, 1 xx X-Ray <span class="dmg">(~37%, 3 bars)</span></li>
+  <li><strong>Fast jab punish:</strong> 1, 1, 4 xx Kartwheel, dash, 4 xx Leg Grab <span class="dmg">(~23%; ~28% with Krazy Legs)</span></li>
+  <li><strong>Launcher:</strong> jump-in Punch, Back+2, 1, Forward+2, Military Stance, Lift Off (Back+2), Uppercut <span class="dmg">(~30%)</span></li>
+  <li><strong>Military Stance string:</strong> Forward+2, 2 xx Kartwheel, Forward+2, 2 xx Leg Grab <span class="dmg">(~29%; ~33% with Krazy Legs)</span></li>
+  <li><strong>Jump-in Air Drop:</strong> jump-in Punch, Air Drop, 3, 1, 2 xx Krazy Legs (EX Leg Grab) <span class="dmg">(~39%, 1 bar; ~34% with plain Leg Grab)</span></li>
+  <li><strong>Jump-in Air Drop, X-Ray:</strong> jump-in Punch, Air Drop, 3, 1 xx X-Ray <span class="dmg">(~41%, 3 bars)</span></li>
+  <li><strong>Corner:</strong> Air Drop, 4 xx Kartwheel, Back+2, 1 xx Kiss, jump, Air Drop, 3, 1 xx Military Stance, Tackle (1+3, 1+2) <span class="dmg">(~43%, corner)</span></li>
+</ul>
+<h3>How to play</h3>
+<p>Sonya is a rushdown / footsie hybrid with strong normals and a fast 2, 1 that cancels into Kartwheel for juggles. Energy Rings zone and recover fast, Arc Kick closes distance, Leg Grab ends combos, and Military Stance adds a three-way mix-up after Forward+2, 2. Her Down+4 has one of the longest reaches in the game. Control space with rings, then convert pokes and Air Drops into Kartwheel combos.</p>
+<p class="src">Sources: MortalKombatOnline "Kombo Workshop" combo list; GameFAQs community Mortal Kombat Character Guide (2011); swiftninja's Midscreen Combo FAQ (GameFAQs).</p>
+
+<!-- SUB-ZERO -->
+<h2 id="sub-zero">Sub-Zero</h2>
+<h3>Useful strings</h3>
+<ul class="combos">
+  <li><strong>Winter Blade (2, 2, 2)</strong>: base your offense on 2, 2: fast (2 is 9 frames), safe on block, and it cancels into specials. The last hit is an overhead with a very large hitbox. <span class="tag">Starts combos</span></li>
+  <li><strong>Ice Pick (Back+1, 2, 1)</strong>: Back+1, 2 is an overhead and safe on block, but slower (Back+1 is 12 frames). Back+1, 2 cancels into Iceball. <span class="tag">Starts combos</span></li>
+  <li><strong>Frost Bitten (2, 1, 2)</strong>: use as a punisher; cancels into Iceball. <span class="tag">Starts combos</span></li>
+  <li><strong>Ices Up (2, 1, 4)</strong>: his juggle string after a freeze, ending in Slide or X-Ray.</li>
+  <li><strong>Big Leg (Forward+4)</strong>: solid poke that hits overhead and cancels into Iceball or Slide. <span class="tag">Starts combos</span></li>
+  <li><strong>2 xx Iceball</strong>: his anti-air of choice against jump-ins.</li>
+</ul>
+<h3>Combos</h3>
+<p class="note">Specials used: Iceball (Down, Forward, 3), Slide (Back, Forward, 4), Ice Clone (Down, Back, 1). Enhanced: Power Slide (EX Slide).</p>
+<ul class="combos">
+  <li><strong>Fast string:</strong> 2, 2 xx Iceball, jump-in Punch, 2, 1, 4 xx Slide <span class="dmg">(~30%; ~32% with Power Slide)</span></li>
+  <li><strong>Overhead:</strong> jump-in Punch, Back+1, 2 xx Iceball, jump-in Punch, Back+1, 2, 4 <span class="dmg">(~31%)</span></li>
+  <li><strong>Overhead, long:</strong> Back+1, 2 xx Iceball, NJP, dash, Back+1, 2, then 2, 1, 2 xx Slide <span class="dmg">(~42%)</span></li>
+  <li><strong>Overhead poke:</strong> Forward+4 xx Iceball, jump-in Punch, 2, 1, 4 xx Slide <span class="dmg">(~31%; ~33% with Power Slide)</span></li>
+  <li><strong>Jump-in, 1 bar:</strong> jump-in Punch, Back+1, 2 xx Iceball, jump-in Punch, 2, 1, 4 xx Power Slide (EX Slide) <span class="dmg">(~39%, 1 bar; ~36% with plain Slide)</span></li>
+  <li><strong>X-Ray:</strong> Back+1, 2 xx Iceball, jump-in Punch, Back+1, 2 xx X-Ray <span class="dmg">(~48%, 3 bars)</span></li>
+  <li><strong>X-Ray from a poke:</strong> Forward+4 xx Iceball, jump-in Punch, 2, 1, 4 xx X-Ray (hold the X-Ray about half a second) <span class="dmg">(~48%, 3 bars)</span></li>
+  <li><strong>Corner:</strong> 2, 1, 4 xx Iceball, 2, 1, 4 xx Slide <span class="dmg">(~36%, corner)</span></li>
+</ul>
+<h3>How to play</h3>
+<p>Sub-Zero is a defensive zoner / trap character. Iceball freezes for a full combo from range, the Ice Clone walls off approaches and controls space, and Slide punishes from range (it is very unsafe if blocked). Play patient, place clones deliberately, bait whiffs, and cash every freeze into big damage. Slide is his only wake-up attack, so mix it with back-rolls and Ice Clone.</p>
+<p class="src">Sources: MortalKombatOnline "Kombo Workshop" combo list; GameFAQs community Mortal Kombat Character Guide (2011); swiftninja's Midscreen Combo FAQ (GameFAQs).</p>
+
+<!-- SCORPION -->
+<h2 id="scorpion">Scorpion</h2>
+<h3>Useful strings</h3>
+<ul class="combos">
+  <li><strong>Torment (1, 1, 1)</strong>: all hits high, safe on block, and 1, 1 cancels into Spear. One of his best strings. <span class="tag">Starts combos</span></li>
+  <li><strong>Damnation (1, 1, 4)</strong>: all hits high, safe on block, knocks down and pushes them away.</li>
+  <li><strong>Dead End (3, 3, 4)</strong>: all hits high, safe on block. 3 is his fastest starter (10 frames); 3, 3 cancels into Spear. <span class="tag">Starts combos</span></li>
+  <li><strong>Brimstone (2, 1, 2)</strong>: first two hits high, last hit mid, safe on block, knockdown. 2, 1 cancels into Spear. <span class="tag">Starts combos</span></li>
+  <li><strong>Gravedigger (2, 1+2)</strong>: the second hit is a mid launcher, unsafe on block. Follow with Teleport. <span class="tag">Starts combos</span></li>
+  <li><strong>Doom Blade (Forward+2, 1, 4)</strong>: all hits high, safe on block. Forward+2, 1 cancels into Spear or Teleport and is his usual juggle filler. <span class="tag">Starts combos</span></li>
+  <li><strong>Grievance (Forward+4, 3)</strong>: first hit low, second high, unsafe on block. Forward+4 cancels into Spear, so it is his low combo starter. <span class="tag">Starts combos</span></li>
+  <li><strong>Blade Overhead (Back+2)</strong>: overhead launcher; also his best punish for a whiffed teleport. <span class="tag">Starts combos</span></li>
+</ul>
+<h3>Combos</h3>
+<p class="note">Specials used: Spear (Back, Back, 1), Teleport (Down, Back, 3; also in the air), Demon Fire (Down, Back, 2), Takedown (Down, Back, 4), Air Throw (throw while airborne). Enhanced: Flame Spear (EX Spear).</p>
+<ul class="combos">
+  <li><strong>Anti-air:</strong> Jump Kick xx Air Throw <span class="dmg">(~20%, short and easy anti-air / punish)</span></li>
+  <li><strong>Fast string:</strong> jump-in Punch, 1, 1 xx Spear, NJP, dash, Back+2, dash, 1, 1 xx Teleport, Jump Kick xx Air Throw <span class="dmg">(~40%)</span></li>
+  <li><strong>Fastest starter:</strong> 3, 3 xx Spear, NJP, dash, Back+2, Jump Kick xx Teleport, Jump Kick xx Air Throw <span class="dmg">(~36%)</span></li>
+  <li><strong>Overhead:</strong> Back+2, Teleport, Spear, Forward+2, 1, 4 <span class="dmg">(~21%)</span></li>
+  <li><strong>Launcher:</strong> jump-in Punch, 2, 1+2 xx Teleport, 1, 1 xx Spear, Forward+2, 1 xx Teleport <span class="dmg">(~33%)</span></li>
+  <li><strong>Low, X-Ray:</strong> Forward+4 xx Spear, NJP, dash, Back+2, Jump Kick xx Teleport, dash, 2, 1 xx X-Ray <span class="dmg">(~44%, 3 bars)</span></li>
+  <li><strong>Short X-Ray:</strong> 1, 1 xx Spear, Forward+2, 1 xx X-Ray <span class="dmg">(~48%, 3 bars)</span></li>
+  <li><strong>Fastest starter, X-Ray:</strong> 3, 3 xx Spear, NJP, dash, Back+2, Jump Kick xx Teleport, dash, 2, 1 xx X-Ray <span class="dmg">(~45%, 3 bars)</span></li>
+</ul>
+<p class="note">After an Air Throw, Hell Fire (EX Demon Fire) is guaranteed. A combo that ends in plain Teleport leaves the opponent staggered, so you can go for another jump-in mix-up instead.</p>
+<h3>How to play</h3>
+<p>Scorpion is an aggressive rushdown character built around his Spear and the Teleport "vortex." Spear and Flame Spear start combos from range (only throw a plain Spear inside a combo; Flame Spear has armor). Ending a juggle in Teleport while the opponent is standing forces a guessing game on their landing. Back+2 (overhead) and Forward+4 (low) give him a real high/low mix-up, and Demon Fire is unblockable on the ground.</p>
+<p class="src">Sources: MortalKombatOnline "Kombo Workshop" combo list; GameFAQs community Mortal Kombat Character Guide (2011); ELC1837's Scorpion Guide (GameFAQs); swiftninja's Midscreen Combo FAQ (GameFAQs).</p>
+
+<!-- CYRAX -->
+<h2 id="cyrax">Cyrax</h2>
+<h3>Useful strings</h3>
+<ul class="combos">
+  <li><strong>See Saw (1, 1, 1)</strong>: safe on block and ends in an overhead. 1 is 9 frames; 1, 1 is one of his preferred safe starters. <span class="tag">Starts combos</span></li>
+  <li><strong>Steel Fists (1, 2, 1)</strong>: safe on block. Cancels into Ragdoll, or into a Medium Bomb followed by a Net for pressure. <span class="tag">Starts combos</span></li>
+  <li><strong>Mustard (2, 1, 2)</strong>: safe on block, ends in an overhead. 2, 1 cancels into Net or Sticky Bomb in his big combos. <span class="tag">Starts combos</span></li>
+  <li><strong>Kombat Boots (3, 3, 4)</strong>: 3, 3 is safe on block (10 frames); mostly used inside juggles.</li>
+  <li><strong>Power Plant (1, 2, 3)</strong>: cancels into Buzzsaw.</li>
+  <li><strong>Cyber Beatdown (Back+1, 2, 1, 2)</strong>: press rapidly; an unblockable command throw that leaves them staggered.</li>
+  <li><strong>Blast Overhead (Back+2)</strong>: launcher, slow (30 frames). Good after Down+1 pokes make the opponent crouch-block. <span class="tag">Starts combos</span></li>
+</ul>
+<h3>Combos</h3>
+<p class="note">Specials used: Bomb close (Back, Back, 4), medium (Forward, Forward, 4), far (Back, Back, Forward, 4); Net (Back, Back, 3); Ragdoll (Down, Forward, 3, then throw); Reverse Kick (Down, Forward, 3); Buzzsaw (Back, Forward, 2). Enhanced: Sticky Bomb (EX Bomb).</p>
+<ul class="combos">
+  <li><strong>Fast string:</strong> 1, 2, 1 xx Ragdoll <span class="dmg">(~23%)</span></li>
+  <li><strong>Launcher:</strong> Back+2, dash, 1, 2, 1 xx Medium Bomb <span class="dmg">(~20%)</span></li>
+  <li><strong>Jump-in, Net:</strong> jump-in Punch, 2, 1 xx Net, jump-in Punch, 1, 2, 3 xx Reverse Kick <span class="dmg">(~32%)</span></li>
+  <li><strong>Jump-in, 1 bar:</strong> jump-in Punch, 2, 1 xx Sticky Bomb (EX close Bomb), Medium Bomb, Uppercut, Uppercut <span class="dmg">(~45%, 1 bar)</span></li>
+  <li><strong>Big 1 bar:</strong> 2, 1 xx Sticky Bomb, Medium Bomb, Uppercut, Back+2, dash, 1, 2, 1 xx Ragdoll <span class="dmg">(~57%, 1 bar)</span></li>
+  <li><strong>Net and bombs:</strong> jump-in Punch, 2, 1 xx Net, dash back, jump-in Punch, 2, 1 xx Sticky Bomb, Medium Bomb, Uppercut, Back+2, dash, 3 xx Ragdoll <span class="dmg">(~53%, 1 bar)</span></li>
+  <li><strong>Jump-in, X-Ray:</strong> jump-in Punch, 2, 1 xx Net, jump-in Punch, 2, 1 xx X-Ray <span class="dmg">(~43%, 3 bars)</span></li>
+  <li><strong>Bomb trap, X-Ray:</strong> Medium Bomb, Close Bomb, Net, Back+2, dash, 1 xx X-Ray <span class="dmg">(~41%, 3 bars)</span></li>
+</ul>
+<h3>How to play</h3>
+<p>Cyrax is a trap / zoner built on his Bombs (close, medium, far &ndash; unblockable) and the Net. Bombs and Net set up extended juggles and resets, and Back+1, 2, 1, 2 is an unblockable command throw. Lay bombs to control space, catch with the Net, then convert into long bomb-juggle combos. His routes are meter- and timing-heavy, and his Teleport is very unsafe outside combos.</p>
+<p class="src">Sources: MortalKombatOnline "Kombo Workshop" combo list; GameFAQs community Mortal Kombat Character Guide (2011); swiftninja's Midscreen Combo FAQ (GameFAQs).</p>
+
+<!-- SEKTOR -->
+<h2 id="sektor">Sektor</h2>
+<h3>Useful strings</h3>
+<ul class="combos">
+  <li><strong>Demolition (2, 1, 4)</strong>: 2, 1 cancels into Teleport Uppercut or Flame Burner. <span class="tag">Starts combos</span></li>
+  <li><strong>System Overload (1, 2, Back+1)</strong>: Back+1 launches the opponent far for a long juggle. Back+1 on its own is safe on block and a good anti-air. <span class="tag">Starts combos</span></li>
+  <li><strong>Run Down (Back+3, 4)</strong>: Back+3 hits low; cancel 4 into Teleport Uppercut. <span class="tag">Starts combos</span></li>
+  <li><strong>Fatal Error (Forward+4, 4)</strong>: cancels into Teleport Uppercut; also used mid-juggle. <span class="tag">Starts combos</span></li>
+  <li><strong>Drive Power (Back+2, 1)</strong>: Back+2 cancels into Teleport Uppercut. <span class="tag">Starts combos</span></li>
+  <li><strong>Fusion Force (1, 2, 4)</strong>: avoid; the last hit tends to miss. Cancel 1, 2 into Flame Burner instead.</li>
+</ul>
+<h3>Combos</h3>
+<p class="note">Specials used: Teleport Uppercut (Down, Forward, 4), Flame Burner (Back, Forward, 2), Straight Missile (Back, Forward, 1). Enhanced: Metal Uppercut (EX Teleport Uppercut).</p>
+<ul class="combos">
+  <li><strong>Fast string:</strong> 2, 1 xx Teleport Uppercut, 2, 1 xx Flame Burner <span class="dmg">(~24%)</span></li>
+  <li><strong>Low:</strong> Back+3, 4 xx Teleport Uppercut, 1, 2 xx Flame Burner <span class="dmg">(~25%)</span></li>
+  <li><strong>Launcher:</strong> 1, 2, Back+1, Forward+4, 4 xx Teleport Uppercut, Back+2 xx Flame Burner <span class="dmg">(~36%)</span></li>
+  <li><strong>Jump-in, 1 bar:</strong> jump-in Punch, 1, 2, Back+1, Forward+4, 4 xx Metal Uppercut (EX Teleport Uppercut), 4, Straight Missile <span class="dmg">(~42%, 1 bar; ~38% without meter)</span></li>
+  <li><strong>Fast string, 1 bar:</strong> jump-in Punch, 2, 1 xx Teleport Uppercut, Jump Kick, Metal Uppercut (EX Teleport Uppercut), 4 xx Flame Burner <span class="dmg">(~39%, 1 bar)</span></li>
+  <li><strong>Jump-in, X-Ray:</strong> jump-in Punch, 1, 2, Back+1, Forward+4, 4 xx Teleport Uppercut, 1, 2 xx X-Ray <span class="dmg">(~49%, 3 bars)</span></li>
+  <li><strong>Back+2, X-Ray:</strong> Back+2 xx Teleport Uppercut, Forward+4 xx X-Ray <span class="dmg">(~43%, 3 bars)</span></li>
+</ul>
+<h3>How to play</h3>
+<p>Sektor is a zoner with fast Straight and Up Missiles and a quick Teleport Uppercut that doubles as a launcher. Zone with missiles, punish with Teleport Uppercut, and enhance it to extend juggles. Many of his strings are unsafe on block, so cancel safe hits into Teleport Uppercut and keep Back+1 for anti-air. Flame Burner ends combos and leaves the opponent standing.</p>
+<p class="src">Sources: MortalKombatOnline "Kombo Workshop" combo list; GameFAQs community Mortal Kombat Character Guide (2011); swiftninja's Midscreen Combo FAQ (GameFAQs).</p>
+
+<!-- SMOKE -->
+<h2 id="smoke">Smoke</h2>
+<h3>Useful strings</h3>
+<ul class="combos">
+  <li><strong>Combustion (3, Down+1, 2)</strong>: his main juggle string and hit-confirm into Smoke Cloud. <span class="tag">Starts combos</span></li>
+  <li><strong>Rekindle (2, 1, 4)</strong>: his fastest string; all high, knockdown. 2, 1 cancels into Smoke Cloud. <span class="tag">Starts combos</span></li>
+  <li><strong>Smokin (Back+2, 3)</strong>: overhead starter; Back+2, 3 cancels into Smoke Cloud. <span class="tag">Starts combos</span></li>
+  <li><strong>On Fire (3, 2)</strong>: filler inside juggles and corner loops.</li>
+  <li>Smoke has no low strings; his low option is the sweep. His mix-up comes from Smoke Towards and Smoke Away (teleports through the opponent) plus the Back+2 overhead.</li>
+</ul>
+<h3>Combos</h3>
+<p class="note">Specials used: Smoke Cloud (Down, Back, 2), Teleport (Down, Back, 4; also in the air), Air Throw (throw while airborne). Enhanced: Smoke Bomb (EX Smoke Cloud), Smokeport (EX Teleport).</p>
+<ul class="combos">
+  <li><strong>Fast string:</strong> 2, 1 xx Smoke Cloud, Jump Kick xx Teleport <span class="dmg">(~23%; ~26% with Smokeport)</span></li>
+  <li><strong>Main string:</strong> 3, Down+1, 2, dash, Back+2, 3 xx Smoke Cloud, Jump Kick xx Air Throw (or Teleport) <span class="dmg">(~33%; ~42% with X-Ray after the Smoke Cloud)</span></li>
+  <li><strong>Overhead:</strong> Back+2, 3 xx Smoke Cloud, step forward, 3, 2, dash, 3, Down+1, 2, Jump Kick xx Air Throw <span class="dmg">(~36%)</span></li>
+  <li><strong>Jump-in:</strong> jump-in Punch, 3, Down+1, 2, dash, 3, 2 xx Smoke Cloud, dash, 3, Down+1, 2, Air Throw <span class="dmg">(~41%)</span></li>
+  <li><strong>1 bar:</strong> 3, Down+1, 2 xx Smoke Bomb (EX Smoke Cloud), 3, Down+1, 2, Jump Kick, Teleport <span class="dmg">(~36%, 1 bar; ~39% with Smokeport, 2 bars)</span></li>
+  <li><strong>Reset loop:</strong> 3, Down+1, 2, Jump Kick xx Air Throw, OTG Smoke Cloud, dash, 3, Down+1, 2, Jump Kick xx Air Throw, OTG Smoke Cloud <span class="dmg">(~46%; the Smoke Cloud after an Air Throw can be blocked, so this is a reset, not a true combo)</span></li>
+  <li><strong>X-Ray:</strong> 3, Down+1, 2 xx X-Ray <span class="dmg">(~40%, 3 bars)</span></li>
+  <li><strong>Jump-in, X-Ray:</strong> jump-in Punch, 3, Down+1, 2 xx Smoke Cloud, 2, 1 xx X-Ray <span class="dmg">(~45%, 3 bars)</span></li>
+  <li><strong>Corner:</strong> 2, 1, 4, Smoke Cloud, 3, 2, 3, 2, 3, 2, 2, 1, 4 <span class="dmg">(~41%, corner)</span></li>
+</ul>
+<h3>How to play</h3>
+<p>Smoke is a hit-confirm / mix-up character. Smoke Cloud (the enhanced version is Smoke Bomb) starts juggles and pulls opponents in, Shake counters projectiles (the enhanced Vibration also counters non-low normals), and Smoke Towards / Smoke Away pass through the opponent for cross-ups. After an Air Throw, throw a Smoke Cloud: the opponent can only block it. Condition them with 2, 1, 4 after Smoke Towards, then switch to the Back+2 overhead or a throw.</p>
+<p class="src">Sources: MortalKombatOnline "Kombo Workshop" combo list; GameFAQs community Mortal Kombat Character Guide (2011); swiftninja's Midscreen Combo FAQ (GameFAQs).</p>
+
+<!-- REPTILE -->
+<h2 id="reptile">Reptile</h2>
+<h3>Useful strings</h3>
+<ul class="combos">
+  <li><strong>Carnivore Bash (1, 2, 2, 1)</strong>: 1, 2, 2 cancels into a Force Ball to start his juggle. <span class="tag">Starts combos</span></li>
+  <li><strong>Amphibian Charge (3, 2, 1)</strong>: his juggle string; 3, 2 goes between Force Balls and 3, 2, 1 cancels into Slide or X-Ray. <span class="tag">Starts combos</span></li>
+  <li><strong>Hybrid Crush (2, Forward+3, 1+2)</strong>: a meterless juggle ender.</li>
+  <li>Mix-ups: the Acid Hand special is an overhead and Slide hits low. Down+4 can be cancelled into Acid Hand for a low-into-overhead mix-up.</li>
+</ul>
+<h3>Combos</h3>
+<p class="note">Specials used: Slow Force Ball (Back, Back, 1), Fast Force Ball (Back, Back, 3), Slide (Back, Forward, 4), Elbow Dash (Back, Forward, 2), Acid Hand (Down, Back, 2), Acid Spit (Down, Forward, 1). Enhanced: Reptilian Elbow (EX Elbow Dash), Acid Stream (EX Acid Spit). Each Force Ball type can only be used once per juggle.</p>
+<ul class="combos">
+  <li><strong>Fast string:</strong> 1, 2, 2 xx Fast Force Ball, 3, 2 xx Slow Force Ball, 3, 2, 1 xx Slide <span class="dmg">(~34%; ~44% ending in X-Ray)</span></li>
+  <li><strong>Jump-in:</strong> jump-in Punch, 1, 2, 2 xx Slow Force Ball, 3, 2 xx Fast Force Ball, 3, 2, 1 xx X-Ray <span class="dmg">(~46%, 3 bars)</span></li>
+  <li><strong>From range:</strong> Fast Force Ball, Elbow Dash (it whiffs to close distance), NJP, 3, 2 xx Slow Force Ball, 3, 2, 1 xx Slide <span class="dmg">(~31%)</span></li>
+  <li><strong>3, 2, 1 starter:</strong> 3, 2, 1 xx Elbow Dash (whiffs), NJP, 3, 2 xx Slow Force Ball, Fast Force Ball, 3, 2, 1 xx Slide <span class="dmg">(~37%)</span></li>
+  <li><strong>Short, 1 bar:</strong> 3, 2 xx Reptilian Elbow (EX Elbow Dash), Slide <span class="dmg">(~29%, 1 bar)</span></li>
+  <li><strong>Keep them standing:</strong> end any combo above with 3, 2 xx Acid Stream (EX Acid Spit) instead of 3, 2, 1 xx Slide <span class="dmg">(1&ndash;2% less damage, 1 bar; prevents a wake-up attack)</span></li>
+  <li><strong>Corner:</strong> 3, 2, 1 xx Acid Hand, 3, 2, 1 xx Fast Force Ball, 3, 2, 1 xx Acid Spit <span class="dmg">(~39%, corner)</span></li>
+</ul>
+<h3>How to play</h3>
+<p>Reptile is a juggle / rushdown character who can also zone. A Force Ball that hits gives a full combo from almost anywhere, Acid Spit is a very fast projectile, Elbow Dash is the fastest move in the game, and invisibility hides which attack is coming. Fire a Slow Force Ball and Elbow Dash in behind it: if they block, throw them. Slide hits low; Acid Hand is an overhead.</p>
+<p class="src">Sources: MortalKombatOnline "Kombo Workshop" combo list; GameFAQs community Mortal Kombat Character Guide (2011).</p>
+
+<!-- KANO -->
+<h2 id="kano">Kano</h2>
+<h3>Useful strings</h3>
+<ul class="combos">
+  <li><strong>Dragon's Tail (Back+1, 1, 2)</strong>: his best combo starter, leading into his most damaging juggles. <span class="tag">Starts combos</span></li>
+  <li><strong>Getting Ahead (2, 1, 2)</strong>: easier starter, and his main juggle string (2, 1, 2, dash, 2, 1, 2). <span class="tag">Starts combos</span></li>
+  <li><strong>Mean Machine (Forward+3, Back+2)</strong>: Back+2 (Overhead Smash) is an overhead launcher, so this catches opponents who block crouching. <span class="tag">Starts combos</span></li>
+  <li><strong>Smashing Time (Back+2, Forward+1)</strong>: overhead start; cancels into Choke (keeps them close) or Knife Throw (sends them across the screen). <span class="tag">Starts combos</span></li>
+</ul>
+<h3>Combos</h3>
+<p class="note">Specials used: Ball (Forward, Down, Back, Forward), Up Ball (Down, Forward, 2), Choke (Down, Forward, 1), Knife Throw (Down, Back, 2). Enhanced: Kano Ball (EX Ball), Kano Choke (EX Choke, armor). Kano cannot combo into his X-Ray.</p>
+<ul class="combos">
+  <li><strong>Anti-air:</strong> Jump Kick xx Air Throw <span class="dmg">(~15%)</span></li>
+  <li><strong>Fast string:</strong> 2, 1, 2, dash, 2, 1, 2 xx Ball <span class="dmg">(~25%)</span></li>
+  <li><strong>Fast string, jump-in:</strong> jump-in Punch, 2, 1, 2, dash, 2, 1, 2 xx Up Ball (or Ball) <span class="dmg">(~28%)</span></li>
+  <li><strong>Dragon's Tail:</strong> Back+1, 1, 2, dash, Back+1, 1, 2 xx Ball <span class="dmg">(~31%; ~33% with Kano Ball)</span></li>
+  <li><strong>Dragon's Tail, long:</strong> jump-in Punch, Back+1, 1, 2, dash, 2, 1, 2, dash, Back+1, 1 xx Up Ball <span class="dmg">(~35%)</span></li>
+  <li><strong>Overhead:</strong> Forward+3, Back+2, dash, 2, 1, 2 xx Up Ball <span class="dmg">(~26%)</span></li>
+  <li><strong>Overhead, short:</strong> Back+2, Forward+1 xx Choke <span class="dmg">(~19%; ~24% with Kano Choke)</span></li>
+  <li><strong>Corner:</strong> Back+1, 1, 2, 2, 1, 2, 2, 1, 2, 1, 1, 2 xx Up Ball <span class="dmg">(~36%, corner)</span></li>
+  <li><strong>Corner, 1 bar:</strong> Back+1, 1, 2, 2, 1, 2 xx Kano Choke (EX Choke) <span class="dmg">(~35%, corner, 1 bar)</span></li>
+</ul>
+<h3>How to play</h3>
+<p>Kano is a zoner / juggle character with the Knife Throw (very fast recovery), the rolling Ball, the Up Ball anti-air and the Choke. Zone with knives, anti-air with Up Ball (or Jump Kick into Air Throw when you can), and punish with Ball or a Dragon's Tail juggle. Charging Kano Ball for about three seconds makes it unblockable, and Kano Choke has armor.</p>
+<p class="src">Sources: MortalKombatOnline "Kombo Workshop" combo list; GameFAQs community Mortal Kombat Character Guide (2011); swiftninja's Midscreen Combo FAQ (GameFAQs).</p>
+
+<!-- JAX -->
+<h2 id="jax">Jax</h2>
+<h3>Useful strings</h3>
+<ul class="combos">
+  <li><strong>Code Of Conduct (Forward+4, 1, 4)</strong> and <strong>Advance Force (Forward+4, 1, 3)</strong>: Forward+4 is a fast low (9 frames). Safe on block, and Forward+4, 1 cancels into Dash Punch or Gotcha Grab. <span class="tag">Starts combos</span></li>
+  <li><strong>Boot Kamp (Back+1, 2, 4)</strong>: the second hit is an overhead; safe on block. Cancels into Dash Punch. <span class="tag">Starts combos</span></li>
+  <li><strong>Major Force (1, 2, 3)</strong>: starts with his 8-frame jab. 1, 2 cancels into Overhead Smash or Dash Punch. <span class="tag">Starts combos</span></li>
+  <li><strong>Chain Of Command (2, Forward+2, Back+1)</strong>: cancels into Air Gotcha Grab. <span class="tag">Starts combos</span></li>
+</ul>
+<h3>Combos</h3>
+<p class="note">Specials used: Dash Punch (Down, Forward, 2), Ground Pound close (Down, Back, 3), medium (Down, Forward, 3), far (Down, Back, Forward, 3; unblockable), Gotcha Grab (Down, Forward, 1), Air Gotcha Grab (Down, Back, 1), Overhead Smash (Down, Up, 4), Back Breaker (throw while airborne). Enhanced: Dash Fist (EX Dash Punch, armor), Elite Smash, Ground Quake. Jax cannot combo into his X-Ray.</p>
+<ul class="combos">
+  <li><strong>Anti-air:</strong> Jump Kick, Back Breaker <span class="dmg">(~16%)</span></li>
+  <li><strong>Fast jab:</strong> 1, 2 xx Overhead Smash <span class="dmg">(~18%; ~22% with Elite Smash)</span></li>
+  <li><strong>Low:</strong> Forward+4, 1 xx Dash Punch <span class="dmg">(~15%; ~23% with Dash Fist)</span></li>
+  <li><strong>Overhead:</strong> Back+1, 2, 4 xx Dash Punch <span class="dmg">(~23%; ~30% with Dash Fist)</span></li>
+  <li><strong>Overhead, jump-in, 1 bar:</strong> jump-in Punch, Back+1, 2, 4 xx Dash Fist (EX Dash Punch) <span class="dmg">(~33%, 1 bar)</span></li>
+  <li><strong>String:</strong> 2, Forward+2, Back+1 xx Air Gotcha Grab <span class="dmg">(~26%)</span></li>
+  <li><strong>Ground Pound:</strong> Close Ground Pound, dash, Back+1, 2, 4 xx Dash Punch <span class="dmg">(~23%; medium Ground Pound does 2&ndash;3% more)</span></li>
+  <li><strong>Ground Pound, long:</strong> Medium Ground Pound, dash, 1, dash, 1, dash, 1, dash, 1, dash, 1 xx Gotcha Grab <span class="dmg">(~31%; ~34% with Gotcha Beatdown)</span></li>
+  <li><strong>Corner loop:</strong> Forward+4, 1, 3, Forward+4, 1, 3, Forward+4, 1, 3 <span class="dmg">(~34%, corner)</span></li>
+  <li><strong>Corner, 2 bars:</strong> Ground Quake (EX Ground Pound), NJP, 4, 1, 1 xx Dash Fist (EX Dash Punch) <span class="dmg">(~43%, corner, 2 bars)</span></li>
+</ul>
+<h3>How to play</h3>
+<p>Jax is a rushdown powerhouse with fast normals, the Dash Punch (very fast, and the enhanced Dash Fist has armor), the unblockable Ground Pound, the Gotcha Grab command throw, and Energy Wave. Push opponents to the corner with Dash Punch, then loop Forward+4, 1, 3. Forward+4 is low and Back+1, 2 is an overhead, both safe. Ground Pound can be dash-cancelled for mind games. Avoid long projectile fights: his Energy Wave recovers slowly.</p>
+<p class="src">Sources: MortalKombatOnline "Kombo Workshop" combo list (corner route); GameFAQs community Mortal Kombat Character Guide (2011); swiftninja's Midscreen Combo FAQ (GameFAQs).</p>
+
+<!-- MILEENA -->
+<h2 id="mileena">Mileena</h2>
+<h3>Useful strings</h3>
+<ul class="combos">
+  <li><strong>Fiendly Kiss (4, 2)</strong>: the center of her offense; combos after a Down+4 that hits. 4, 2 cancels into Ball Roll or Teleport Drop. <span class="tag">Starts combos</span></li>
+  <li><strong>Splits (Up+4)</strong>: launcher that reaches from sweep range; safe on block. <span class="tag">Starts combos</span></li>
+  <li><strong>Boot Down (Back+1, 4)</strong>: safe on block; her main juggle filler.</li>
+  <li><strong>Bones (2, 3, 4)</strong>: 2, 3 cancels into Ball Roll; needs to be close. <span class="tag">Starts combos</span></li>
+  <li><strong>Pretty Slasher (Forward+3, 1+2)</strong>: Forward+3 is a good poke from a little outside sweep range and cancels into Ball Roll. <span class="tag">Starts combos</span></li>
+  <li><strong>Getaway Sticks (Back+3, Back+4)</strong>: Back+3 hits low. Not safe, but it trains opponents to crouch-block, which opens them to Up+4. Back+3 into the overhead Smashing Roll is a low-then-overhead mix-up.</li>
+  <li><strong>Leaping Sai (Back+2)</strong>: overhead that goes over low projectiles and leaves a Sai stuck in the opponent, adding damage to Leaping Neckbite.</li>
+</ul>
+<h3>Combos</h3>
+<p class="note">Specials used: Ball Roll (Back, Down, 4), Teleport Drop (Forward, Forward, 3; also in the air), Sai Blast (Back, Forward, 1; also in the air), Leaping Neckbite (Back, Forward, 2). Enhanced: Smashing Roll (EX Ball Roll, overhead). A blocked Ball Roll is punished hard, so confirm before rolling.</p>
+<ul class="combos">
+  <li><strong>Close string:</strong> 2, 3 xx Ball Roll, Up+4, 3, 4 xx Teleport Drop xx Sai Blast <span class="dmg">(~34%)</span></li>
+  <li><strong>Close string, long:</strong> 2, 3 xx Ball Roll, Up+4, Back+1, 4, dash, 1, 1, 2 xx Leaping Neckbite <span class="dmg">(~33%)</span></li>
+  <li><strong>Poke:</strong> Forward+3 xx Ball Roll, Up+4, Back+1, 4, dash, 1, 1, 2 xx Leaping Neckbite <span class="dmg">(~30%)</span></li>
+  <li><strong>Low:</strong> Back+3 xx Ball Roll, Up+4, Back+1, 4, dash, 1, 1, 2 xx Leaping Neckbite <span class="dmg">(~28%)</span></li>
+  <li><strong>Low into overhead, 1 bar:</strong> Back+3, Smashing Roll (EX Ball Roll), Back+1, 4, Back+1, 4, 4 xx Ball Roll, Back+1, 4 xx Leaping Neckbite <span class="dmg">(~32%, 1 bar)</span></li>
+  <li><strong>Launcher:</strong> Up+4, Up+4, Forward+3, 1+2 xx Ball Roll, Jump Kick xx Teleport Drop xx Sai Blast <span class="dmg">(~40%)</span></li>
+  <li><strong>Jump-in:</strong> jump-in Punch, 4, 2 xx Ball Roll, Back+1, 4, 1, 1 xx Sai Blast <span class="dmg">(~30%)</span></li>
+  <li><strong>Launcher, X-Ray:</strong> Up+4, Up+4, Forward+3, 1+2 xx Ball Roll, Forward+3, 1+2 xx X-Ray <span class="dmg">(~53%, 3 bars)</span></li>
+  <li><strong>Jump-in, X-Ray:</strong> jump-in Punch, Back+1, 4, 3, 4 xx X-Ray <span class="dmg">(~42%, 3 bars)</span></li>
+</ul>
+<h3>How to play</h3>
+<p>Mileena is a mix-up / rushdown character who also zones well. Sai Blast recovers very fast (and instant air Sais from a jump fill the screen), Teleport Drop is one of the best teleports, and Ball Roll starts her combos. Up+4 and Back+1, 4 are safe; 4, 2 drives her pressure. Ending a combo with plain Leaping Neckbite leaves the opponent standing. Use Back+3 (low) against Up+4 and Smashing Roll (overhead) to open guards.</p>
+<p class="src">Sources: MortalKombatOnline "Kombo Workshop" combo list; GameFAQs community Mortal Kombat Character Guide (2011); swiftninja's Midscreen Combo FAQ (GameFAQs).</p>
+
+<!-- NIGHTWOLF -->
+<h2 id="nightwolf">Nightwolf</h2>
+<h3>Useful strings</h3>
+<ul class="combos">
+  <li><strong>Axe Blast (1, 2, 2, 1)</strong>: 1, 2, 2 cancels into Axe Swing (the hatchet launcher). <span class="tag">Starts combos</span></li>
+  <li><strong>Dagger Stab (Back+1, 1, 1)</strong>: cancels into Axe Swing. <span class="tag">Starts combos</span></li>
+  <li><strong>Tomahawk Smash (Back+2, 2, 1)</strong>: Back+2, 2 cancels into Axe Swing; Back+2 is also used mid-juggle. <span class="tag">Starts combos</span></li>
+  <li><strong>Full Moon (Forward+3, 1, 2)</strong>: Forward+3 is quick (11 frames). Forward+3, 1 cancels into Axe Swing; the full string loops in the corner. <span class="tag">Starts combos</span></li>
+</ul>
+<h3>Combos</h3>
+<p class="note">Specials used: Axe Swing (Down, Forward, 1), Shoulder (Forward, Forward, 4), Arrow Shot (Down, Back, 1), Choke (Down, Forward, 2), Lightning (Down, Back, 3; unblockable). Enhanced: Thunder Storm (EX Lightning, launches), Strangle (EX Choke), Power Charge (EX Shoulder, armor).</p>
+<ul class="combos">
+  <li><strong>Fast string:</strong> 1, 2, 2 xx Axe Swing, Axe Swing, dash, 1, 1 xx Arrow Shot, Shoulder <span class="dmg">(~33%)</span></li>
+  <li><strong>Back+1:</strong> Back+1, 1, 1 xx Axe Swing, Axe Swing, dash, 1, 1 xx Arrow Shot, Shoulder <span class="dmg">(~33%)</span></li>
+  <li><strong>Back+2:</strong> Back+2, 2 xx Axe Swing, Axe Swing, Back+2 xx Choke <span class="dmg">(~34%; ~37% with Strangle)</span></li>
+  <li><strong>Forward+3:</strong> Forward+3, 1 xx Axe Swing, Back+2 xx Axe Swing, dash, 1, dash, 1, 2, 2, Shoulder <span class="dmg">(~37%)</span></li>
+  <li><strong>Jump-in:</strong> jump-in Punch, Forward+3, 1 xx Axe Swing, dash, 1, dash, 1, dash, 1 xx Shoulder <span class="dmg">(~30%)</span></li>
+  <li><strong>Lightning, 1 bar:</strong> Thunder Storm (EX Lightning), Back+2 xx Axe Swing, dash, 1, 2, 2, Shoulder <span class="dmg">(~31%, 1 bar)</span></li>
+  <li><strong>Fast string, X-Ray:</strong> 1, 2, 2 xx Axe Swing, Axe Swing, dash, 2 xx X-Ray <span class="dmg">(~48%, 3 bars)</span></li>
+  <li><strong>Jump-in, X-Ray:</strong> jump-in Punch, 1, 2, 2 xx Axe Swing, Back+2, 2 xx X-Ray <span class="dmg">(~50%, 3 bars)</span></li>
+  <li><strong>Corner:</strong> Forward+3, 1, 2, Forward+3, 1, 2, Forward+3, 1, 2, Uppercut <span class="dmg">(~43%, corner)</span></li>
+</ul>
+<h3>How to play</h3>
+<p>Nightwolf is a counter / rushdown character with one of the best special-move sets in the game. Reflect sends projectiles back, Axe Swing is a strong launcher and anti-air, Arrow Shot is safe on block, Shoulder is safe on block and knocks down, and Lightning is unblockable. Condition opponents with Arrow Shot and Shoulder, then catch blockers with Lightning. His jab juggles (dash, 1) need practice in training mode.</p>
+<p class="src">Sources: MortalKombatOnline "Kombo Workshop" combo list; GameFAQs community Mortal Kombat Character Guide (2011); swiftninja's Midscreen Combo FAQ (GameFAQs).</p>
+
+<!-- KITANA -->
+<h2 id="kitana">Kitana</h2>
+<h3>Useful strings</h3>
+<ul class="combos">
+  <li><strong>Noble Lift (Forward+2, 1)</strong>: her combo starter of choice: a safe poke that leads into a launcher. <span class="tag">Starts combos</span></li>
+  <li><strong>Majestic (2, 1, 2)</strong>: covers a lot of ground; good straight out of Square Boost. 2, 1 cancels into Upraise. <span class="tag">Starts combos</span></li>
+  <li><strong>Deadly Rush (Forward+4, 1)</strong>: starts her longer launches and corner combos. <span class="tag">Starts combos</span></li>
+  <li><strong>Regal Assault (3, 3, 3)</strong>: juggle string, mostly in the corner; 3, 3 cancels into Cutting Fan.</li>
+  <li><strong>Uprise (Back+2)</strong>: launcher used after Forward+2, 1, then an instant air Fan Toss.</li>
+  <li>Down+1 (crouching jab) is a key poke to push opponents back out to Forward+2, 1 range.</li>
+</ul>
+<h3>Combos</h3>
+<p class="note">Specials used: Fan Toss (Down, Forward, 1; also in the air), Upraise (Back, Back, 2; the fan lift), Cutting Fan (Down, Forward, 2), Square Boost (Down, Back, 1). "Instant air Fan Toss" means jump and do the Fan Toss as close to the ground as possible; it recovers faster than the grounded one.</p>
+<ul class="combos">
+  <li><strong>Main starter:</strong> Forward+2, 1, Back+2 xx Fan Toss, dash, Fan Toss, dash, 4 xx Cutting Fan <span class="dmg">(~38%)</span></li>
+  <li><strong>Main starter, long:</strong> Forward+2, 1, Forward+2 xx Fan Toss, 4 xx Upraise, dash, dash, Back+2 xx Fan Toss, dash, Fan Toss, dash, 4 xx Cutting Fan <span class="dmg">(~47%; ~50% with X-Ray in place of the last Fan Toss)</span></li>
+  <li><strong>Jump-in, simple:</strong> jump-in Punch, Forward+2, 1, 3, 3 xx Cutting Fan <span class="dmg">(~27%)</span></li>
+  <li><strong>Jump-in, launcher:</strong> jump-in Punch, Forward+2, 1, Back+2, instant air Fan Toss, dash, Uppercut <span class="dmg">(~34%)</span></li>
+  <li><strong>Deadly Rush:</strong> jump-in Punch, Forward+4, 1, NJP, dash, Back+2, Fan Toss, dash, Back+2 xx X-Ray <span class="dmg">(~50%, 3 bars)</span></li>
+  <li><strong>Jump-in, X-Ray:</strong> jump-in Punch, Forward+2, 1, Back+2, instant air Fan Toss, X-Ray <span class="dmg">(~45%, 3 bars)</span></li>
+  <li><strong>Corner:</strong> Forward+4, 1, Back+2 xx instant air Fan Toss, Fan Toss, Fan Toss, 3, 3, 3, Cutting Fan <span class="dmg">(~47%, corner)</span></li>
+</ul>
+<h3>How to play</h3>
+<p>Kitana is a fast zoner / footsie character with Fan Toss (a fast projectile, best as an instant air fan), Upraise (a float launcher and anti-air), Cutting Fan (quick recovery, leaves them staggered), Square Boost and Square Wave. Keep opponents out with Down+1 and fans, poke with Forward+2, 1, and juggle with fans while they float. Her damage is modest but her space control is excellent.</p>
+<p class="src">Sources: MortalKombatOnline "Kombo Workshop" combo list; GameFAQs community Mortal Kombat Character Guide (2011); swiftninja's Midscreen Combo FAQ (GameFAQs).</p>
+
+<!-- JADE -->
+<h2 id="jade">Jade</h2>
+<h3>Useful strings</h3>
+<ul class="combos">
+  <li><strong>Staff Strikes (Back+1)</strong>: her combo starter of choice against standing opponents; cancels into Staff Overhead. If Back+1 is blocked, input Staff Grab instead: it overrides the Staff Overhead and is safe on block. <span class="tag">Starts combos</span></li>
+  <li><strong>Rising Pole (Back+2)</strong>: launcher; punishes blocked teleports, dive kicks and slides, and works as an anti-air. <span class="tag">Starts combos</span></li>
+  <li><strong>Pole Vault (Up+3)</strong>: anti-air that also goes over low projectiles; mostly safe, and it combos into X-Ray.</li>
+  <li><strong>Edenian Rush (Forward+2, 1, 2)</strong>: can catch teleporting opponents; cancels into Shadow Kick. <span class="tag">Starts combos</span></li>
+  <li><strong>Assassin Strikes (Back+3, 2)</strong>: cancels into Staff Grab, and is used inside her juggles.</li>
+  <li><strong>Betrayal (3, 4, 2)</strong>: 3, 4 cancels into a Boomerang. With Shadow Glow active, start combos with 3, Staff Overhead instead of the slower Back+1.</li>
+</ul>
+<h3>Combos</h3>
+<p class="note">Specials used: Staff Overhead (Down, Back, 2; an overhead), Staff Grab (Down, Forward, 2), Shadow Kick (Down, Forward, 4; tap it twice quickly for a second kick), Boomerang (Down, Forward, 1). Enhanced: Staff Slam (EX Staff Grab), Eclipse Kick (EX Shadow Kick), Shadow Glow (EX Shadow Flash, armor).</p>
+<ul class="combos">
+  <li><strong>Back+1:</strong> Back+1 xx Staff Overhead, dash, Back+2, dash, 1, dash, 1, 2 xx Shadow Kick, Shadow Kick <span class="dmg">(~33%)</span></li>
+  <li><strong>Back+1, jump-in:</strong> jump-in Punch, Back+1 xx Staff Overhead, dash, Back+2, Back+3, 2 xx Staff Grab <span class="dmg">(~36%; ~38% with Staff Slam)</span></li>
+  <li><strong>Back+2:</strong> jump-in Punch, Back+2, Uppercut <span class="dmg">(~21%)</span></li>
+  <li><strong>Staff Overhead from range:</strong> Staff Overhead, dash, Back+2, Pole Vault (Up+3) <span class="dmg">(~23%; reaches from just outside sweep range)</span></li>
+  <li><strong>Front Kick starter:</strong> 3 xx Staff Overhead, dash, Back+2, dash, Back+3, 2 xx Staff Grab <span class="dmg">(~31%; ~33% with Staff Slam)</span></li>
+  <li><strong>Edenian Rush:</strong> Forward+2, 1, 2 xx Shadow Kick, Shadow Kick <span class="dmg">(~20%)</span></li>
+  <li><strong>Anti-air, 1 bar:</strong> Pole Vault (Up+3), Eclipse Kick (EX Shadow Kick), Shadow Kick <span class="dmg">(~22%, 1 bar)</span></li>
+  <li><strong>Anti-air, X-Ray:</strong> Pole Vault (Up+3) xx X-Ray <span class="dmg">(~43%, 3 bars)</span></li>
+  <li><strong>Back+1, X-Ray:</strong> Back+1 xx Staff Overhead, dash, Back+2 xx X-Ray <span class="dmg">(~49%, 3 bars)</span></li>
+</ul>
+<h3>How to play</h3>
+<p>Jade is a counter / anti-zoner with Shadow Flash (passes through projectiles), Boomerangs, the Staff Overhead, Staff Grab and Shadow Kick. Her sweet spot is just outside sweep range. Shadow Glow (EX) gives all her moves armor for a short time, which makes her a strong counter-puncher when she has meter. A single Shadow Kick sends the opponent half a screen away, a double Shadow Kick sends them full screen.</p>
+<p class="src">Sources: MortalKombatOnline "Kombo Workshop" combo list; GameFAQs community Mortal Kombat Character Guide (2011); swiftninja's Midscreen Combo FAQ (GameFAQs).</p>
+
+<!-- BARAKA -->
+<h2 id="baraka">Baraka</h2>
+<h3>Useful strings</h3>
+<ul class="combos">
+  <li><strong>Tears Of Pain (2, 2, 1+2)</strong>: his main hit-confirm; the last hit juggles into Back+3, 1 or Forward+4. <span class="tag">Starts combos</span></li>
+  <li><strong>Open Wound (Back+3, 1, Forward+1)</strong>: Back+3 hits low. Back+3, 1 juggles and repeats with a dash in between. <span class="tag">Starts combos</span></li>
+  <li><strong>Easy Kill (Back+3, 2, 2)</strong>: low, high, mid; his best mix-up string. If they read the last hit, cancel into Chop Chop or Blade Spin instead.</li>
+  <li><strong>Doom Kicks (Forward+4, 4)</strong>: Forward+4, 4 juggles into another 4 and Blade Charge. <span class="tag">Starts combos</span></li>
+  <li><strong>Splinter (Back+1, Forward+2)</strong>: cancels into Chop Chop for his biggest X-Ray combo. <span class="tag">Starts combos</span></li>
+  <li><strong>Gut Strike (Forward+2)</strong>: hits mid and cancels into Chop Chop. Almost all his normals can cancel into specials, even mid-string.</li>
+</ul>
+<h3>Combos</h3>
+<p class="note">Specials used: Blade Charge (Down, Forward, 2), Chop Chop (Back, Back, 1), Blade Spin (Down, Back, 3). Enhanced: Blade Rush (EX Blade Charge, armor, passes through projectiles).</p>
+<ul class="combos">
+  <li><strong>Fast string:</strong> 2, 2, 1+2, Forward+4, 4 xx Blade Charge <span class="dmg">(~25%; ~28% with Blade Rush; ~31% with jump-in and Blade Rush)</span></li>
+  <li><strong>Fast string, long:</strong> 2, 2, 1+2, dash, Back+3, 1, dash, 4 xx Blade Charge <span class="dmg">(~32%; ~35% with Blade Rush)</span></li>
+  <li><strong>Low:</strong> Back+3, 1, dash, Back+3, 1, dash, Back+3, 1, dash, 4 xx Blade Charge <span class="dmg">(~35%; ~38% with Blade Rush)</span></li>
+  <li><strong>Mid poke:</strong> Forward+2 xx Chop Chop, dash, Down+4 xx Blade Charge <span class="dmg">(~25%)</span></li>
+  <li><strong>Anti-air:</strong> Chop Chop on a jumping opponent, then Blade Charge (skip the Down+4 when Chop Chop hits in the air)</li>
+  <li><strong>Jump-in, X-Ray:</strong> jump-in Punch, Back+3, 1, dash, Back+3, 1 xx X-Ray <span class="dmg">(~45%, 3 bars)</span></li>
+  <li><strong>Fast string, X-Ray:</strong> 2, 2, 1+2, Forward+4 xx X-Ray <span class="dmg">(~40%; ~43% with jump-in, 3 bars)</span></li>
+  <li><strong>Splinter, X-Ray:</strong> Back+1, Forward+2 xx Chop Chop, dash, Down+4 xx X-Ray <span class="dmg">(~50%, 3 bars)</span></li>
+  <li><strong>Corner:</strong> 2, 2, 1+2, Back+3, 1, Back+3, 1, 1, 2, 1 xx Chop Chop <span class="dmg">(~40%, corner)</span></li>
+  <li><strong>Corner, X-Ray:</strong> Forward+4, 4, 4 xx X-Ray <span class="dmg">(~46%, corner, 3 bars)</span></li>
+</ul>
+<h3>How to play</h3>
+<p>Baraka is a counter-style character: slow to move, but his attacks come out fast and almost everything cancels into a special. Chop Chop catches jumpers and leads into Blade Charge, Blade Rush (EX) goes through projectiles with armor, and Spark is a weak projectile, so don't try to out-zone zoners. Mix Back+3 (low) with Forward+2 (mid) and Easy Kill, punish whiffs hard, and push opponents to the corner where his damage climbs.</p>
+<p class="src">Sources: MortalKombatOnline "Kombo Workshop" combo list; GameFAQs community Mortal Kombat Character Guide (2011).</p>
+
+<!-- KUNG LAO -->
+<h2 id="kung-lao">Kung Lao</h2>
+<h3>Useful strings</h3>
+<ul class="combos">
+  <li><strong>Windy Palm (1, 1, 2, 1)</strong>: leave off the last hit and cancel 1, 1, 2 into Spin on hit. If it is blocked, finish all four hits: the full string is safe. <span class="tag">Starts combos</span></li>
+  <li><strong>Chained Fist (2, 1, 2, 1, 2)</strong>: press rapidly. Big damage for a string and lots of chip damage, but unsafe on block. 2 is very fast (7 frames), and 2, 1 cancels into Spin. <span class="tag">Starts combos</span></li>
+  <li><strong>Plum Flower (2, 4, 1+3, 2)</strong> and <strong>Uprooting Step (2, 4, 1+3, 4)</strong>: juggle enders. The last hit needs exact timing, so press 2 and 4 together to make it easier.</li>
+  <li><strong>Iron Broom (2, 4, 1+2)</strong>: 2, 4 can end in 1+2 or cancel into Ground Hat, which is his main mix-up after 2, 4.</li>
+  <li><strong>Lead The Way (Back+3, 3, 3)</strong>: Back+3, 3 cancels into Spin; the full string cancels into Ground Hat. <span class="tag">Starts combos</span></li>
+  <li>Spin (Down, Forward, 1) is the best anti-air in the game and starts combos, but it is unsafe on block.</li>
+</ul>
+<h3>Combos</h3>
+<p class="note">Specials used: Spin (Down, Forward, 1), Dive Kick (Down+4 in the air), Teleport (Down, Up; then 3 for Tele-Kick), Hat Toss (Back, Forward, 2), Ground Hat (Down, Back, 2). Enhanced: Ultimate Hat (EX Hat Toss), Cyclone (EX Spin, armor).</p>
+<ul class="combos">
+  <li><strong>Fast string:</strong> jump-in Punch, 1, 1, 2 xx Spin, Jump Kick, Dive Kick <span class="dmg">(~27%, midscreen)</span></li>
+  <li><strong>Fastest jab:</strong> 2, 1 xx Spin, Jump Kick xx Dive Kick, dash, 1, dash, 2, 4, 1+3, 2 <span class="dmg">(~33%)</span></li>
+  <li><strong>Back+3:</strong> Back+3, 3 xx Spin, Jump Kick xx Dive Kick, Forward+3 xx Spin <span class="dmg">(~24%; ~27% ending in Cyclone)</span></li>
+  <li><strong>Teleport:</strong> Teleport, 3 (Tele-Kick), 2, 4 xx Spin, dash, 2, 4, 1+3, 2 <span class="dmg">(~34%)</span></li>
+  <li><strong>1 bar:</strong> 1, 1, 2 xx Spin, NJP, dash, 2 xx Ultimate Hat (EX Hat Toss), dash, 1, dash, 2, 4, 1+3, 2 <span class="dmg">(~36%, 1 bar)</span></li>
+  <li><strong>Jump-in, X-Ray:</strong> jump-in Punch, 2, 1 xx Spin, 2, 4 xx X-Ray, dash, Uppercut <span class="dmg">(~46%, 3 bars)</span></li>
+  <li><strong>Teleport, X-Ray:</strong> Teleport, 3 (Tele-Kick), 2, 4 xx Spin, dash, X-Ray, dash, Uppercut <span class="dmg">(~50%, 3 bars)</span></li>
+  <li><strong>Corner:</strong> jump-in Punch, 1, 1, 2 xx Spin, Jump Kick, Dive Kick, Jump Kick, Dive Kick, 1, 1, 2 xx Uppercut <span class="dmg">(~46%, corner)</span></li>
+  <li><strong>Corner, X-Ray:</strong> jump-in Punch, 1, 1, 2 xx Spin, Jump Kick, Dive Kick, Jump Kick, Dive Kick, Jump Kick, Dive Kick xx X-Ray <span class="dmg">(~61%, corner, 3 bars)</span></li>
+</ul>
+<h3>How to play</h3>
+<p>Kung Lao is a high-execution rushdown character with the Spin (launcher and anti-air), Dive Kick, Hat Toss and Ground Hat (zoning), and Teleport. Make opponents jump with Ground Hats, then Spin them. Pressure with safe strings like the full 1, 1, 2, 1 and throw when they block. Spin, Dive Kick and Teleport are all unsafe on block, so mix them in carefully. His X-Ray hits in front and behind, so it punishes teleports.</p>
+<p class="src">Sources: MortalKombatOnline "Kombo Workshop" combo list; GameFAQs community Mortal Kombat Character Guide (2011); swiftninja's Midscreen Combo FAQ (GameFAQs).</p>
+
+<!-- LIU KANG -->
+<h2 id="liu-kang">Liu Kang</h2>
+<h3>Useful strings</h3>
+<ul class="combos">
+  <li><strong>Fierce Tiger (2, 1, 3)</strong>: high, high, low. 2 is fast (8 frames), and the string juggles into itself. <span class="tag">Starts combos</span></li>
+  <li><strong>Back+3, 1, 2</strong> (shown beside Lotus Flurry in the move list): low, high, high, and it launches for a juggle. <span class="tag">Starts combos</span></li>
+  <li><strong>Immortal Dragon (1, 2, Back+1)</strong>: cancels into Bicycle Kick, or dash after it for a jab juggle. <span class="tag">Starts combos</span></li>
+  <li><strong>Blazing Blasts (Forward+1, 2, 1)</strong>: Forward+1, 2 cancels into Low Fireball; Forward+1, 2 is also his repeatable juggle filler.</li>
+  <li><strong>Showdown (Forward+2, 4)</strong>: juggle ender before Flying Dragon Kick or X-Ray.</li>
+  <li><strong>Lotus Flurry (3, 3, 4)</strong>: 3, 3 cancels into Flying Dragon Kick.</li>
+</ul>
+<h3>Combos</h3>
+<p class="note">Specials used: Flying Dragon Kick (Back, Forward, 2), Bicycle Kick (Back, Back, Forward, 4), Low Fireball (Back, Forward, 3), High Fireball (Back, Forward, 1). Enhanced: Flame Dragon Kick (EX Flying Dragon Kick, armor), Bicycle Steps (EX Bicycle Kick).</p>
+<ul class="combos">
+  <li><strong>Fast string:</strong> 1, 2, Back+1, dash, Forward+1, 2, Forward+1, 2, Forward+1, 2, Forward+1, 2 xx Flying Dragon Kick <span class="dmg">(~31%)</span></li>
+  <li><strong>Fast string, short:</strong> 1, 2, Back+1 xx Bicycle Kick <span class="dmg">(~21%; ~26% with Bicycle Steps)</span></li>
+  <li><strong>Low:</strong> Back+3, 1, 2, dash, Forward+2, 4 xx Flying Dragon Kick <span class="dmg">(~25%; ~29% with Flame Dragon Kick)</span></li>
+  <li><strong>High-high-low:</strong> 2, 1, 3, 2, 1, 3, 2, 1 xx Flying Dragon Kick <span class="dmg">(~28%; ~30% with Flame Dragon Kick)</span></li>
+  <li><strong>Jump-in:</strong> jump-in Punch, 2, 1, 3, 2, 1, 3, Forward+2, 4 xx Flying Dragon Kick <span class="dmg">(~33%; ~35% with Flame Dragon Kick)</span></li>
+  <li><strong>Low, X-Ray:</strong> Back+3 xx X-Ray, dash, Uppercut <span class="dmg">(~40%, 3 bars)</span></li>
+  <li><strong>Fast string, X-Ray:</strong> 1, 2, Back+1, dash, Back+3, 1 xx X-Ray, dash, Uppercut <span class="dmg">(~41%, 3 bars)</span></li>
+  <li><strong>Raw X-Ray:</strong> X-Ray xx Bicycle Kick <span class="dmg">(~38%, 3 bars; his X-Ray is an overhead)</span></li>
+  <li><strong>Corner:</strong> Back+3, 1, 2, Back+3, 1, 2, Back+3, 1, 2, Uppercut <span class="dmg">(~41%, corner or near it)</span></li>
+</ul>
+<h3>How to play</h3>
+<p>Liu Kang is a well-rounded rushdown / mix-up character with the Low Fireball, High Fireball (also from the air), Flying Dragon Kick, Bicycle Kick and a Parry. Zone with fireballs, approach with Flying Dragon Kick, and mix 2, 1, 3 (ends low) with Back+3, 1, 2 (starts low) up close. Low Fireball is a good wake-up option that lets him keep zoning. Honest, solid, and strong at every range.</p>
+<p class="src">Sources: MortalKombatOnline "Kombo Workshop" combo list; GameFAQs community Mortal Kombat Character Guide (2011); swiftninja's Midscreen Combo FAQ (GameFAQs).</p>
+
+<!-- RAIDEN -->
+<h2 id="raiden">Raiden</h2>
+<h3>Useful strings</h3>
+<ul class="combos">
+  <li><strong>Spark Kicks (3, 3, 4)</strong>: his main starter. You can cancel into Teleport instead of finishing the string, which makes it hard to punish. <span class="tag">Starts combos</span></li>
+  <li><strong>Thunder God (Back+3, 1, 2)</strong>: juggle starter; Back+3, 1 cancels into Electrocute or X-Ray. <span class="tag">Starts combos</span></li>
+  <li><strong>Heavenly Hand (1, 2, 1, 2)</strong>: 1, 2, 1 cancels into Electrocute. <span class="tag">Starts combos</span></li>
+  <li><strong>Quick Burn (Forward+2, 4)</strong>: Forward+2 is 12 frames; cancels into Electric Fly. After a Down+4 that hits, you can dash in and do Forward+2, 4. <span class="tag">Starts combos</span></li>
+  <li><strong>Heel Smash (Forward+4)</strong>: slow (30 frames) starter for dash juggles.</li>
+  <li>Raiden has no low combo starters. Electric Fly is very punishable on block; Vicinity Blast leaves him ahead on block.</li>
+</ul>
+<h3>Combos</h3>
+<p class="note">Specials used: Electrocute (Down, Forward, 2), Electric Fly (Back, Forward, 3; the "torpedo"), Teleport (Down, Up), Vicinity Blast (Down, Back, 2). Enhanced: Shocker (EX Electrocute, armor).</p>
+<ul class="combos">
+  <li><strong>Jab string:</strong> 1, 2, 1 xx Electrocute, Back+3, 1, 2 xx Electric Fly <span class="dmg">(~29%)</span></li>
+  <li><strong>Spark Kicks:</strong> 3, 3, 4 xx Teleport, Electrocute, Back+3, 1, 2 xx Electric Fly <span class="dmg">(~36%)</span></li>
+  <li><strong>Jump-in:</strong> jump-in Punch, Back+3, 1, 2, dash, 1 xx Electrocute, 3, 3, 4 xx Electric Fly <span class="dmg">(~38%)</span></li>
+  <li><strong>Forward+2:</strong> Forward+2, 4 xx Electric Fly <span class="dmg">(~22%)</span></li>
+  <li><strong>Forward+4:</strong> Forward+4, dash, Back+3, 1 xx Electrocute, dash, Back+3, 1 xx Electric Fly <span class="dmg">(~29%)</span></li>
+  <li><strong>Jab string, X-Ray:</strong> 1, 2, 1 xx Electrocute, Back+3, 1 xx X-Ray <span class="dmg">(~40%, 3 bars)</span></li>
+  <li><strong>Spark Kicks, X-Ray:</strong> jump-in Punch, 3, 3, 4 xx X-Ray <span class="dmg">(~45%, 3 bars; the X-Ray must come straight after the kicks)</span></li>
+  <li><strong>Near corner:</strong> jump-in Punch, Back+3, 1, 2, 3, 3, 4, 2 xx Electrocute, Uppercut <span class="dmg">(~37%, near corner)</span></li>
+  <li><strong>Corner:</strong> 3, 3, 4 xx Vicinity Blast, 3, 3, 4, 3, 3 xx Electrocute, 3, 3 xx Electric Fly <span class="dmg">(~41%, corner)</span></li>
+</ul>
+<h3>How to play</h3>
+<p>Raiden is a teleport / pressure character with Electrocute (launcher), Teleport, Electric Fly (the torpedo) and Lightning. Teleport is hard to punish: use it to escape or to get in, not constantly. Shocker (EX Electrocute) is his anti-air because it has armor. Electric Fly is his one highly punishable move, so use it to end combos or to check people, not at random.</p>
+<p class="src">Sources: MortalKombatOnline "Kombo Workshop" combo list; GameFAQs community Mortal Kombat Character Guide (2011); swiftninja's Midscreen Combo FAQ (GameFAQs).</p>
+
+<!-- ERMAC -->
+<h2 id="ermac">Ermac</h2>
+<h3>Useful strings</h3>
+<ul class="combos">
+  <li><strong>Ermac Rush (1, 2, 1)</strong>: 1 is 10 frames, solid for a zoner. 1, 2 cancels into Force Lift, his launcher. <span class="tag">Starts combos</span></li>
+  <li><strong>Nether Pain (2, 2)</strong>: cancels into Force Lift, or into Force Push to end juggles. <span class="tag">Starts combos</span></li>
+  <li><strong>Fusion (Back+1, 1, 4)</strong>: slow, but a big punish starter into Force Lift. <span class="tag">Starts combos</span></li>
+  <li><strong>We Win (Back+1, 2, Forward+1)</strong>: punish starter; dash, then Force Lift. <span class="tag">Starts combos</span></li>
+  <li><strong>Mysterious Mash (Forward+1, 1, 4)</strong>: punish starter into Force Port. <span class="tag">Starts combos</span></li>
+  <li><strong>Surrender (3, 1, 2)</strong>: leaves him far ahead on hit, enough for a safe jump-in.</li>
+  <li><strong>2-hit Kick (Forward+4)</strong>: low that causes a stagger; follow with a dash and a throw, 1, 2, or another Forward+4.</li>
+</ul>
+<h3>Combos</h3>
+<p class="note">Specials used: Force Lift (Down, Back, 1; the telekinetic slam), Force Port (Down, Back, 4; teleport punch, also in the air), Force Push (Back, Forward, 1). Enhanced: Telepush (EX Force Push), Telelift (EX Force Lift).</p>
+<ul class="combos">
+  <li><strong>Fast string:</strong> 1, 2 xx Force Lift, Jump Kick xx Force Port, dash, 1, 2 xx Force Push <span class="dmg">(~33%; ~46% ending in X-Ray)</span></li>
+  <li><strong>Jump-in:</strong> jump-in Punch, 2, 2 xx Force Lift, Jump Kick xx Force Port, dash, 2, 2 xx Force Push <span class="dmg">(~46%)</span></li>
+  <li><strong>Punish:</strong> Back+1, 1, 4 xx Force Lift, Jump Kick, Force Port, Force Push <span class="dmg">(~40%; ~42% with Telepush)</span></li>
+  <li><strong>Punish, jump-in:</strong> jump-in Punch, Back+1, 1, 4 xx Force Lift, Jump Kick, Force Port, Force Push <span class="dmg">(~43%)</span></li>
+  <li><strong>We Win:</strong> Back+1, 2, Forward+1, dash, Force Lift, Jump Kick, Force Port, dash, 2 xx Force Push <span class="dmg">(~42%)</span></li>
+  <li><strong>2 bars:</strong> jump-in Punch, 2 xx Telelift (EX Force Lift), Jump Kick, Force Port, Telepush (EX Force Push) <span class="dmg">(~40%, 2 bars)</span></li>
+  <li><strong>Punish, X-Ray:</strong> Back+1, 1, 4 xx Force Lift, dash, 2, 2 xx X-Ray <span class="dmg">(~54%, 3 bars)</span></li>
+  <li><strong>Jump-in, X-Ray:</strong> jump-in Punch, 2, 2 xx Force Lift, Jump Kick, Force Port, X-Ray <span class="dmg">(~50%, 3 bars)</span></li>
+</ul>
+<h3>How to play</h3>
+<p>Ermac is a zoner / counter character with Force Lift (the telekinetic slam, a launcher with a large hitbox), Force Push (a strong anti-air that covers a lot of space), a fast Force Ball and the Force Port teleport punch. Zone with Force Ball, anti-air with Force Push, and punish hard with Back+1 starters. Most of his specials are punishable on block inside half screen, and the Hover Slam recovers very slowly.</p>
+<p class="src">Sources: MortalKombatOnline "Kombo Workshop" combo list; GameFAQs community Mortal Kombat Character Guide (2011); swiftninja's Midscreen Combo FAQ (GameFAQs).</p>
+
+<!-- NOOB SAIBOT -->
+<h2 id="noob-saibot">Noob Saibot</h2>
+<h3>Useful strings</h3>
+<ul class="combos">
+  <li><strong>Assassinate (2, 1, 2)</strong>: cancels into Shadow Charge (high) or Shadow Slide (low) for a high/low guess, or into Teleport Slam or X-Ray. <span class="tag">Starts combos</span></li>
+  <li><strong>Evil Twin (Back+1, 2, 1, 4)</strong>: the third hit is mid, the second hit reaches past sweep range, and it ends in a keep-away kick that cancels into Shadow Charge. <span class="tag">Starts combos</span></li>
+  <li><strong>No Compassion (Back+2, 1, 4)</strong>: second hit mid; cancels into Shadow Charge or X-Ray. <span class="tag">Starts combos</span></li>
+  <li><strong>Possessed (Forward+4, 3)</strong>: cancels into Shadow Charge.</li>
+  <li>Shadow Upknee (Down, Back, 3) is one of the best anti-airs in the game and safe on block.</li>
+</ul>
+<h3>Combos</h3>
+<p class="note">Specials used: Teleport Slam (Down, Up; also in the air), Shadow Charge (Down, Forward, 3), Shadow Slide (Back, Forward, 4; low), Shadow Upknee (Down, Back, 3), Ghostball (Down, Forward, 1).</p>
+<ul class="combos">
+  <li><strong>Anti-air:</strong> Jump Kick xx Teleport Slam <span class="dmg">(~16%)</span></li>
+  <li><strong>Fast string:</strong> 2, 1, 2 xx Teleport Slam <span class="dmg">(~20%; ~43% ending in X-Ray)</span></li>
+  <li><strong>Fast string, low ender:</strong> 2, 1, 2 xx Shadow Slide <span class="dmg">(~18%; swap in Shadow Charge for a high ender)</span></li>
+  <li><strong>Back+1:</strong> Back+1, 2, 1, 4 xx Shadow Charge <span class="dmg">(~21%)</span></li>
+  <li><strong>Back+1, jump-in:</strong> jump-in Punch, Back+1, 2, 1, 4 xx Teleport Slam <span class="dmg">(~25%)</span></li>
+  <li><strong>Back+2:</strong> Back+2, 1, 4 xx Shadow Charge <span class="dmg">(~18%; ~39% ending in X-Ray)</span></li>
+  <li><strong>Jump-in, X-Ray:</strong> jump-in Punch, 2, 1, 2 xx X-Ray <span class="dmg">(~46%, 3 bars)</span></li>
+  <li><strong>Corner:</strong> jump-in Punch, 2, 1, 2 xx Shadow Upknee, 2, 1 xx Shadow Upknee, 2, 1 xx Shadow Upknee, 2, 1 xx Shadow Charge <span class="dmg">(~38%, corner)</span></li>
+</ul>
+<h3>How to play</h3>
+<p>Noob Saibot is a zoner built on shadow clones: Shadow Charge (high), Shadow Slide (low), Shadow Upknee (anti-air) and the Blackhole portals, plus Teleport Slam. Mix Charges and Slides from outside sweep range, use Upknee up close (it is safe on block), and follow a Teleport Slam with a Shadow Charge to keep them blocking. Teleport Slam is very punishable if blocked, so don't lean on it.</p>
+<p class="src">Sources: MortalKombatOnline "Kombo Workshop" combo list; GameFAQs community Mortal Kombat Character Guide (2011); swiftninja's Midscreen Combo FAQ (GameFAQs).</p>
+
+<!-- SINDEL -->
+<h2 id="sindel">Sindel</h2>
+<h3>Useful strings</h3>
+<ul class="combos">
+  <li><strong>Anguish (2, 1, 2)</strong>: 2, 1 cancels into Step Up (an overhead special that pushes them away). Her best close-range mix-up. <span class="tag">Starts combos</span></li>
+  <li><strong>Unforgettable (Back+3, Forward+2)</strong>: her most damaging starter, but slow (27 frames): use it after a jump-in or as a punish. <span class="tag">Starts combos</span></li>
+  <li><strong>Child's Play (4, 4, Up+3)</strong>: 4, 4 leads into Back+1, 2 for a juggle. <span class="tag">Starts combos</span></li>
+  <li><strong>Royal Pain (1, 1, Back+2, 4)</strong>: 1, 1, Back+2 into an instant air Fireball is her quickest combo.</li>
+  <li><strong>Rebirth (Back+1, 2)</strong>: juggle filler after a launch.</li>
+  <li><strong>Rise To Power (3, 1, Back+2)</strong>: good push-away string at close range; pops up in the corner.</li>
+</ul>
+<h3>Combos</h3>
+<p class="note">Specials used: Step Up (Down, Forward, 4; overhead), Yell (Down, Back, 2; stuns), Hair Whip (Down, Forward, 2), Fireball (Down, Forward, 1; also in the air). Enhanced: Scream (EX Yell), Step Over (EX Step Up), Hair Toss (EX Hair Whip).</p>
+<ul class="combos">
+  <li><strong>Fast string:</strong> 2, 1 xx Step Up <span class="dmg">(~15%; ~19% with Step Over)</span></li>
+  <li><strong>4, 4:</strong> 4, 4, Back+1, 2, dash, 1, 1, 1 xx Hair Whip <span class="dmg">(~27%)</span></li>
+  <li><strong>Unforgettable:</strong> Back+3, Forward+2, dash, Back+1, 2, dash, Forward+1, 2 xx Step Up <span class="dmg">(~29%; ~31% with Step Over)</span></li>
+  <li><strong>Jump-in:</strong> jump-in Punch, Back+3, Forward+2, dash, Yell, jump-in Punch, 3, 1 xx Step Up <span class="dmg">(~33%)</span></li>
+  <li><strong>Unforgettable, long:</strong> Back+3, Forward+2 xx Yell, jump-in Punch, Back+3, Forward+2, 1, dash, 1, 1, 1 xx Hair Whip <span class="dmg">(~38%; ~48% ending in X-Ray; the Yell timing here is strict, and Scream (EX) is easier)</span></li>
+  <li><strong>1 bar:</strong> 2 xx Scream (EX Yell), jump-in Punch, Back+3, Forward+2, dash, 3, 1 xx Hair Whip <span class="dmg">(~31%, 1 bar)</span></li>
+  <li><strong>X-Ray:</strong> 4, 4, Back+1, 2, dash, 1, 1, 1 xx X-Ray <span class="dmg">(~43%, 3 bars)</span></li>
+  <li><strong>Corner:</strong> 3, 1, Back+2, Up+4, 1 xx Yell, 3, 1, Back+2, 1, 1, 1, Fireball <span class="dmg">(~44%, corner)</span></li>
+</ul>
+<h3>How to play</h3>
+<p>Sindel is a strong zoner with ground and air Fireballs (instant air Fireballs recover fastest), a Low Fireball, Levitate, Yell (a long stun that extends combos), Hair Whip and Step Up. Every close-range exchange should aim to push the opponent back out so she can zone again: 2, 1 xx Step Up, 3, 1, Back+2, or a throw after a blocked jump-in. Her X-Ray hits low.</p>
+<p class="src">Sources: MortalKombatOnline "Kombo Workshop" combo list; GameFAQs community Mortal Kombat Character Guide (2011); swiftninja's Midscreen Combo FAQ (GameFAQs).</p>
+
+<!-- KABAL -->
+<h2 id="kabal">Kabal</h2>
+<h3>Useful strings</h3>
+<ul class="combos">
+  <li><strong>Mutilation (Back+1, 2, 1)</strong>: his main juggle starter and corner loop. <span class="tag">Starts combos</span></li>
+  <li><strong>Vanquish (2, 1, 2)</strong>: ends in an overhead. 2 is fast (9 frames); 2, 1 cancels into Nomad Dash, his quickest punish (very short reach). <span class="tag">Starts combos</span></li>
+  <li><strong>Extermination (1, 1, Back+4, 3)</strong>: 1, 1, Back+4 ends low and cancels into Nomad Dash. <span class="tag">Starts combos</span></li>
+  <li><strong>Nomad's Fear (Forward+3, 2)</strong>: cancels into Nomad Dash or Tornado Slam; also his juggle ender. <span class="tag">Starts combos</span></li>
+  <li>Buzzsaw hits low and Tornado Slam is an overhead; both can come out of a cancelled Nomad Dash for his mix-up.</li>
+</ul>
+<h3>Combos</h3>
+<p class="note">Specials used: Nomad Dash (Back, Forward, 4; cancel with Back plus Block or with another special), Gas Blast (Back, Back, 1; also in the air), Buzzsaw (Back, Back, 3; low), Tornado Slam (Down, Back, 2; overhead). Enhanced: Cyclone Slam (EX Tornado Slam).</p>
+<ul class="combos">
+  <li><strong>Main string:</strong> Back+1, 2, 1, Jump Kick xx air Gas Blast, Nomad Dash (cancel), Forward+3, 2 xx Tornado Slam <span class="dmg">(~32%)</span></li>
+  <li><strong>Main string, long:</strong> Back+1, 2, 1, dash, 1, dash, Forward+3, 2 xx Nomad Dash, Forward+3, 2 xx Tornado Slam <span class="dmg">(~32%; ~33% with Cyclone Slam)</span></li>
+  <li><strong>Fast punish:</strong> 2, 1 xx Nomad Dash, Back+1, 2, 1, dash, 4, Gas Blast <span class="dmg">(~25%)</span></li>
+  <li><strong>Low ender:</strong> 1, 1, Back+4 xx Nomad Dash, Back+1, 2, 1, dash, 1, dash, Forward+3, 2 xx Tornado Slam <span class="dmg">(~28%)</span></li>
+  <li><strong>Jump-in, 1 bar:</strong> jump-in Punch, Forward+3, 2 xx Nomad Dash, Forward+3, 2 xx Cyclone Slam (EX Tornado Slam) <span class="dmg">(~32%, 1 bar; ~29% with Tornado Slam)</span></li>
+  <li><strong>Main string, X-Ray:</strong> Back+1, 2, 1, dash, Forward+3, 2 xx X-Ray <span class="dmg">(~39%, 3 bars)</span></li>
+  <li><strong>Jump-in, X-Ray:</strong> jump-in Punch, Forward+3, 2 xx Nomad Dash, Forward+3, 2 xx X-Ray <span class="dmg">(~43%, 3 bars)</span></li>
+  <li><strong>Corner:</strong> Back+1, 2, 1, Back+1, 2, 1, Back+1, 2, 1, Back+1, 2, 1, Forward+3, Buzzsaw <span class="dmg">(~36%, corner)</span></li>
+</ul>
+<h3>How to play</h3>
+<p>Kabal is a top-tier zoner / mix-up character with the fast Gas Blast (instant air Gas Blasts recover fastest), the low Buzzsaw, and the cancellable Nomad Dash, which captures on hit. Zone with fireballs and saws; up close, cancel Nomad Dash into Tornado Slam (overhead) or Buzzsaw (low). His defense is weak, so meter is often better saved for breakers or the enhanced Nomad Dash than for X-Ray.</p>
+<p class="src">Sources: MortalKombatOnline "Kombo Workshop" combo list; GameFAQs community Mortal Kombat Character Guide (2011); swiftninja's Midscreen Combo FAQ (GameFAQs).</p>
+
+<!-- STRYKER -->
+<h2 id="stryker">Stryker</h2>
+<h3>Useful strings</h3>
+<ul class="combos">
+  <li><strong>Beatdown (Back+1, 2, 2)</strong>: his best combo starter up close; pops the opponent up. 16 frames, so faster moves beat it. <span class="tag">Starts combos</span></li>
+  <li><strong>Come With Me (Back+3, 2)</strong>: low then mid; slow (26 frames). <span class="tag">Starts combos</span></li>
+  <li><strong>Aggravated Assault (Back+2, Forward+2)</strong>: dash after it into a jab and Gun Shot. <span class="tag">Starts combos</span></li>
+  <li><strong>Pain Patrol (2, 3, 2)</strong>: good push-away string; 2, 3 is slow (18 frames) but the second hit is low, and it cancels into Roll Toss.</li>
+  <li><strong>Kop Out (1, 2)</strong>: juggle filler before a Gun Shot or X-Ray.</li>
+  <li>His 4 (Back Kick) is very fast (8 frames) and a strong anti-air; his Uppercut is also one of the fastest (7 frames).</li>
+</ul>
+<h3>Combos</h3>
+<p class="note">Specials used: Gun Shot (Back, Forward, 1), Roll Toss (Back, Forward, 4), High Grenade Toss (Down, Back, 2), Low Grenade Toss (Down, Back, 1). Enhanced: Bang Bang (EX Gun Shot), Roll Out (EX Roll Toss, armor).</p>
+<ul class="combos">
+  <li><strong>Main string:</strong> Back+1, 2, 2, NJP, dash, 1, 2 xx Gun Shot, step forward, 4 <span class="dmg">(~31%)</span></li>
+  <li><strong>Main string, jump-in:</strong> jump-in Punch, Back+1, 2, 2, NJP, Gun Shot, Roll Toss <span class="dmg">(~30%; ~38% with Bang Bang and Roll Out, 2 bars)</span></li>
+  <li><strong>Low:</strong> jump-in Punch, Back+3, 2, dash, 1 xx Gun Shot, 4 <span class="dmg">(~31%; ~33% with Bang Bang)</span></li>
+  <li><strong>Back+2:</strong> Back+2, Forward+2, dash, 1, 1, Gun Shot, dash, 4 <span class="dmg">(~27%)</span></li>
+  <li><strong>Push-away:</strong> 2, 3 xx Roll Toss <span class="dmg">(~18%; ~22% with Roll Out)</span></li>
+  <li><strong>Anti-air, 1 bar:</strong> 4, Bang Bang (EX Gun Shot), Roll Toss <span class="dmg">(~25%, 1 bar; plain 4, Gun Shot does about 14%)</span></li>
+  <li><strong>Main string, X-Ray:</strong> Back+1, 2, 2, dash, 1, 2 xx X-Ray <span class="dmg">(~44%, 3 bars)</span></li>
+  <li><strong>Jump-in, X-Ray:</strong> jump-in Punch, Back+1, 2, 2, step forward, 1, 2 xx X-Ray <span class="dmg">(~47%, 3 bars)</span></li>
+  <li><strong>Corner, 1 bar:</strong> Back+3, 2, 1, 2 xx Gun Shot, 1, 2, Bang Bang (EX Gun Shot), 1, 2 <span class="dmg">(~43%, corner, 1 bar)</span></li>
+</ul>
+<h3>How to play</h3>
+<p>Stryker is a zoner with a very fast Gun Shot, High and Low Grenade Tosses, the Roll Toss and the Baton Sweep. Stay far and mix grenades, gunshots and rolls; Roll Toss rolls under high projectiles. Up close, use his fast 4 and Uppercut, and mix Back+3, 2 (low) with Beatdown. Gun Shot is a high projectile, so slide characters can go under it.</p>
+<p class="src">Sources: MortalKombatOnline "Kombo Workshop" combo list; GameFAQs community Mortal Kombat Character Guide (2011); swiftninja's Midscreen Combo FAQ (GameFAQs).</p>
+
+<!-- SHANG TSUNG -->
+<h2 id="shang-tsung">Shang Tsung</h2>
+<h3>Useful strings</h3>
+<ul class="combos">
+  <li><strong>Play Time (Forward+3, 4)</strong>: cancels into a Ground Skull, Soul Steal or X-Ray. <span class="tag">Starts combos</span></li>
+  <li><strong>Deadly Truth (Forward+4, 3, 4)</strong>: cancels into Ground Skulls for his skull juggles. <span class="tag">Starts combos</span></li>
+  <li><strong>Death Walker (2, 2, 1)</strong>: starter into a close Ground Skull, or into a dash and Forward+4, 3. <span class="tag">Starts combos</span></li>
+  <li><strong>Reserved Pain (Back+1, 2, 1, 4)</strong>: Back+1, 2, 1 cancels into Fire Skull. <span class="tag">Starts combos</span></li>
+  <li><strong>Forearm Strike (Back+2)</strong>: overhead; cancels into Soul Steal or X-Ray.</li>
+  <li><strong>Soul Stain (1, 2, 2)</strong>: a combo ender instead of Soul Steal that sets up an Up Skull mix-up.</li>
+</ul>
+<h3>Combos</h3>
+<p class="note">Specials used: Ground Skull close (Down, Up, 4), medium (Down, Back, 4), far (Down, Forward, 4); Fire Skull (Back, Back, 1); Soul Steal (Forward, Down, Back, 3; turns into the opponent with a damage boost). Enhanced: Triple Skulls (EX Fire Skull).</p>
+<ul class="combos">
+  <li><strong>Back+1:</strong> Back+1, 2, 1 xx Fire Skull <span class="dmg">(~16%; ~20% with Triple Skulls)</span></li>
+  <li><strong>Jump-in:</strong> jump-in Punch, Forward+4, 3, 4 xx Far Ground Skull, Far Ground Skull <span class="dmg">(~29%)</span></li>
+  <li><strong>Death Walker:</strong> jump-in Punch, 2, 2, 1, dash, Forward+4, 3 xx Medium Ground Skull, Soul Steal <span class="dmg">(~34%)</span></li>
+  <li><strong>Overhead:</strong> Back+2 xx Soul Steal <span class="dmg">(~14%)</span></li>
+  <li><strong>Overhead, X-Ray:</strong> Back+2 xx X-Ray <span class="dmg">(~38%, 3 bars)</span></li>
+  <li><strong>Play Time, X-Ray:</strong> Forward+3, 4 xx Medium Ground Skull, dash, X-Ray <span class="dmg">(~39%, 3 bars)</span></li>
+  <li><strong>Death Walker, X-Ray:</strong> jump-in Punch, 2, 2, 1, dash, Forward+4, 3 xx Medium Ground Skull, X-Ray <span class="dmg">(~43%, 3 bars)</span></li>
+  <li><strong>Corner:</strong> 2, 2, 1, Close Ground Skull, 2, 2, 1 xx Soul Steal <span class="dmg">(~36%, corner)</span></li>
+</ul>
+<h3>How to play</h3>
+<p>Shang Tsung is a zoner / juggle character with Fire Skulls, Up Skulls (above, behind and in front) and Ground Skulls (close, medium, far), plus Soul Steal, which turns him into the opponent with a damage boost. Each skull builds meter and does chip damage when blocked. Learn where each starter leaves the opponent so you know which Ground Skull follows. His throw also heals him a little.</p>
+<p class="src">Sources: MortalKombatOnline "Kombo Workshop" combo list; GameFAQs community Mortal Kombat Character Guide (2011); swiftninja's Midscreen Combo FAQ (GameFAQs).</p>
+
+<!-- QUAN CHI -->
+<h2 id="quan-chi">Quan Chi</h2>
+<h3>Useful strings</h3>
+<ul class="combos">
+  <li><strong>Wounded Wrath (Back+2, 1)</strong>: his main starter; it repeats with a step or dash in between. <span class="tag">Starts combos</span></li>
+  <li><strong>Afterlife (1, 1, 2)</strong>: cancels into Trance or a forward Sky Drop. <span class="tag">Starts combos</span></li>
+  <li><strong>Annihilation (Back+3, 1+2)</strong>: low, then mid, and it bounces the opponent for a juggle. <span class="tag">Starts combos</span></li>
+  <li><strong>Corruption (Forward+1, 2, 1+2)</strong>: high, low, high. One of his strongest strings and his usual juggle ender after Trance.</li>
+  <li><strong>Spellbinder (2, 1, 2)</strong>: cancels into Trance. <span class="tag">Starts combos</span></li>
+  <li><strong>Low Hop Kick (Up+3)</strong>: cancels into Trance; useful against opponents who block a lot.</li>
+</ul>
+<h3>Combos</h3>
+<p class="note">Specials used: Trance (Back, Forward, 3; hypnotizes for a free follow-up), Sky Drop (Down, Back, 3; hold Forward or Back to aim), Skeletal Boost (Down, Back, 4; random health or damage boost). Enhanced: Sky Stomp (EX Sky Drop), Skeletal Buff (EX Skeletal Boost, both boosts).</p>
+<ul class="combos">
+  <li><strong>Main string:</strong> Back+2, 1, dash, Back+2, 1, dash, 1, 1, 2 xx Trance, Forward+1, 2, 1+2 <span class="dmg">(~35%)</span></li>
+  <li><strong>Afterlife:</strong> 1, 1, 2 xx Trance, Back+2, 1, step forward, Back+2, 1, dash, Uppercut <span class="dmg">(~32%)</span></li>
+  <li><strong>Afterlife, jump-in:</strong> jump-in Punch, 1, 1, 2 xx Trance, jump-in Punch, Back+2, 1, Forward+1, 2, 1+2 <span class="dmg">(~35%)</span></li>
+  <li><strong>Low:</strong> Back+3, 1+2, dash, Back+2, 1, dash, 1 xx Trance, dash, Forward+1, 2, 1+2 <span class="dmg">(~31%)</span></li>
+  <li><strong>Quick, 1 bar:</strong> 1, 1, 2 xx Sky Stomp (EX Sky Drop), held Forward <span class="dmg">(~24%, 1 bar; ~17% with plain Sky Drop)</span></li>
+  <li><strong>Main string, X-Ray:</strong> Back+2, 1, dash, Back+2, 1, dash, 1, 1, 2 xx Trance, 2, 1 xx X-Ray <span class="dmg">(~46%, 3 bars)</span></li>
+  <li><strong>Jump-in, X-Ray:</strong> jump-in Punch, 1, 1, 2 xx Trance, jump-in Punch, Back+2, 1, Forward+1, 2 xx X-Ray <span class="dmg">(~46%, 3 bars)</span></li>
+  <li><strong>Corner:</strong> Back+2, 1, Back+2, 1, 2, 1, 2 xx Trance, Forward+1, 2, 1+2 <span class="dmg">(~35%, corner)</span></li>
+</ul>
+<p class="note">Skeletal Boost's damage boost lasts for one combo and can turn a ~31% combo into ~42%. Activate it when you have time, for example after an Uppercut knockdown.</p>
+<h3>How to play</h3>
+<p>Quan Chi is a mix-up / setup character with Trance (a free combo when it lands), the Skull Ball, the Ground Burst rune, Skeletal Boost and the aimable Sky Drop. Mix Corruption (high, low, high) and Annihilation (low, then mid) up close, land Trance to chain combos, and use Skeletal Boost for extra damage. Sky Drop is easy to block and punish if overused.</p>
+<p class="src">Sources: MortalKombatOnline "Kombo Workshop" combo list; GameFAQs community Mortal Kombat Character Guide (2011); swiftninja's Midscreen Combo FAQ (GameFAQs).</p>
+
+<!-- SHEEVA -->
+<h2 id="sheeva">Sheeva</h2>
+<h3>Useful strings</h3>
+<ul class="combos">
+  <li><strong>Four-Way (2, 1, 2, Forward+1)</strong>: 2, 1, 2 is her fastest starter (12 frames) and should be your first choice; Forward+1 at the end is an overhead. <span class="tag">Starts combos</span></li>
+  <li><strong>Sheeva Rush (2, 1, 2, Back+1)</strong>: same start, but Back+1 ends with a low. Mix it with Four-Way.</li>
+  <li><strong>Shokan Fury (1, 2, Back+1)</strong>: Back+1 sets up a dash juggle. <span class="tag">Starts combos</span></li>
+  <li><strong>Turmoil (3, 3)</strong>: her slowest starter but the longest reach; cancels into Grab N Punch. <span class="tag">Starts combos</span></li>
+  <li><strong>Knee Kick (Forward+3)</strong>: hits low; cancels into Grab N Punch. <span class="tag">Starts combos</span></li>
+  <li><strong>Quad Toss (Back+2, 1+2)</strong>: follows a Low Grab; cancels into Fireball.</li>
+  <li><strong>Swinging Leg (Forward+4)</strong>: one of the best pokes in the game and a long-range anti-air.</li>
+</ul>
+<h3>Combos</h3>
+<p class="note">Specials used: Grab N Punch (Back, Forward, 3), Anti-Air Grab (Down, Forward, 1; airborne opponent only), Low Grab (Down, Back, 3; ducking opponent only, unblockable), Fireball (Down, Forward, 2). Enhanced grabs all have armor: Untamed Fury (EX Grab N Punch), Power Anti-Air. Grab N Punch on an airborne opponent misses Kitana and Mileena because of their smaller size.</p>
+<ul class="combos">
+  <li><strong>Fast string:</strong> 2, 1, 2, Forward+1 xx Grab N Punch <span class="dmg">(~30%; ~33% with Untamed Fury)</span></li>
+  <li><strong>Jump-in:</strong> jump-in Punch, 1, 2, Back+1, dash, 2, 1, 2 xx Grab N Punch <span class="dmg">(~33%; ~36% with Untamed Fury)</span></li>
+  <li><strong>Shokan Fury:</strong> 1, 2, Back+1, dash, 4 xx Grab N Punch <span class="dmg">(~31%; ~34% with Untamed Fury)</span></li>
+  <li><strong>Anti-air ender:</strong> 1, 2, Back+1, dash, 2 xx Anti-Air Grab <span class="dmg">(~26%; ~29% with Power Anti-Air)</span></li>
+  <li><strong>Low:</strong> Forward+3 xx Grab N Punch <span class="dmg">(~22%; ~25% with Untamed Fury)</span></li>
+  <li><strong>Long reach:</strong> 3, 3 xx Grab N Punch <span class="dmg">(~25%)</span></li>
+  <li><strong>Against a crouching opponent:</strong> Low Grab, Back+2, 1+2 xx Fireball <span class="dmg">(~41%)</span></li>
+  <li><strong>Back+2:</strong> Back+2, 1+2 xx Fireball <span class="dmg">(~28%)</span></li>
+  <li><strong>Jump-in, X-Ray:</strong> jump-in Punch, 2, 1, 2 xx X-Ray <span class="dmg">(~40%, 3 bars)</span></li>
+  <li><strong>Corner:</strong> 1, 2, Back+1, 1, 2, Back+1, 2, 1, 2, Forward+1 xx Grab N Punch <span class="dmg">(~37%, corner)</span></li>
+</ul>
+<h3>How to play</h3>
+<p>Sheeva is a slow, powerful grappler with the Jump Stomp (an unblockable teleport stomp; hold Forward or Back in the air to steer it), Ground Pound (unblockable), Grab N Punch, the Anti-Air Grab (which beats almost everything in the air), the Low Grab against crouchers, and a Fireball. After a Jump Stomp lands, go for 2, 1, 2: if they crouch-block, Low Grab; if they stand-block, end with Back+1 (low) or throw. Her enhanced grabs all have armor, so meter is best spent there.</p>
+<p class="src">Sources: MortalKombatOnline "Kombo Workshop" combo list; GameFAQs community Mortal Kombat Character Guide (2011); swiftninja's Midscreen Combo FAQ (GameFAQs).</p>
+
+<!-- CYBER SUB-ZERO -->
+<h2 id="cyber-sub-zero">Cyber Sub-Zero</h2>
+<h3>Useful strings</h3>
+<ul class="combos">
+  <li><strong>Nano Smash (2, 1, 1+2)</strong>: 2, 1 cancels into Ice Ball for his main combo; 2, 1, 1+2 is also his juggle string after the freeze. <span class="tag">Starts combos</span></li>
+  <li><strong>Reboot (3, 4)</strong>: the second hit is an overhead. Follow with a jump and far Divekick, or dash into Back+2, 2. <span class="tag">Starts combos</span></li>
+  <li><strong>Frost (Back+1, 2)</strong>: Back+1 is an excellent long poke from just outside sweep range and cancels into Ice Ball. <span class="tag">Starts combos</span></li>
+  <li><strong>System Error (3, 3, 2)</strong>: cancels into Slide, or into a close Ice Bomb as a trap.</li>
+  <li><strong>Wildcard (Back+2, 2)</strong>: juggle ender before Slide.</li>
+  <li><strong>Splits Attack (Up+4)</strong>: juggle hit before Slide.</li>
+</ul>
+<h3>Combos</h3>
+<p class="note">Specials used: Ice Ball (Down, Forward, 1; freezes), Ice Bomb close (Back, Back, 3), medium (Forward, Forward, 3), far (Back, Back, Forward, 3; unblockable), Slide (Back, Forward, 4), Divekick far (Down+4 in the air). Enhanced: Cyber-Slide (EX Slide), Ice Beam (EX Ice Ball). His X-Ray only works in the air.</p>
+<ul class="combos">
+  <li><strong>Main string:</strong> 2, 1 xx Ice Ball, jump-in Punch, 2, 1, 1+2, dash, Up+4 xx Slide <span class="dmg">(~40%)</span></li>
+  <li><strong>Main string, alternate ender:</strong> 2, 1 xx Ice Ball, jump-in Punch, 2, 1, 1+2, dash, 2, 1, Back+2, 2 xx Slide <span class="dmg">(~37%; ~39% with Cyber-Slide)</span></li>
+  <li><strong>Poke:</strong> Back+1 xx Ice Ball, jump-in Punch, 2, 1, 1+2, dash, Back+2, 2 xx Slide <span class="dmg">(~32%; ~34% with Cyber-Slide)</span></li>
+  <li><strong>Overhead:</strong> 3, 4, dash, Back+2, 2 xx Slide <span class="dmg">(~26%; ~28% with Cyber-Slide)</span></li>
+  <li><strong>Close Ice Bomb:</strong> Close Ice Bomb, NJP, 3, 4 xx Slide <span class="dmg">(~31%; ~34% with Cyber-Slide)</span></li>
+  <li><strong>Medium Ice Bomb:</strong> Medium Ice Bomb, Uppercut, dash, Back+3, 2, 1 <span class="dmg">(~28%)</span></li>
+  <li><strong>Main string, X-Ray:</strong> 2, 1 xx Ice Ball, jump-in Punch, 2, 1, 1+2, jump, X-Ray <span class="dmg">(~49%, 3 bars)</span></li>
+  <li><strong>Close Ice Bomb, X-Ray:</strong> Close Ice Bomb, NJP, Jump Kick, X-Ray <span class="dmg">(~52%, 3 bars)</span></li>
+  <li><strong>Corner:</strong> 3, 4, 3, 4, 3, 4, 3, 3 xx Slide <span class="dmg">(~36%, corner)</span></li>
+</ul>
+<h3>How to play</h3>
+<p>Cyber Sub-Zero is a rushdown / mix-up character with unblockable Ice Bombs (close, medium, far), the Ice Ball freeze, Slide, a high Ice Parry and an air Divekick. Bombs control space and set traps; 3, 3, 2 into a close Ice Bomb is a classic setup. His Divekick is hard to punish, but Slide is very unsafe if blocked, so keep it for combos and punishes. Enhanced Ice Beam catches opponents who jump.</p>
+<p class="src">Sources: MortalKombatOnline "Kombo Workshop" combo list; GameFAQs community Mortal Kombat Character Guide (2011).</p>
+
+<!-- SKARLET -->
+<h2 id="skarlet">Skarlet <span class="tag">DLC</span></h2>
+<h3>Useful strings</h3>
+<ul class="combos">
+  <li><strong>Rising Blade (Back+2)</strong>: launcher. Back+2 xx Down Slash pops the opponent up again, and the Down Slash is an overhead. <span class="tag">Starts combos</span></li>
+  <li><strong>Blood Boil (Forward+3, 1, 2)</strong>: launches. Forward+3, 1 cancels into Down Slash, an overhead pop-up. <span class="tag">Starts combos</span></li>
+  <li><strong>Bloodshot (2, 3)</strong>: her juggle filler between Slashes.</li>
+  <li><strong>Punishment (2, 1, 2)</strong>: 2, 1 cancels into Up Slash. <span class="tag">Starts combos</span></li>
+  <li><strong>Bad Blood (Back+1, 1, Forward+4)</strong>: the last hit pops the opponent up. <span class="tag">Starts combos</span></li>
+  <li><strong>Bloody Murder (Back+1, 1, Back+4)</strong>: the third hit is low. <strong>Blood Clot (Back+1, Forward+3)</strong>: the second hit is an overhead. Together they give a high/low mix-up from the same start.</li>
+  <li><strong>Slaughter (Forward+3, 3)</strong>: the second hit is low.</li>
+  <li><strong>Flesh and Blood (Forward+2, 1, 2, 1+2)</strong>: launches into Red Dash. <span class="tag">Starts combos</span></li>
+  <li><strong>Lifting Leg (Up+3)</strong>: pop-up. <span class="tag">Starts combos</span></li>
+</ul>
+<h3>Combos</h3>
+<p class="note">Specials used: Down Slash (Down, Back, 2), Up Slash (Down, Forward, 2), Dagger Toss (Down, Forward, 1), Red Dash (Down, Forward, 3; then 4 for Red Slide, or a Slash during the dash), Blood Drop (Down, Back, 4; also in the air). Enhanced: Blood Stomp (EX Blood Drop).</p>
+<ul class="combos">
+  <li><strong>Back+2:</strong> Back+2 xx Down Slash, dash, 2, 3 xx Up Slash, dash, 2, 3 xx Red Dash, Red Slide <span class="dmg">(~38%)</span></li>
+  <li><strong>Back+2, jump-in:</strong> jump-in Punch, Back+2 xx Down Slash, dash, Back+2 xx Down Slash, dash, 2 xx Up Slash, dash, 1 xx Dagger Toss <span class="dmg">(~41%)</span></li>
+  <li><strong>Forward+3:</strong> Forward+3, 1 xx Down Slash, dash, 2, 3 xx Up Slash, dash, 2, 3 xx Dagger Toss <span class="dmg">(~37%)</span></li>
+  <li><strong>Up+3:</strong> Up+3, 2, 3 xx Up Slash, dash, 2, 3 xx Dagger Toss <span class="dmg">(~35%)</span></li>
+  <li><strong>Fast string:</strong> Forward+2, 1, 2 xx Up Slash, dash, 2, 1, 2 <span class="dmg">(~24%)</span></li>
+  <li><strong>1 bar:</strong> Back+2 xx Down Slash, Jump Kick xx Blood Stomp (EX Blood Drop) <span class="dmg">(~29%, 1 bar)</span></li>
+  <li><strong>Back+2, X-Ray:</strong> jump-in Punch, Back+2 xx Down Slash, dash, Back+2 xx Down Slash, dash, Back+2 xx X-Ray <span class="dmg">(~49%, 3 bars)</span></li>
+  <li><strong>Flesh and Blood, X-Ray:</strong> jump-in Punch, Forward+2, 1, 2, 1+2 xx Red Dash xx Up Slash, dash, 1 xx X-Ray <span class="dmg">(~41%, 3 bars)</span></li>
+  <li><strong>Corner:</strong> Back+2 xx Down Slash, Back+2 xx Down Slash, Back+2 xx Down Slash, 2, 1, 2 <span class="dmg">(~42%, corner)</span></li>
+</ul>
+<h3>How to play</h3>
+<p>Skarlet is a rushdown / zoner hybrid with the Dagger Toss and Air Daggers, the Red Dash (a fast dash that ends in a low Red Slide or a Slash), the Blood Ball, and her Back+2 launcher. Zone with daggers, dash in with Red Dash, and loop Back+2 xx Down Slash for damage. Mix Bloody Murder (ends low) with Blood Clot (ends overhead). Her X-Ray hits overhead.</p>
+<p class="src">Sources: MortalKombatOnline "Kombo Workshop" combo list (X-Ray routes); TRMK forum Skarlet thread (strings, meterless, corner and 1-bar routes).</p>
+
+<!-- KENSHI -->
+<h2 id="kenshi">Kenshi <span class="tag">DLC</span></h2>
+<h3>Useful strings</h3>
+<ul class="combos">
+  <li><strong>Absentminded (Forward+2, 2, Back+1)</strong>: his main combo starter. Back+1 pops the opponent up for a dash or a Rising Karma follow-up, and Forward+2, 2 also loops inside juggles. <span class="tag">Starts combos</span></li>
+  <li><strong>Brainpower (Forward+3, 2)</strong>: cancels into Rising Karma. <span class="tag">Starts combos</span></li>
+  <li><strong>Off Balance (1, 1, 4)</strong>: cancels into Rising Karma or Tele-Flurry; 1, 1 is also a juggle filler. <span class="tag">Starts combos</span></li>
+  <li><strong>Heightened Senses (2, 1, Back+2)</strong>: cancels into Tele-Flurry. <span class="tag">Starts combos</span></li>
+</ul>
+<h3>Combos</h3>
+<p class="note">Specials used: Rising Karma (Down, Back, 1; launcher), Tele-Flurry (Back, Forward, 3), Spirit Charge (Back, Forward, 2), Telekinetic Slash close (Down, Back, 4), medium (Down, Forward, 4). Enhanced: Tele-Beatdown (EX Tele-Flurry), Spirit Vengeance (EX Spirit Charge), Karma Eruption (EX Rising Karma).</p>
+<ul class="combos">
+  <li><strong>Main starter:</strong> jump-in Punch, Forward+2, 2, Back+1 xx Rising Karma, 1, 1 xx Tele-Flurry <span class="dmg">(~30%)</span></li>
+  <li><strong>Main starter, long:</strong> jump-in Punch, Forward+2, 2, Back+1, 1, 1 xx Rising Karma, 1, 1 xx Tele-Flurry <span class="dmg">(~32%)</span></li>
+  <li><strong>Main starter, Forward+2 loop:</strong> jump-in Punch, Forward+2, 2, Back+1, Forward+2, 2 xx Rising Karma, Forward+2, 2 xx close Telekinetic Slash <span class="dmg">(~35%)</span></li>
+  <li><strong>Jab string:</strong> jump-in Punch, 1, 1, 4 xx Rising Karma, medium Telekinetic Slash <span class="dmg">(~26%)</span></li>
+  <li><strong>Heightened Senses:</strong> jump-in Punch, 2, 1, Back+2 xx Tele-Flurry <span class="dmg">(~26%)</span></li>
+  <li><strong>1 bar:</strong> jump-in Punch, Forward+2, 2, Back+1, dash, 1, 1, 4 xx Tele-Beatdown (EX Tele-Flurry) <span class="dmg">(~34%, 1 bar)</span></li>
+  <li><strong>Brainpower, 1 bar:</strong> jump-in Punch, Forward+3, 2 xx Rising Karma, Forward+2, 2 xx Spirit Vengeance (EX Spirit Charge) <span class="dmg">(~30%, 1 bar)</span></li>
+  <li><strong>Main starter, X-Ray:</strong> jump-in Punch, Forward+2, 2, Back+1, dash, 1 xx X-Ray <span class="dmg">(~44%, 3 bars)</span></li>
+  <li><strong>Main starter, long X-Ray:</strong> jump-in Punch, Forward+2, 2, Back+1, 1, 1 xx Rising Karma, 3 xx X-Ray <span class="dmg">(~45%, 3 bars)</span></li>
+  <li><strong>Corner, 2 bars:</strong> jump-in Punch, Forward+2, 2, Back+1 xx Karma Eruption (EX Rising Karma), Forward+2, 2 xx Spirit Vengeance (EX Spirit Charge) <span class="dmg">(~37%, corner, 2 bars)</span></li>
+</ul>
+<h3>How to play</h3>
+<p>Kenshi is a long-range zoner with Rising Karma (a launcher), Telekinetic Slash (close, medium and far), Tele-Flurry, Spirit Charge and Blade Reflect. Control space with his sword specials, launch with Forward+2, 2, Back+1 or Rising Karma, and extend juggles with enhanced specials. His midscreen combos are consistent; his corner combos are where the extra damage is.</p>
+<p class="src">Sources: MortalKombatOnline "Kombo Workshop" combo list; swiftninja's Midscreen Combo FAQ (GameFAQs). No reliable source for his strings' hit levels or block safety was found, so those are not listed.</p>
+
+<!-- RAIN -->
+<h2 id="rain">Rain <span class="tag">DLC</span></h2>
+<h3>Useful strings</h3>
+<ul class="combos">
+  <li><strong>Moisturize Me (4, 3, Back+4)</strong>: 4, 3 cancels into Lightning or Geyser Kick and is his main starter and juggle string. <span class="tag">Starts combos</span></li>
+  <li><strong>Waterfall (Back+2, 1+2)</strong>: starter for dash juggles; also cancels into Aqua Splash. <span class="tag">Starts combos</span></li>
+  <li><strong>Right As Rain (1, 2, Forward+4)</strong>: repeatable juggle string. <span class="tag">Starts combos</span></li>
+  <li><strong>It Pours (1, 1)</strong>: juggle filler before Geyser Kick or Aqua Splash.</li>
+</ul>
+<h3>Combos</h3>
+<p class="note">Specials used: Lightning (Down, Back, 2), Super Kick (Down, Back, 4; the roundhouse), Geyser Kick (Down, Back, 3), Water Bubble (Down, Forward, 3; traps and floats the opponent), Aqua Splash (Back, Forward, 1), H2O Boost (Forward, Down, Back, 1; damage boost). Enhanced: H2O Buff (EX H2O Boost).</p>
+<ul class="combos">
+  <li><strong>Main string:</strong> 4, 3 xx Lightning, Super Kick, 4, 3 xx Water Bubble, Geyser Kick <span class="dmg">(~34%)</span></li>
+  <li><strong>Jump-in:</strong> jump-in Punch, 4, 3 xx Lightning, walk forward, 4, 3 xx Super Kick, 4 xx Geyser Kick <span class="dmg">(~39%)</span></li>
+  <li><strong>Jump-in, short:</strong> jump-in Punch, 4, 3 xx Geyser Kick <span class="dmg">(~25%)</span></li>
+  <li><strong>Waterfall:</strong> jump-in Punch, Back+2, 1+2, dash, 1, dash, 4, 3 xx Lightning, Super Kick, 4 xx Geyser Kick <span class="dmg">(~35%)</span></li>
+  <li><strong>Right As Rain:</strong> jump-in Punch, 1, 2, Forward+4, 1, 2, Forward+4, 1, 1 xx Aqua Splash <span class="dmg">(~32%)</span></li>
+  <li><strong>Water Bubble:</strong> jump-in Punch, 4, 3 xx Lightning, Super Kick, 4, 3 xx Water Bubble, 4, 3 xx Aqua Splash <span class="dmg">(~40%)</span></li>
+  <li><strong>Boost, 1 bar:</strong> H2O Buff (EX H2O Boost), jump-in Punch, 4, 3 xx Lightning, walk forward, 4, 3 xx Geyser Kick <span class="dmg">(~51%, 1 bar)</span></li>
+  <li><strong>X-Ray:</strong> jump-in Punch, 4, 3 xx Lightning, Super Kick, 4, 3 xx X-Ray, Geyser Kick <span class="dmg">(~51%, 3 bars)</span></li>
+  <li><strong>Main string, X-Ray:</strong> 4, 3 xx Lightning, Super Kick, 4, 3 xx X-Ray, Uppercut <span class="dmg">(~44&ndash;48%, 3 bars)</span></li>
+  <li><strong>Corner:</strong> jump-in Punch, 4, 3 xx Lightning, 4, 3 xx Geyser Kick, 4 xx Geyser Kick, 4 xx Geyser Kick <span class="dmg">(~44&ndash;48%, corner)</span></li>
+</ul>
+<h3>How to play</h3>
+<p>Rain is a zoner / mix-up character with the Water Bubble (a trap that floats the opponent), Lightning, Super Kick, Geyser Kick, Aqua Splash and the Water-Port teleport. Trap opponents in the Bubble, juggle them with Lightning and kicks, and use H2O Boost before a combo for much more damage. His biggest combos need meter.</p>
+<p class="src">Sources: MortalKombatOnline "Kombo Workshop" combo list; swiftninja's Midscreen Combo FAQ (GameFAQs). No reliable source for his strings' hit levels or block safety was found, so those are not listed.</p>
+
+<!-- FREDDY -->
+<h2 id="freddy">Freddy Krueger <span class="tag">DLC</span></h2>
+<h3>Useful strings</h3>
+<ul class="combos">
+  <li><strong>In Your Dreams (Back+1, 2, Up+1)</strong>: launcher with faster start-up than Playing With Power; the start of his long juggles. <span class="tag">Starts combos</span></li>
+  <li><strong>Playing With Power (Forward+4, 2, 1)</strong>: launcher and his X-Ray combo string. Forward+4, 2 also cancels into a Hell Spike. <span class="tag">Starts combos</span></li>
+  <li><strong>Come To Freddy (3, 3)</strong>: cancels into Hell Blast (EX Hell Spike). <span class="tag">Starts combos</span></li>
+  <li><strong>Kung Fu This Bitch (2, 2, 1+2)</strong>: 2, 2 cancels into Hell Blast. <span class="tag">Starts combos</span></li>
+  <li><strong>Split You In Two (1, 1, 1)</strong>: 1, 1 cancels into Hell Blast. <span class="tag">Starts combos</span></li>
+  <li><strong>Double Swipe (Back+2)</strong> is his overhead and <strong>Low Blow (Back+3)</strong> his low; both cancel into specials and start at 18 frames.</li>
+</ul>
+<h3>Combos</h3>
+<p class="note">Specials used: Hell Spike close (Down, Back, 1), medium (Down, Forward, 1), far (Down, Back, Forward, 1) &ndash; the three versions link into each other, but repeating the same one drops the opponent; Glove Toss (Back, Forward, 2). Enhanced: Hell Blast (EX medium Hell Spike), Power Glove Toss (EX Glove Toss).</p>
+<ul class="combos">
+  <li><strong>Launcher:</strong> jump-in Punch, Back+1, 2, Up+1, close Hell Spike, medium Hell Spike, far Hell Spike <span class="dmg">(~26%)</span></li>
+  <li><strong>Playing With Power:</strong> jump-in Punch, Forward+4, 2 xx close Hell Spike, Back+2, Forward+4, 2, 1 xx far Hell Spike <span class="dmg">(~34%)</span></li>
+  <li><strong>Up+3 starter:</strong> jump-in Punch, Up+3, Forward+4, 2, 1 xx medium Hell Spike <span class="dmg">(~31%)</span></li>
+  <li><strong>Jab, 1 bar:</strong> jump-in Punch, 1, 1 xx Hell Blast (EX Hell Spike), Back+1, 2, Up+1, Up+1, Back+2, Uppercut <span class="dmg">(~43%, 1 bar)</span></li>
+  <li><strong>Back Punch, 1 bar:</strong> jump-in Punch, 2, 2 xx Hell Blast (EX Hell Spike), Back+1, 2, Up+1, Up+1, 3, 3 xx Glove Toss <span class="dmg">(~45%, 1 bar; ~47% with Power Glove Toss, 2 bars)</span></li>
+  <li><strong>Kicks, 2 bars:</strong> jump-in Punch, 3, 3 xx Hell Blast (EX Hell Spike), jump-in Punch, 3, 3 xx Hell Blast <span class="dmg">(~37%, 2 bars)</span></li>
+  <li><strong>X-Ray:</strong> jump-in Punch, Forward+4, 2, 1 xx X-Ray <span class="dmg">(~54%, 3 bars; ~51% without the jump-in)</span></li>
+</ul>
+<h3>How to play</h3>
+<p>Freddy is a zoner / trapper with the Glove Toss (fast start-up and recovery) and Freddy Fingers (slow, but stops slides), the Hell Spikes (very fast ground spikes that also punish dive kicks), the Dream Shift teleport, and the Sweet Dreams sleep trap, which works best after a hard knockdown. Zone with projectiles and spikes, escape pressure with Dream Shift, and convert Hell Blast into long juggles. Nightmare Stance is a low stance that can't block, but non-low projectiles pass over it.</p>
+<p class="src">Sources: SuperCombo (Shoryuken) archive &ndash; MK9 Freddy Krueger strategy thread; swiftninja's Midscreen Combo FAQ (GameFAQs); The Inner Dorkdom "How to play Mortal Kombat (MK9)" (overhead and low).</p>
+
+<hr>
+<footer>
+<p><strong>Sources &amp; notes.</strong> String names and inputs are checked against the game's own move list. Combo sources: the MortalKombatOnline community "Kombo Workshop: List of useful kombos for every character" thread; the GameFAQs "Mortal Kombat Character Guide" (a community FAQ by HolyWhiteMage, DragonPick and TheChad_87, version 2.0, August 2011; its frame data is credited to TestYourMight forum members), which is also the main source for string hit levels and block safety; swiftninja's "Move List and Midscreen Combo FAQ" (GameFAQs, 2011), whose special-move inputs were copied from the in-game move list; ELC1837's Scorpion Guide and tectactoe's Johnny Cage Guide (GameFAQs); the TRMK forum Skarlet thread; and the SuperCombo (Shoryuken) archive MK9 Freddy Krueger strategy thread. Community combo names for specials (for example "TK Slam" or "hatchet") are replaced with the in-game names (Force Lift, Axe Swing).</p>
+<p>Damage percentages are approximate and depend on spacing, starter, patch and hit count. Most of these guides date from 2011; later patches may have changed a few values. "Corner" routes need the opponent in the corner; "X-Ray" costs all 3 meter bars; "EX" costs 1 bar each.</p>
+<p>Built as offline reference for screen-reader users. Single self-contained file, no external resources.</p>
+</footer>
+
+</div>
+</body>
+</html>

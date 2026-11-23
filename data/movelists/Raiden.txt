@@ -1,0 +1,56 @@
+# BASIC ATTACKS
+Front Punch | [FP]
+Back Punch | [BP]
+Front Kick | [FK]
+Back Kick | [BK]
+Uppercut | [Down][+][BP]
+Static Touch | [Away][+][BP]
+Gut Strike | [Towards][+][BP]
+Side Kick | [Away][+][FK]
+Spinning Kick | [Towards][+][FK]
+Heel Smash | [Towards][+][BK]
+Sweep | [Away][+][BK]
+Throw (Away) | [THROW]
+Throw (Towards) | [Towards][+][THROW]
+# KOMBO ATTACKS
+Heavenly Hand | [FP][,][BP][,][FP][,][BP]
+Sudden Energy | [BP][,][BP][,][Towards][+][FP]
+White Lightning | [BP][,][BP][,][Away][+][BK]
+Violent Thunder | [Away][+][BP][,][Towards][+][FP][,][FP][+][BP]
+Quick Burn | [Towards][+][BP][,][BK]
+Flash Storm | [Towards][+][BP][,][FK][,][FP][+][BP]
+Spark Kicks | [FK][,][FK][,][BK]
+Thunder God | [Away][+][FK][,][FP][,][BP]
+# FAST TAGS
+Distant Thunder | [FK][,][FK][,][BK][,][TAG]
+Elder Fury | [Away][+][FK][,][FP][,][BP][,][TAG]
+God Fist | [Towards][+][BP][,][BK][,][TAG]
+# TAG KOMBOS
+Godlike | [BP][,][BP][,][TAG]
+Supernatural | [Away][+][BP][,][Towards][+][FP][,][TAG]
+Divine Power | [Towards][+][BP][,][FK][,][TAG]
+# SPECIAL ATTACKS
+Lightning | [Down][Away][FP]
+Electrocute | [Down][Towards][BP]
+Electric Fly | [Away][Towards][FK]  | Can be done in the air
+Teleport | [Down][Up]
+Vicinity Blast | [Down][Away][BP]
+# ENHANCED ATTACKS
+  note: Uses one bar of super
+Bolt | [Down][Away][FP][+][BLOCK]
+Shocker | [Down][Towards][BP][+][BLOCK]
+Thunder Fly | [Away][Towards][FK] [+][BLOCK]
+Sparkport | [Down][Up][+][BLOCK]
+Vicinity Burst | [Down][Away][BP][+][BLOCK]
+# TAG SPECIALS
+Tag Out | [TAG]
+Tag Attack | [Down][,][Towards][+][TAG]
+Tag Assist | [Down][,][Away][+][TAG]
+# X-RAY ATTACK
+  note: Uses three bars of super
+Shock Therapy | [L2][+][BLOCK]
+# FINISHING MOVES
+Just A Scratch | [Down][Towards][Down][Towards][FP] | Jump
+Transplant | [Away][Towards][Towards][Down][BK]
+Stage Fatality | [Down][Down][Down][BP] | Varies
+Babality | [Down][Away][Down][BK]

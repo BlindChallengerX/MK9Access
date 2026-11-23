@@ -1,0 +1,56 @@
+# BASIC ATTACKS
+Front Punch | [FP]
+Back Punch | [BP]
+Front Kick | [FK]
+Back Kick | [BK]
+Uppercut | [Down][+][BP]
+Jaw Chop | [Away][+][FP]
+Step Strike | [Away][+][BP]
+Hook Kick | [Away][+][FK]
+Spin Kicks | [Towards][+][BK]
+Sweep | [Away][+][BK]
+Throw (Away) | [THROW]
+Throw (Towards) | [Towards][+][THROW]
+# KOMBO ATTACKS
+Ablaze | [FP][,][FP][,][BP]
+Smoldering | [FP][,][FK]
+Red-Hot | [Away][+][FP][,][BK]
+Smokin | [Away][+][BP][,][FK]
+Rekindle | [BP][,][FP][,][BK]
+Combustion | [FK][,][Down][+][FP][,][BP]
+On Fire | [FK][,][BP]
+# FAST TAGS
+Ashes To Ashes | [FK][,][Down][+][FP][,][BP][,][TAG]
+Dust To Dust | [FK][,][BP][,][TAG]
+# TAG KOMBOS
+Incinerate | [FP][,][FP][,][TAG]
+Immolation | [BP][,][FP][,][TAG]
+Ignite | [FK][,][Down][+][FP][,][TAG]
+# SPECIAL ATTACKS
+Shake | [Away][Towards][FP] | Hold [FP] To charge
+Smoke Cloud | [Down][Away][BP]
+Air Throw |  | While in the air
+Teleport | [Down][Away][BK] | Can be done in the air
+Invisibility | [Down][Up][FK]
+Smoke Away | [Towards][Away][FK]
+Smoke Towards | [Away][Towards][FK]
+# ENHANCED ATTACKS
+  note: Uses one bar of super
+Vibration | [Away][Towards][FP][+][BLOCK]
+Smoke Bomb | [Down][Away][BP][+][BLOCK]
+Smokeport | [Down][Away][BK][+][BLOCK]
+Vanish | [Down][Up][FK][+][BLOCK]
+Phase Away | [Towards][Away][FK][+][BLOCK]
+Phase Towards | [Away][Towards][FK][+][BLOCK]
+# TAG SPECIALS
+Tag Out | [TAG]
+Tag Attack | [Down][,][Towards][+][TAG]
+Tag Assist | [Down][,][Away][+][TAG]
+# X-RAY ATTACK
+  note: Uses three bars of super
+Burn Out | [L2][+][BLOCK]
+# FINISHING MOVES
+Smoked Out | [Away][Towards][Away][Towards][FP]
+Tremor | [Away][Away][Down][Towards][BP]
+Stage Fatality | [Towards][Up][Up][FP] | Varies
+Babality | [Down][Away][Down][Towards][Down] | Jump

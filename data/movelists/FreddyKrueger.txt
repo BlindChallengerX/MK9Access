@@ -1,0 +1,69 @@
+# BASIC ATTACKS
+Front Punch | [FP]
+Back Punch | [BP]
+Front Kick | [FK]
+Back Kick | [BK]
+Uppercut | [Down][+][BP]
+Razor Slash | [Away][+][FP]
+Double Swipe | [Away][+][BP]
+Hell Slice | [Towards][+][BP]
+Low Blow | [Away][+][FK]
+Hop Kick | [Up][+][FK]
+Big Knee | [Towards][+][BK]
+Sweep | [Away][+][BK]
+Throw (Away) | [THROW]
+Throw (Towards) | [Towards][+][THROW]
+Nightmare Stance | [Down][Away][BK]
+Open Wide |  | From Nightmare Stance
+Claw Slam | 
+Low Slash | 
+Split You In Two | [FP][,][FP][,][FP]
+Skin The Cat | [Away][+][FP][,][BP][,][BP]
+In Your Dreams | [Away][+][FP][,][BP][,][Up][+][FP]
+Kung Fu This Bitch | [BP][,][BP][,][FP][+][BP]
+I Am Eternal | [Towards][+][BP][,][FP][,][Away][+][FK]
+Never Sleep Again | [Towards][+][BP][,][FP][,][BK]
+I Love Screamers | [Away][+][BP][,][BK]
+Come To Freddy | [FK][,][FK]
+Ungrateful Piggy | [Away][+][FK][,][FK]
+Comin For You | [Towards][+][BK][,][FK]
+Playing With Power | [Towards][+][BK][,][BP][,][FP]
+# FAST TAGS
+How Sweet Fresh Meat | [Away][+][FP][,][BP][,][Up][+][FP][,][TAG]
+Tag You're it | [Up][+][FK][,][TAG]
+Great Graphics | [Towards][+][BK][,][BP][,][FP][,][TAG]
+# TAG KOMBOS
+Party's Just Starting | [FP][,][FP][,][TAG]
+Always Room For More | [Away][+][FP][,][BP][,][TAG]
+Reach Out And Cut Someone | [BP][,][BP][,][TAG]
+Meet Your Maker | [Towards][+][BP][,][FP][,][TAG]
+Now You Die | [Towards][+][BK][,][BP][,][TAG]
+# SPECIAL ATTACKS
+Hell Spike (Close) | [Down][Away][FP]
+Hell Spike (Medium) | [Down][Towards][FP]
+Hell Spike (Far) | [Down][Away][Towards][FP]
+Sweet Dreams | [Down][Towards][BK]
+Glove Toss | [Away][Towards][BP]
+Freddy Fingers | [Down][Away][BP]
+Dream Shift Away | [Down][Away][FK]
+Dream Shift Towards | [Down][Towards][FK]
+# ENHANCED ATTACKS
+  note: Uses one bar of super
+Hell Blast | [Down][Towards][FP][+][BLOCK]
+Deep Sleep | [Down][Towards][BK][+][BLOCK]
+Power Glove Toss | [Away][Towards][BP][+][BLOCK]
+Freddy's Edge | [Down][Away][BP][+][BLOCK]
+Hell Shift Away | [Down][Away][FK][+][BLOCK]
+Hell Shift Towards | [Down][Towards][FK][+][BLOCK]
+# TAG SPECIALS
+Tag Out | [TAG]
+Tag Attack | [Down][,][Towards][+][TAG]
+Tag Assist | [Down][,][Away][+][TAG]
+# X-RAY ATTACK
+  note: Uses three bars of super
+What A Rush | [L2][+][BLOCK]
+# FINISHING MOVES
+Tell 'Em Freddy Sent Ya | [Away][Towards][Down][Down][FP] | Any
+Welcome To My Nightmare | [Down][Up][Towards][Away][BLOCK]
+Stage Fatality | [Towards][Down][Down][FK] | Varies
+Babality | [Away][Towards][Down][FP] | Jump

@@ -1,0 +1,54 @@
+# BASIC ATTACKS
+Front Punch | [FP]
+Back Punch | [BP]
+Front Kick | [FK]
+Back Kick | [BK]
+Uppercut | [Down][+][BP]
+Chops | [Away][+][FP]
+Hat Swipe | [Towards][+][BP]
+Rolling Thunder | [Towards][+][FK]
+Point Kick | [Away][+][FK]
+Hop Kick | [Towards][+][BK]
+Sweep | [Away][+][BK]
+Throw (Away) | [THROW]
+Throw (Towards) | [Towards][+][THROW]
+# KOMBO ATTACKS
+Windy Palm | [FP][,][FP][,][BP][,][FP]
+Healing Wind | [Away][+][FP][,][Towards][+][FP]
+Chained Fist | [BP][,][FP][,][BP][,][FP][,][BP] | Must be pressed rapidly
+Iron Broom | [BP][,][BK][,][FP][+][BP]
+Leg Bar | [BP][,][BK][,][FP][+][FK]
+Uprooting Step | [BP][,][BK][,][FP][+][FK][,][BK]
+Plum Flower | [BP][,][BK][,][FP][+][FK][,][BP]
+Lead The Way | [Away][+][FK][,][FK][,][FK]
+# FAST TAGS
+Spinout | [Down][Towards][FP][,][TAG]
+# TAG KOMBOS
+Yin Yang | [FP][,][FP][,][BP][,][TAG]
+Swirling Dragon | [BP][,][FP][,][BP][,][FP][,][BP][,][TAG]
+Double Yang | [BP][,][BK][,][TAG]
+# SPECIAL ATTACKS
+Hat Toss | [Away][Towards][BP] | [Up] and [Down] Controls.
+Ground Hat | [Down][Away][BP]
+Spin | [Down][Towards][FP]
+Dive Kick | [Down][+][BK] | While in the air
+Teleport | [Down][Up] | Can be done in the air
+(While Teleporting) | [FP] Throws [BP] Punches [FK] Kicks
+# ENHANCED ATTACKS
+  note: Uses one bar of super
+Ultimate Hat | [Away][Towards][BP][+][BLOCK]
+Grinding Hat | [Down][Away][BP][+][BLOCK] | Hold [BP] to delay
+Cyclone | [Down][Towards][FP][+][BLOCK]
+Multi Kick | [Down][+][BK][+][BLOCK]
+# TAG SPECIALS
+Tag Out | [TAG]
+Tag Attack | [Down][,][Towards][+][TAG]
+Tag Assist | [Down][,][Away][+][TAG]
+# X-RAY ATTACK
+  note: Uses three bars of super
+Fist Of Shaolin | [L2][+][BLOCK]
+# FINISHING MOVES
+Hat Trick | [Away][Towards][Towards][Away][BP]
+Razor's Edge | [Down][Down][Towards][Away][FP]
+Stage Fatality | [Down][Towards][Down][FK] | Varies
+Babality | [Down][Towards][Down][BP] | Jump

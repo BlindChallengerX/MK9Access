@@ -1,0 +1,62 @@
+# BASIC ATTACKS
+Front Punch | [FP]
+Back Punch | [BP]
+Front Kick | [FK]
+Back Kick | [BK]
+Uppercut | [Down][+][BP]
+Blade Slash | [Away][+][FP]
+Cross Swipe | [Away][+][BP]
+Gut Strike | [Towards][+][BP]
+Foot Stomp | [Away][+][FK]
+Hop Kick | [Up][+][FK]
+Quick Knee | [Towards][+][BK]
+Big Legs | [Up][+][BK]
+Sweep | [Away][+][BK]
+Throw (Away) | [THROW]
+Throw (Towards) | [Towards][+][THROW]
+# KOMBO ATTACKS
+Tarkatan Rush | [FP][,][BP][,][FP]
+Painful Swipes | [FP][,][BP][,][BP]
+Tricky Fury | [FP][,][BP][,][Away][+][FK]
+Cut 'Em Loose | [Away][+][FP][,][FP]
+Splinter | [Away][+][FP][,][Towards][+][BP]
+Cold Steel | [BP][,][FP][,][BP]
+Tears Of Pain | [BP][,][BP][,][FP][+][BP]
+Tarkatan Push | [Away][+][BP][,][Towards][+][BP]
+Horror Show | [Towards][+][BP][,][BK]
+Outworld Bash | [Towards][+][BP][,][BP]
+Tarkatan Blows | [FK][,][Away][+][FK]
+Open Wound | [Away][+][FK][,][FP][,][Towards][+][FP]
+Easy Kill | [Away][+][FK][,][BP][,][BP]
+Doom Kicks | [Towards][+][BK][,][BK]
+# FAST TAGS
+Bloody Mess | [Away][+][FK][,][FP][,][TAG]
+# TAG KOMBOS
+Skinned Alive | [FP][,][BP][,][TAG]
+Killer Kuts | [BP][,][FP][,][TAG]
+Have At It | [BP][,][BP][,][TAG]
+# SPECIAL ATTACKS
+Blade Charge | [Down][Towards][BP]
+Spark | [Down][Away][BP]
+Chop Chop | [Away][Away][FP]
+Blade Spin | [Down][Away][FK]
+Slices | [Down][Towards][FP]
+# ENHANCED ATTACKS
+  note: Uses one bar of super
+Blade Rush | [Down][Towards][BP][+][BLOCK]
+Sparked | [Down][Away][BP][+][BLOCK]
+Chopchop Shop | [Away][Away][FP][+][BLOCK]
+Spinner | [Down][Away][FK][+][BLOCK]
+Slicer | [Down][Towards][FP][+][BLOCK]
+# TAG SPECIALS
+Tag Out | [TAG]
+Tag Attack | [Down][,][Towards][+][TAG]
+Tag Assist | [Down][,][Away][+][TAG]
+# X-RAY ATTACK
+  note: Uses three bars of super
+Nail And Impale | [L2][+][BLOCK]
+# FINISHING MOVES
+Up The Middle | [Away][Towards][Down][Towards][FP]
+Take A Spin | [Towards][Towards][Down][Down][FK]
+Stage Fatality | [Down][Down][Down][Down][FK] | Varies
+Babality | [Towards][Away][Towards][BK] | Jump

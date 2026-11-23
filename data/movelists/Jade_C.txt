@@ -1,0 +1,59 @@
+# BASIC ATTACKS
+Front Punch | [FP]
+Back Punch | [BP]
+Front Kick | [FK]
+Back Kick | [BK]
+Uppercut | [Down][+][BP]
+Staff Strikes | [Away][+][FP]
+Rising Pole | [Away][+][BP]
+Upward Thrust | [Towards][+][BP]
+Gut Kick | [Away][+][FK]
+Pole Vault | [Up][+][FK]
+Sweep | [Away][+][BK]
+Throw (Away) | [THROW]
+Throw (Towards) | [Towards][+][THROW]
+# KOMBO ATTACKS
+Pole Check | [FP][,][BP][,][BP]
+Jade Charge | [Away][+][FP][,][Towards][+][FP]
+Bad Girl | [BP][,][FK][,][Towards][+][BP]
+Edenian Rush | [Towards][+][BP][,][FP][,][BP]
+Betrayal | [FK][,][BK][,][BP]
+Assassin Strikes | [Away][+][FK][,][BP]
+Polecat | [BK][,][Towards][+][FK]
+# FAST TAGS
+Untameable | [Away][+][BP][,][TAG]
+Pole Pain | [Up][+][FK][,][TAG]
+# TAG KOMBOS
+After You | [FP][,][BP][,][TAG]
+Likewise | [BP][,][FK][,][TAG]
+Edenian Tag | [Towards][+][BP][,][FP][,][TAG]
+Distrust | [FK][,][BK][,][TAG]
+# SPECIAL ATTACKS
+Boomerang | [Down][Towards][FP]
+Boomerang Up | [Down][Away][FP]
+Boomerang Down | [Down][Towards][FK]
+Shadow Kick | [Down][Towards][BK]
+Shadow Flash | [Away][Towards][FK]
+Staff Overhead | [Down][Away][BP]
+Staff Grab | [Down][Towards][BP]
+# ENHANCED ATTACKS
+  note: Uses one bar of super
+Reboomerang | [Down][Towards][FP][+][BLOCK]
+Reboomerang Up | [Down][Away][FP][+][BLOCK]
+Reboomerang Down | [Down][Towards][FK][+][BLOCK]
+Eclipse Kick | [Down][Towards][BK][+][BLOCK]
+Shadow Glow | [Away][Towards][FK][+][BLOCK]
+Staff Smash | [Down][Away][BP][+][BLOCK]
+Staff Slam | [Down][Towards][BP][+][BLOCK]
+# TAG SPECIALS
+Tag Out | [TAG]
+Tag Attack | [Down][,][Towards][+][TAG]
+Tag Assist | [Down][,][Away][+][TAG]
+# X-RAY ATTACK
+  note: Uses three bars of super
+Staff Buster | [L2][+][BLOCK]
+# FINISHING MOVES
+Head-A-Rang | [Up][Up][Down][Towards][FP] | Fullscreen
+Half Mast | [Away][Down][Away][Down][BK]
+Stage Fatality | [Away][Towards][Down][BLOCK] | Varies
+Babality | [Down][Down][Towards][Down][BK] | Jump

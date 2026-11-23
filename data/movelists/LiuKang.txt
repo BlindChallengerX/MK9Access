@@ -1,0 +1,68 @@
+# BASIC ATTACKS
+Front Punch | [FP]
+Back Punch | [BP]
+Front Kick | [FK]
+Back Kick | [BK]
+Uppercut | [Down][+][BP]
+Strong Fist | [Away][+][FP]
+Face Jab | [Towards][+][FP]
+Gut Strike | [Away][+][BP]
+Knee Bash | [Towards][+][BP]
+Shaolin Heel | [Towards][+][FK]
+Knee Kick | [Away][+][FK]
+Shin Kick | [Towards][+][BK]
+Sweep | [Away][+][BK]
+Throw (Away) | [THROW]
+Throw (Towards) | [Towards][+][THROW] | [Down][Away][BP]
+Final Act |  | From Dragon Stance
+Fist Of Death | 
+Shaolin Flip | 
+Moon Sweep | 
+# KOMBO ATTACKS
+Three Fists | [FP][,][FP][,][FP]
+Death Fist | [FP][,][FP][,][BP]
+Immortal Dragon | [FP][,][BP][,][Away][+][FP]
+Blazing Blasts | [Towards][+][FP][,][BP][,][FP]
+Fierce Tiger | [BP][,][FP][,][FK]
+Showdown | [Towards][+][BP][,][BK]
+Launching Fury | [Away][+][BP][,][Away][+][FK]
+Backdown | [Away][+][BP][,][FK]
+Lotus Flurry | [FK][,][FK][,][BK] | [Away][+][FK][,][FP][,][BP]
+Krushing Kombo | [Towards][+][BK][,][FK]
+# FAST TAGS
+Shaolin Spirit | [FP][,][BP][,][Away][+][FP][,][TAG]
+Dragon's Bite | [Away][+][FK][,][FP][,][BP][,][TAG]
+Next Time | [FP][,][TAG]
+Shaolin Step | [BP][,][FP][,][FK][,][TAG]
+# TAG KOMBOS
+Fist Swaps | [FP][,][FP][,][TAG]
+Step In | [FP][,][BP][,][TAG]
+Friendly | [Towards][+][FP][,][BP][,][TAG]
+Dragon Dance | [BP][,][FP][,][TAG]
+Twin Lotus | [FK][,][FK][,][TAG]
+Harm-Onious | [Away][+][FK][,][FP][,][TAG]
+# SPECIAL ATTACKS
+High Fireball | [Away][Towards][FP] | Can be done in the air
+Low Fireball | [Away][Towards][FK]
+Flying Dragon Kick | [Away][Towards][BP]
+Bicycle Kick | [Away][Away][Towards][BK]
+Parry | [Down][Away][FP]
+# ENHANCED ATTACKS
+  note: Uses one bar of super
+High Dragon Fire | [Away][Towards][FP][+][BLOCK]
+Low Dragon Fire | [Away][Towards][FK][+][BLOCK]
+Flame Dragon Kick | [Away][Towards][BP][+][BLOCK]
+Bicycle Steps | [Away][Away][Towards][BK][+][BLOCK]
+Burning Parry | [Down][Away][FP][+][BLOCK]
+# TAG SPECIALS
+Tag Out | [TAG]
+Tag Attack | [Down][,][Towards][+][TAG]
+Tag Assist | [Down][,][Away][+][TAG]
+# X-RAY ATTACK
+  note: Uses three bars of super
+Chin Up | [L2][+][BLOCK]
+# FINISHING MOVES
+Fist Of Flame | [Towards][Away][Down][Down][FK]
+The Beast Within | [Down][Down][Towards][Down][BK] | Jump
+Stage Fatality | [Down][Towards][Away][FK] | Varies
+Babality | [Down][Down][Down][BK]

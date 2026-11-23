@@ -1,0 +1,63 @@
+# BASIC ATTACKS
+Front Punch | [FP]
+Back Punch | [BP]
+Front Kick | [FK]
+Back Kick | [BK]
+Uppercut | [Down][+][BP]
+Back Hand | [Away][+][FP]
+Overhead Swipe | [Towards][+][FP]
+Side Chop | [Away][+][BP]
+Low Hop Kick | [Up][+][FK]
+Shin Kick | [Away][+][FK]
+Hop Kick | [Towards][+][BK]
+Sweep | [Away][+][BK]
+Throw (Away) | [THROW]
+Throw (Towards) | [Towards][+][THROW]
+# KOMBO ATTACKS
+Afterlife | [FP][,][FP][,][BP]
+Under Torment | [FP][,][FP][,][FK]
+Conjurer's Crush | [Away][+][FP][,][FP]
+Corruption | [Towards][+][FP][,][BP][,][FP][+][BP]
+Spellbinder | [BP][,][FP][,][BP]
+Root Of Evil | [BP][,][FP][,][BK]
+Enchantment | [BP][,][FP][,][Up][+][FK]
+Wounded Wrath | [Away][+][BP][,][FP]
+Incantation | [Away][+][BP][,][BK]
+Deterioration | [Away][+][FK][,][FK]
+Annihilation | [Away][+][FK][,][FP][+][BP]
+# FAST TAGS
+Sinister | [Away][+][BP][,][FP][,][TAG]
+Die-Abolical | [Away][+][FK][,][FP][+][BP][,][TAG]
+# TAG KOMBOS
+Alternative Means | [FP][,][FP][,][TAG]
+Kruel Intentions | [Towards][+][FP][,][BP][,][TAG]
+Necro-Mashy | [BP][,][FP][,][TAG]
+# SPECIAL ATTACKS
+Skeletal Boost | [Down][Away][BK]
+Ground Burst (Close) | [Down][Away][FP]
+Ground Burst (Medium) | [Down][Towards][FP]
+Ground Burst (Far) | [Down][Away][Towards][FP]
+Skull Ball | [Down][Away][BP]
+Sky Drop | [Down][Away][FK] | Can be done in the air
+Trance | [Away][Towards][FK]
+# ENHANCED ATTACKS
+  note: Uses one bar of super
+Skeletal Buff | [Down][Away][BK][+][BLOCK]
+Ground Blast (Close) | [Down][Away][FP][+][BLOCK]
+Ground Blast (Medium) | [Down][Towards][FP][+][BLOCK]
+Ground Blast (Far) | [Down][Away][Towards][FP][+][BLOCK]
+Skull Chomp | [Down][Away][BP][+][BLOCK]
+Sky Stomp | [Down][Away][FK][+][BLOCK]
+Mesmerize | [Away][Towards][FK][+][BLOCK]
+# TAG SPECIALS
+Tag Out | [TAG]
+Tag Attack | [Down][,][Towards][+][TAG]
+Tag Assist | [Down][,][Away][+][TAG]
+# X-RAY ATTACK
+  note: Uses three bars of super
+Amulet Assault | [L2][+][BLOCK]
+# FINISHING MOVES
+Beat Down | [Towards][Towards][Down][Down][FP]
+On Your Knees | [Down][Towards][Down][Towards][BK]
+Stage Fatality | [Away][Towards][Down][BP] | Varies
+Babality | [Towards][Down][Away][BP] | Jump

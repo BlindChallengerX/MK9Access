@@ -1,0 +1,70 @@
+# BASIC ATTACKS
+Front Punch | [FP]
+Back Punch | [BP]
+Front Kick | [FK]
+Back Kick | [BK]
+Uppercut | [Down][+][BP]
+Dagger Slash | [Away][+][FP]
+Rising Blade | [Away][+][BP]
+Backfist | [Towards][+][BP]
+Upwards Knee | [Towards][+][FK]
+Roundhouse | [Towards][+][BK]
+Lifting Leg | [Up][+][FK]
+Sweep | [Away][+][BK]
+Throw (Away) | [THROW]
+Throw (Towards) | [Towards][+][THROW]
+Krimson Bash | [FP][,][FP][,][BP]
+Red Pain | [FP][,][FP][,][BK]
+Blood Clot | [Away][+][FP][,][Towards][+][FK]
+Coagulation | [Away][+][FP][,][FP][,][FK]
+Bad Blood | [Away][+][FP][,][FP][,][Towards][+][BK]
+Bloody Murder | [Away][+][FP][,][FP][,][Away][+][BK]
+Bloodshed | [Away][+][BP][,][BK]
+Punishment | [BP][,][FP][,][BP]
+Bloodshot | [BP][,][FK]
+Flesh and Blood | [Towards][+][BP][,][FP][,][BP][,][FP][+][BP]
+Blood Boil | [Towards][+][FK][,][FP][,][BP]
+Slaughter | [Towards][+][FK][,][FK]
+Carnage | [Up][+][FK][,][BK]
+Thicker Than Water | [Towards][+][BK][,][FK]
+# FAST TAGS
+Transfusion | [Away][+][FP][,][FP][,][Towards][+][BK][,][TAG]
+Blood and Tears | [Towards][+][BP][,][FP][,][BP][,][FP][+][BP][,][TAG]
+Butchery | [Towards][+][FK][,][FP][,][BP][,][TAG]
+Warfare | [Up][+][FK][,][TAG]
+# TAG KOMBOS
+Bloodthirsty | [FP][,][FP][,][TAG]
+Krimson Blades | [Away][+][FP][,][FP][,][TAG]
+Judgement | [BP][,][FP][,][TAG]
+Blood and Guts | [Towards][+][BP][,][FP][,][TAG]
+Bloody Hell | [Towards][+][FK][,][FP][,][TAG]
+# SPECIAL ATTACKS
+Up Slash | [Down][Towards][BP]
+Down Slash | [Down][Away][BP]
+Blood Drop | [Down][Away][BK] | Can be done in the air
+Red Dash | [Down][Towards][FK]
+Red Slide (During Dash) | 
+Blood Ball (Drains Health) | [Towards][Down][Away][FP] | [Up] and [Down] Controls.
+Dagger Toss | [Down][Towards][FP]
+Air Dagger (Close) | [Down][Away][FP] | While in the air
+Air Dagger (Far) | 
+# ENHANCED ATTACKS
+  note: Uses one bar of super
+Dual Up Slash | [Down][Towards][BP][+][BLOCK]
+Dual Down Slash | [Down][Away][BP][+][BLOCK]
+Blood Stomp | [Down][Away][BK][+][BLOCK]
+Krimson Dash | [Down][Towards][FK][+][BLOCK]
+Double Daggers | [Down][Towards][FP][+][BLOCK]
+Tri Air Dagger | [Down][Away][FP][+][BLOCK]
+# TAG SPECIALS
+Tag Out | [TAG]
+Tag Attack | [Down][,][Towards][+][TAG]
+Tag Assist | [Down][,][Away][+][TAG]
+# X-RAY ATTACK
+  note: Uses three bars of super
+Blood Bank | [L2][+][BLOCK]
+# FINISHING MOVES
+Blood Bath | [Down][Away][Down][Down][BLOCK] | Touching
+Make It Rain | [Towards][Away][Down][Down][BK] | Jump
+Stage Fatality | [Towards][Away][Towards][FP] | Varies
+Babality | [Down][Away][Down][Towards][BP]

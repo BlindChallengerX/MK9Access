@@ -1,0 +1,70 @@
+# BASIC ATTACKS
+Front Punch | [FP]
+Back Punch | [BP]
+Front Kick | [FK]
+Back Kick | [BK]
+Uppercut | [Down][+][BP]
+Hookshot | [Away][+][BP]
+Backfist | [Towards][+][BP]
+Spin Kick | [Away][+][FK]
+Heel Bash | [Towards][+][BK]
+Sweep | [Away][+][BK]
+Throw (Away) | [THROW]
+Throw (Towards) | [Towards][+][THROW]
+Military Stance | [Down][Away][BP]
+Double Kick |  | From Military Stance
+Power Knee | 
+Shoulder | 
+Knockdown | 
+Tackle | [FP][+][FK][,][FP][+][BP]
+Dash Punches | [Towards][+][FP]
+Lift Off | 
+Hit The Deck | 
+# KOMBO ATTACKS
+Advance Force | [FP][,][FP][,][BP]
+Fierce Assault | [FP][,][FP][,][BK]
+Drop Zone | [BP][,][FP][,][Away][+][FK]
+Ground Control | [BP][,][FP][,][Away][+][BK]
+Power Rush | [Towards][+][BP][,][BP][,][BK]
+Mess Hall | [Away][+][BP][,][FP][,][Towards][+][BP]
+Play Time | [FK][,][FP][,][BP]
+Beat Up | [FK][,][FP][,][BK]
+Pull Out | [BK][,][BK]
+# FAST TAGS
+Switch Off | [BP][,][TAG]
+Fatal Kiss | [Down][Away][FP][,][TAG]
+Surprise | [Away][+][BP][,][FP][,][Towards][+][BP][,][TAG]
+Windmill | [Down][Towards][FK][,][TAG]
+# TAG KOMBOS
+Lick My Boots | [FP][,][FP][,][TAG]
+Special Forced | [BP][,][FP][,][TAG]
+Tough Love | [Towards][+][BP][,][BP][,][TAG]
+Honorable Discharge | [FK][,][FP][,][TAG]
+# SPECIAL ATTACKS
+Energy Ring Blast | [Away][Towards][BP]
+Leg Grab | [Away][Towards][BK]
+Kiss | [Down][Away][FP]
+Arc Kick | [Down][Away][BK]
+Kartwheel | [Down][Towards][FK]
+Air Drop | [Down][+][BK] | While in the air
+Air Throw | 
+# ENHANCED ATTACKS
+  note: Uses one bar of super
+Rings Of Justice | [Away][Towards][BP][+][BLOCK]
+Krazy Legs | [Away][Towards][BK][+][BLOCK]
+Deadly Kiss | [Down][Away][FP][+][BLOCK] | Hold [BP] To charge
+Arc Wave | [Down][Away][BK][+][BLOCK]
+Kartwheel Bash | [Down][Towards][FK][+][BLOCK]
+Air Strikes | [Down][+][BK][+][BLOCK]
+# TAG SPECIALS
+Tag Out | [TAG]
+Tag Attack | [Down][,][Towards][+][TAG]
+Tag Assist | [Down][,][Away][+][TAG]
+# X-RAY ATTACK
+  note: Uses three bars of super
+SF Beat Down | [L2][+][BLOCK]
+# FINISHING MOVES
+Scissor Split | [Down][Down][Away][Towards][FP] | Jump
+Kut-Throat | [Down][Away][Towards][Away][BK]
+Stage Fatality | [Away][Towards][Down][BP] | Varies
+Babality | [Down][Down][Towards][FK]

@@ -1,0 +1,60 @@
+# BASIC ATTACKS
+Front Punch | [FP]
+Back Punch | [BP]
+Front Kick | [FK]
+Back Kick | [BK]
+Uppercut | [Down][+][BP]
+Ares Slash | [Away][+][FP]
+Zeus Slice | [Towards][+][FP]
+Divine Lift | [Away][+][BP] | Hold [BP] To follow up
+Spartan Bash | [Towards][+][BP]
+Spartan Knee | [Towards][+][BK]
+Sweep | [Away][+][BK]
+Throw (Away) | [THROW]
+Throw (Towards) | [Towards][+][THROW]
+# KOMBO ATTACKS
+Valor Of Hercules | [FP][,][FP][,][BP]
+Hades Edge | [Away][+][FP][,][BP]
+Hades Pain | [Away][+][FP][,][Away][+][BK]
+Aphrodite's Will | [Towards][+][FP][,][BK]
+Wrath Of Ares | [Towards][+][BP][,][FP]
+Anguish Of Zeus | [Towards][+][BP][,][BP]
+Pandora's Soul | [Towards][+][BK][,][BP]
+Athena's Fury | [BP][,][FP][,][BP]
+Olympic Ascension | 
+Olympic Burst | 
+Olympic Blast | 
+Olympic Toss | 
+Achilles Strike | [Towards][+][BP][,][BP][,][FP]
+# FAST TAGS
+Athena's Rage | [BP][,][FP][,][BP][,][TAG]
+Olympic Chain | [Away][+][BP][,][TAG]
+Pandora's Box | [Towards][+][BK][,][BP][,][TAG]
+# TAG KOMBOS
+Hercules Rush | [FP][,][FP][,][TAG]
+Athena's Pain | [BP][,][FP][,][TAG]
+# SPECIAL ATTACKS
+Apollo's Bow | [Down][Towards][BP]
+Head Of Helios | [Down][Away][BP]
+Hermes Dash | [Away][Towards][BK] | Hold [BK] To charge
+Golden Fleece | [Down][Away][FP]
+Zeus's Rage | [Down][Towards][FK]
+# ENHANCED ATTACKS
+  note: Uses one bar of super
+Apollo's Inferno | [Down][Towards][BP][+][BLOCK]
+Helios Flash | [Down][Away][BP][+][BLOCK]
+Hermes Rush | [Away][Towards][BK][+][BLOCK]
+Argos Ram | [Down][Away][FP][+][BLOCK]
+Revenge Of Olympus | [Down][Towards][FK][+][BLOCK]
+# TAG SPECIALS
+Tag Out | [TAG]
+Tag Attack | [Down][,][Towards][+][TAG]
+Tag Assist | [Down][,][Away][+][TAG]
+# X-RAY ATTACK
+  note: Uses three bars of super
+Nemean Cestus | [L2][+][BLOCK]
+# FINISHING MOVES
+Blade Of Olympus | [Down][Down][Away][Towards][BP] | Touching
+Medusa's Gaze | [Down][Away][Down][Towards][FP] | Jump
+Stage Fatality | [Down][Down][Down][FK] | Varies
+Babality | [Down][Towards][Away][BP]

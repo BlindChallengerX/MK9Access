@@ -1,0 +1,54 @@
+# BASIC ATTACKS
+Front Punch | [FP]
+Back Punch | [BP]
+Front Kick | [FK]
+Back Kick | [BK]
+Uppercut | [Down][+][BP]
+Cross Hook | [Away][+][FP]
+Baton Twirl | [Away][+][BP]
+Sweep | [Away][+][BK]
+Throw (Away) | [THROW]
+Throw (Towards) | [Towards][+][THROW]
+# KOMBO ATTACKS
+Kop Out | [FP][,][BP]
+Dispatched | [FP][,][FP][,][BK]
+Beatdown | [Away][+][FP][,][BP][,][BP]
+Pain Patrol | [BP][,][FK][,][BP]
+The Heat | [Away][+][BP][,][FP]
+Aggravated Assault | [Away][+][BP][,][Towards][+][BP]
+Spread 'Em | [Away][+][BP][,][Away][+][BK]
+Come With Me | [Away][+][FK][,][BP]
+# FAST TAGS
+Serve and Protect | [Away][+][FP][,][BP][,][BP][,][TAG]
+Remain Silent | [Away][+][BP][,][Towards][+][BP][,][TAG]
+Affirmative | [Away][+][FK][,][BP][,][TAG]
+# TAG KOMBOS
+We Aim To Please | [FP][,][FP][,][TAG]
+Officer Friendly | [Away][+][FP][,][BP][,][TAG]
+Don't Move! | [BP][,][FK][,][TAG]
+Assault And Battery | [Away][+][BP][,][TAG]
+# SPECIAL ATTACKS
+Baton Sweep | [Down][Away][BK]
+High Grenade Toss | [Down][Away][BP]
+Low Grenade Toss | [Down][Away][FP]
+Gun Shot | [Away][Towards][FP]
+Roll Toss | [Away][Towards][BK]
+# ENHANCED ATTACKS
+  note: Uses one bar of super
+Baton Bash | [Down][Away][BK][+][BLOCK]
+Double High Grenade Toss | [Down][Away][BP][+][BLOCK]
+Double Low Grenade Toss | [Down][Away][FP][+][BLOCK]
+Bang Bang | [Away][Towards][FP][+][BLOCK]
+Roll Out | [Away][Towards][BK][+][BLOCK]
+# TAG SPECIALS
+Tag Out | [TAG]
+Tag Attack | [Down][,][Towards][+][TAG]
+Tag Assist | [Down][,][Away][+][TAG]
+# X-RAY ATTACK
+  note: Uses three bars of super
+Busted | [L2][+][BLOCK]
+# FINISHING MOVES
+Time Served | [Towards][Down][Towards][FK]
+Have A Blast | [Down][Towards][Down][Towards][BLOCK]
+Stage Fatality | [Towards][Up][Up][BK] | Varies
+Babality | [Down][Towards][Down][Away][BP] | Jump

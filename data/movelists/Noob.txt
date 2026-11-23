@@ -1,0 +1,59 @@
+# BASIC ATTACKS
+Front Punch | [FP]
+Back Punch | [BP]
+Front Kick | [FK]
+Back Kick | [BK]
+Uppercut | [Down][+][BP]
+Saibot Strike | [Away][+][FP]
+Hook Punch | [Away][+][BP]
+Point Kick | [Towards][+][FK]
+Snap Kick | [Towards][+][BK]
+Sweep | [Away][+][BK]
+Throw (Away) | [THROW]
+Throw (Towards) | [Towards][+][THROW]
+# KOMBO ATTACKS
+Saibot Blast | [FP][,][BP]
+Sneaky Saibot | [Away][+][FP][,][BP][,][Towards][+][BK]
+Evil Twin | [Away][+][FP][,][BP][,][FP][,][BK]
+Assassinate | [BP][,][FP][,][BP]
+No Compassion | [Away][+][BP][,][FP][,][BK]
+Reincarnated | [Towards][+][FK][,][FK][,][FK]
+Possessed | [Towards][+][BK][,][FK]
+# FAST TAGS
+Mysterious | [Away][+][FP][,][BP][,][FP][,][TAG]
+# TAG KOMBOS
+Entangled | [Away][+][FP][,][BP][,][TAG]
+Warped Rush | [BP][,][FP][,][TAG]
+Tragic | [Away][+][BP][,][FP][,][TAG]
+The Shadow | [Towards][+][FK][,][FK][,][TAG]
+# SPECIAL ATTACKS
+Ghostball | [Down][Towards][FP]
+Blackhole (Above) | [Down][Away][BP]
+Blackhole (Behind) | [Down][Towards][BP]
+Blackhole (In Front) | [Down][Towards][Away][BP]
+Teleport Slam | [Down][Up] | Can be done in the air
+Shadow Charge | [Down][Towards][FK]
+Shadow Upknee | [Down][Away][FK]
+Shadow Slide | [Away][Towards][BK]
+# ENHANCED ATTACKS
+  note: Uses one bar of super
+Spirit Ball | [Down][Towards][FP][+][BLOCK]
+Darkness (Above) | [Down][Away][BP][+][BLOCK]
+Darkness (Behind) | [Down][Towards][BP][+][BLOCK]
+Darkness (In Front) | [Down][Towards][Away][BP][+][BLOCK]
+Teleport Smash | [Down][Up][+][BLOCK]
+Saibot Charge | [Down][Towards][FK][+][BLOCK]
+Saibot Upknee | [Down][Away][FK][+][BLOCK]
+Saibot Slide | [Away][Towards][BK][+][BLOCK]
+# TAG SPECIALS
+Tag Out | [TAG]
+Tag Attack | [Down][,][Towards][+][TAG]
+Tag Assist | [Down][,][Away][+][TAG]
+# X-RAY ATTACK
+  note: Uses three bars of super
+Together Again | [L2][+][BLOCK]
+# FINISHING MOVES
+Make A Wish | [Away][Towards][Away][Down][BK] | Jump
+As One | [Down][Down][Away][Down][BLOCK]
+Stage Fatality | [Towards][Down][Towards][BLOCK] | Varies
+Babality | [Towards][Up][Towards][FP]

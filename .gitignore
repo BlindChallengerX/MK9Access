@@ -1,0 +1,6 @@
+out/
+logs/
+tools/logs/
+tools/__pycache__/
+tools/ue3unpack.exe
+*.bak

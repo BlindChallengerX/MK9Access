@@ -1,0 +1,24 @@
+# BASIC ATTACKS
+Front Punch | [FP]
+Back Punch | [BP]
+Front Kick | [FK]
+Back Kick | [BK]
+Up Look | [Away][+][FP]
+Power Fist | [Towards][+][FP]
+Hammer Sweep | [Away][+][BK]
+Throw (Away) | [THROW]
+Throw (Towards) | [Towards][+][THROW]
+# KOMBO ATTACKS
+Emperor Bash | [FP][,][FP]
+# SPECIAL ATTACKS
+Taunt (Laugh) | [Down][Away][FP]
+Taunt (Point) | [Down][Towards][FP]
+Shoulder Charge | [Away][Towards][FP]
+Upward Shoulder | [Away][Towards][BP]
+Spear Toss | [Down][Away][BP]
+Hammer Toss | [Away][Towards][FK]
+Hammer Swing | [Away][Towards][BK]
+Hammer Cut | [Down][Away][BK]
+# X-RAY ATTACK
+  note: Uses three bars of super
+It's Official | [L2][+][BLOCK]

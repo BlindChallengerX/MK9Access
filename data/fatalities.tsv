@@ -1,0 +1,63 @@
+character	fatality	input	description
+Scorpion	Split Decision	Forward, Down, Forward, 2 (close)	Scorpion draws two swords, slices off both of the opponent's arms, then swings upward to split the head and torso cleanly in two.
+Scorpion	Nether-Gate	Back, Forward, Back, 3 (close)	Scorpion opens a hellfire portal and thrusts his arm into it; the arm emerges beneath the opponent and tears the body in half from below.
+Liu Kang	Fist of Flame	Forward, Back, Down, Down, 3 (sweep)	Liu Kang sets both fists ablaze and pummels the opponent with flaming punches, burning the body down to a charred, smoking husk.
+Liu Kang	The Beast Within	Down, Down, Forward, Down, 4 (jump)	Liu Kang transforms into a giant dragon, lunges, and bites the opponent's upper body off, swallowing it and leaving the legs behind.
+Kung Lao	Hat Trick	Back, Forward, Forward, Back, 2 (sweep)	Kung Lao lodges his razor-edged hat upright and spinning in the ground, then forces the opponent down onto it, sawing the body in two.
+Kung Lao	Razor's Edge	Down, Down, Forward, Back, 1 (sweep)	Kung Lao spins his bladed hat like a saw and runs it through the opponent, slicing the whole body cleanly in half.
+Sub-Zero	Have an Ice Day	Back, Forward, Down, Forward, 4 (sweep)	Sub-Zero freezes the opponent from the feet up to the waist, then rips the upper torso off the frozen lower half.
+Sub-Zero	Spinal Smash	Down, Back, Down, Forward, 2 (sweep)	Sub-Zero rips the spine and skull out through the opponent's chest, freezes the remaining body, and shatters it with the torn-out spine.
+Sindel	Migraine	Back, Forward, Down, Forward, 1 (sweep)	Sindel unleashes a point-blank sonic scream at the opponent's head until the skull swells and bursts apart in a spray of blood.
+Sindel	Mouthful	Hold Block, Back, Forward, Up, Release Block, 2 (sweep)	Sindel forces the opponent's mouth open and screams down their throat until the body inflates and ruptures.
+Ermac	Mind Over Splatter	Hold Block, Down, Up, Down, Down, Release Block, Block (jump)	Ermac telekinetically lifts the opponent into the air and tears off both arms, both legs, and the head, dropping the torso.
+Ermac	Pest Control	Forward, Back, Forward, Down, 4 (jump)	Ermac suspends the opponent with telekinesis and slams them face-first into the ground again and again until the body is crushed to pulp.
+Reptile	Acid Yak	Hold Block, Forward, Forward, Down, Up, Release Block, 3 (sweep)	Reptile vomits a stream of acid over the opponent, melting the flesh from their bones until only a dripping skeleton remains.
+Reptile	Weight Loss	Down, Down, Forward, Back, 1 (sweep)	Reptile slashes the opponent's abdomen open, pulls out the spilling intestines, and devours them, leaving the gutted body to collapse.
+Kitana	Fan Opener	Down, Down, Back, Forward, 2 (sweep)	Kitana drives her steel fans into the opponent's chest and snaps them open, tearing the ribcage and torso wide apart.
+Kitana	Splitting Headache	Forward, Down, Forward, Back, 3 (sweep)	Kitana hurls her razor-edged fan to slice the opponent's head in half, splitting the skull straight down the middle.
+Johnny Cage	Heads Up!	Forward, Forward, Back, Down, 3 (close)	Johnny Cage rips the opponent's head off along with the dangling spine and holds the severed head aloft.
+Johnny Cage	And The Winner Is...	Down, Forward, Down, Forward, 4 (sweep)	Johnny Cage splits the opponent's skull with a karate chop, then plants a golden award statuette into the open wound.
+Jax	Smash and Grab	Back, Forward, Forward, Back, 2 (close)	Jax seizes the opponent's head in both of his huge metal hands and crushes it until the skull bursts.
+Jax	Three Points!	Forward, Forward, Back, Down, 3 (sweep)	Jax tears the opponent in half at the waist and punts the upper body across the arena like a field-goal kick.
+Sonya Blade	Scissor Split	Down, Down, Back, Forward, 1 (jump)	Sonya clamps her thighs around the opponent's head, spins through the air, and twists until the upper body tears away.
+Sonya Blade	Kut-Throat	Down, Back, Forward, Back, 4 (sweep)	Sonya slashes the opponent's throat wide open and tears the head free from the body.
+Jade	Head-A-Rang	Hold Block, Up, Up, Down, Forward, Release Block, 1 (far)	Jade hurls her razor-edged boomerang across the screen, slicing the opponent's head apart as it spins back to her hand.
+Jade	Half Mast	Back, Down, Back, Down, 4 (sweep)	Jade drives her bo staff up through the opponent's body and raises them overhead, impaled like a flag on a pole.
+Nightwolf	Little Off The Top	Down, Forward, Down, Back, 4 (jump)	Nightwolf summons a spirit tomahawk and chops the top of the opponent's skull clean off, exposing the brain.
+Nightwolf	Ascension	Down, Down, Forward, Back, 1 (sweep)	Nightwolf calls up a surge of green spirit energy that erupts beneath the opponent, impaling and launching the body skyward.
+Stryker	Time Served	Forward, Down, Forward, 3 (sweep)	Stryker clubs the opponent to the ground with his baton, then draws his pistol and shoots them through the head.
+Stryker	Have a Blast	Down, Forward, Down, Forward, Block (sweep)	Stryker straps grenades onto the opponent, steps back, and detonates them, blowing the body apart in a burst of fire.
+Smoke	Smoked Out	Back, Forward, Back, Forward, 1 (sweep)	Smoke plants a charge inside the opponent and teleports clear as the body bursts apart in a thick cloud of smoke.
+Smoke	Tremor	Back, Back, Down, Forward, 2 (sweep)	Smoke slams the opponent into the ground with a shockwave that pulverizes the body.
+Sektor	Robo-Sek	Forward, Down, Back, Forward, 3 (far)	Sektor unloads a barrage of missiles and a jet of flame from range, blasting the opponent apart and incinerating the pieces.
+Sektor	The Scarecrow	Down, Down, Forward, Back, 1 (far)	Sektor impales the opponent on an upright pole and mounts the limp body in a cross-armed pose, like a scarecrow.
+Cyrax	Buzz Kill	Forward, Down, Forward, Back, 2 (close)	Cyrax deploys a spinning buzzsaw from his chest and runs it up through the opponent, slicing the body in half.
+Cyrax	Nothing but Net	Back, Down, Back, Forward, 1 (jump)	Cyrax snares the opponent in his energy net, then drops a cluster of bombs that detonate, blowing the body to pieces.
+Noob Saibot	Make A Wish	Back, Forward, Back, Down, 4 (jump)	Noob Saibot and his shadow clone each grab a leg and tear the opponent in half up the middle, like a wishbone.
+Noob Saibot	As One	Down, Down, Back, Down, Block (jump)	Noob Saibot's shadow clone holds the opponent still while Noob slashes the body apart, both halves vanishing into darkness.
+Kano	Heartbreak	Back, Down, Back, Forward, 1 (sweep)	Kano punches his fist through the opponent's chest, rips out the still-beating heart, and holds it up as the body falls.
+Kano	Eat Your Heart Out	Down, Down, Forward, Back, 4 (sweep)	Kano cuts the opponent's chest open, tears out the heart, and takes a bite from it while the body collapses.
+Mileena	Be Mine	Back, Forward, Back, Forward, 2 (jump)	Mileena unhinges her monstrous jaws, swallows the opponent whole, and spits out the stripped, picked-clean skeleton.
+Mileena	Rip Off	Back, Forward, Back, Down, 3 (jump)	Mileena drives both sais into the opponent's body and tears it apart in a shower of blood.
+Shang Tsung	Bang Bang!	Back, Down, Forward, 3 (sweep)	Shang Tsung conjures a flintlock pistol and shoots the opponent repeatedly, blasting the head and torso apart.
+Shang Tsung	Identity Theft	Down, Down, Back, Down, 2 (jump)	Shang Tsung rips out the opponent's skull and spine, then morphs into their exact likeness over the fallen body.
+Baraka	Up The Middle	Back, Forward, Down, Forward, 1 (sweep)	Baraka thrusts both arm blades up through the opponent from below, splitting the body in half from groin to head.
+Baraka	Take a Spin	Forward, Forward, Down, Down, 3 (sweep)	Baraka impales the opponent on his blade and spins the body overhead like a top before flinging the pieces away.
+Kabal	Hook Up	Back, Forward, Back, Forward, 1 (sweep)	Kabal sinks both hookswords into the opponent's jaw and rips upward, tearing the face and head apart.
+Kabal	It Takes Guts	Down, Down, Back, Forward, Block (sweep)	Kabal slashes the opponent's belly open, grabs the intestines, and dashes away at blinding speed, pulling all the guts out.
+Raiden	Just a Scratch	Down, Forward, Down, Forward, 1 (jump)	Raiden floods the opponent with electricity until the head swells and bursts, leaving the body twitching and smoking.
+Raiden	Transplant	Back, Forward, Forward, Down, 4 (sweep)	Raiden tears the opponent's head off and shoves it down into the gaping cavity of their own chest.
+Sheeva	Stripped Down	Forward, Down, Down, Forward, 1 (sweep)	Sheeva seizes the opponent and peels every bit of skin from the body in one pull, leaving a raw, skinless figure.
+Sheeva	Lend a Hand	Forward, Back, Forward, Back, 4 (sweep)	Sheeva hammers the opponent into the ground with all four of her fists until the body is pounded flat.
+Quan Chi	Beat Down	Forward, Forward, Down, Down, 1 (sweep)	Quan Chi rips off one of the opponent's legs and beats them over the head with it until they die.
+Quan Chi	On Your Knees	Down, Forward, Down, Forward, 4 (sweep)	Quan Chi conjures a sword, slices both the opponent's legs off at the knees, then beheads them as they drop.
+Cyber Sub-Zero	Kold Fusion	Down, Back, Down, Forward, 2 (jump)	Cyber Sub-Zero blasts the opponent with a freezing beam, encasing them in ice, then shatters the frozen body into shards.
+Cyber Sub-Zero	Brain Freeze	Down, Down, Back, Down, 1 (jump)	Cyber Sub-Zero freezes the opponent's head solid, tears it off with the spine, and the frozen head shatters on the ground.
+Skarlet	Blood Bath	Down, Back, Down, Down, Block (close)	Skarlet slashes the opponent open and conjures a rising pool of their blood, bathing in it as the body is drained.
+Skarlet	Make It Rain	Forward, Back, Down, Down, 4 (jump)	Skarlet drains the opponent's blood into the air and lets it rain back down as the withered body collapses.
+Kenshi	Scatterbrained	Hold Block, Up, Down, Up, Down, Release Block, Block (sweep)	Kenshi telekinetically guides his floating katana to slice the top of the opponent's skull off, spilling the brain.
+Kenshi	Split Ends	Back, Forward, Down, Forward, 2 (jump)	Kenshi suspends the opponent in the air and floats his katana to slice the body cleanly in two.
+Rain	Bubble Burst	Back, Forward, Down, Back, Block (jump)	Rain encases the opponent in a sphere of water that compresses until the body implodes and bursts apart.
+Rain	Does It Sting	Hold Block, Up, Down, Back, Forward, Release Block, 2 (jump)	Rain suspends the opponent in a bubble of water and surges it with electricity until the body ruptures.
+Freddy Krueger	Tell 'Em Freddy Sent Ya	Back, Forward, Down, Down, 1 (anywhere)	Freddy slashes the opponent with his bladed glove, carving open the torso and tearing the body to ribbons.
+Freddy Krueger	Welcome To My Nightmare	Hold Block, Down, Up, Forward, Back, Release Block, Block (sweep)	Freddy drags the opponent into a nightmare where clawed arms rise from the ground to impale and shred the body.

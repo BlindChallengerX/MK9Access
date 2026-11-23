@@ -1,0 +1,60 @@
+# BASIC ATTACKS
+Front Punch | [FP]
+Back Punch | [BP]
+Front Kick | [FK]
+Back Kick | [BK]
+Uppercut | [Down][+][BP]
+Yank | [Away][+][FP]
+Blast Overhead | [Away][+][BP]
+Tooth And Nail | [Towards][+][BP]
+Side Kick | [Away][+][FK]
+Hop Kick | [Up][+][BK]
+Sweep | [Away][+][BK]
+Throw (Away) | [THROW]
+Throw (Towards) | [Towards][+][THROW]
+# KOMBO ATTACKS
+See Saw | [FP][,][FP][,][FP]
+Steel Fists | [FP][,][BP][,][FP]
+Power Plant | [FP][,][BP][,][FK]
+Mustard | [BP][,][FP][,][BP]
+Saw Enough | [BP][,][BP][,][Towards][+][FP]
+Kombat Boots | [FK][,][FK][,][BK]
+Cyber Beatdown | [Away][+][FP][,][BP][,][FP][,][BP] | Must be pressed rapidly
+# FAST TAGS
+Automaton | [Away][+][BP][,][TAG]
+# TAG KOMBOS
+Number Cruncher | [Away][+][FP][,][TAG]
+High Tech | [FP][,][BP][,][TAG]
+Short Circuit | [BP][,][FP][,][TAG]
+# SPECIAL ATTACKS
+Bomb (Close) | [Away][Away][BK]
+Bomb (Medium) | [Towards][Towards][BK]
+Bomb (Far) | [Away][Away][Towards][BK]
+Net | [Away][Away][FK]
+Teleport | [Down][Away][FP] | Can be done in the air
+Buzzsaw | [Away][Towards][BP]
+Reverse Kick | [Down][Towards][FK]
+Ragdoll | [Down][Towards][FK][,]*[THROW]
+* Press immediately | 
+Anti-Air | [Down][Towards][FP] | Victim must be in the air
+# ENHANCED ATTACKS
+  note: Uses one bar of super
+Sticky Bomb | [Away][Away][BK][+][BLOCK]
+Electro Net | [Away][Away][FK][+][BLOCK]
+Bangport | [Down][Away][FP][+][BLOCK]
+Saw Blade | [Away][Towards][BP][+][BLOCK]
+Donkey Kick | [Down][Towards][FK][+][BLOCK]
+Ragdolls | [Down][Towards][FK][+][BLOCK][,]*[THROW]
+Power Anti-Air | [Down][Towards][FP][+][BLOCK]
+# TAG SPECIALS
+Tag Out | [TAG]
+Tag Attack | [Down][,][Towards][+][TAG]
+Tag Assist | [Down][,][Away][+][TAG]
+# X-RAY ATTACK
+  note: Uses three bars of super
+Cyberdriver | [L2][+][BLOCK]
+# FINISHING MOVES
+Buzz Kill | [Towards][Down][Towards][Away][BP] | Touching
+Nothing But Net | [Away][Down][Away][Towards][FP] | Jump
+Stage Fatality | [Down][Up][BLOCK] | Varies
+Babality | [Down][Towards][Away][BP]

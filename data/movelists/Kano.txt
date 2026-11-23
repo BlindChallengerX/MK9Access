@@ -1,0 +1,61 @@
+# BASIC ATTACKS
+Front Punch | [FP]
+Back Punch | [BP]
+Front Kick | [FK]
+Back Kick | [BK]
+Uppercut | [Down][+][BP]
+Strong Strike | [Towards][+][FP]
+Gut Poke | [Away][+][FP]
+Overhead Smash | [Away][+][BP]
+Shin Kick | [Towards][+][FK]
+Hop Roundhouse | [Towards][+][BK]
+Sweep | [Away][+][BK]
+Throw (Away) | [THROW]
+Throw (Towards) | [Towards][+][THROW]
+# KOMBO ATTACKS
+One Two Three | [FP][,][FP][,][BP]
+Fighting King | [Towards][+][FP][,][FP]
+No Escape | [Towards][+][FP][,][BP]
+Dragon's Tail | [Away][+][FP][,][FP][,][BP]
+Snake Bite | [Away][+][FP][,][BP]
+Getting Ahead | [BP][,][FP][,][BP]
+Uplifting Force | [Away][+][BP][,][FK]
+Smashing Time | [Away][+][BP][,][Towards][+][FP]
+Double Dragon | [FK][,][FK]
+The Rage Kicks | [Towards][+][FK][,][FK]
+Mean Machine | [Towards][+][FK][,][Away][+][BP]
+# FAST TAGS
+Lead Head | [Away][+][FP][,][FP][,][BP][,][TAG]
+Ear To Ear | [BP][,][FP][,][BP][,][TAG]
+Bloodthirsty | [Towards][+][FK][,][Away][+][BP][,][TAG]
+# TAG KOMBOS
+Troublesome | [FP][,][FP][,][TAG]
+Delinquent | [Away][+][FP][,][FP][,][TAG]
+Villainous | [BP][,][FP][,][TAG]
+Mischievous | [Away][+][BP][,][TAG]
+# SPECIAL ATTACKS
+Ball | [Towards][Down][Away][Towards]
+Down Ball |  | While in the air
+Up Ball | [Down][Towards][BP]
+Choke | [Down][Towards][FP]
+Knife Throw | [Down][Away][BP]
+Air Throw | 
+# ENHANCED ATTACKS
+  note: Uses one bar of super
+Kano Ball | [Towards][Down][Away][Towards][+][BLOCK] | Hold [BLOCK] to delay
+Downward Ball | 
+Uprise Ball | [Down][Towards][BP][+][BLOCK]
+Kano Choke | [Down][Towards][FP][+][BLOCK]
+Knife Toss | [Down][Away][BP][+][BLOCK]
+# TAG SPECIALS
+Tag Out | [TAG]
+Tag Attack | [Down][,][Towards][+][TAG]
+Tag Assist | [Down][,][Away][+][TAG]
+# X-RAY ATTACK
+  note: Uses three bars of super
+Just The Tip | [L2][+][BLOCK]
+# FINISHING MOVES
+Heartbreak | [Away][Down][Away][Towards][FP]
+Eat Your Heart Out | [Down][Down][Towards][Away][BK]
+Stage Fatality | [Up][Up][Away][FK] | Varies
+Babality | [Towards][Down][Down][FK] | Jump

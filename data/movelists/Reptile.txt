@@ -1,0 +1,64 @@
+# BASIC ATTACKS
+Front Punch | [FP]
+Back Punch | [BP]
+Front Kick | [FK]
+Back Kick | [BK]
+Uppercut | [Down][+][BP]
+Reptile Smash | [Towards][+][BP]
+Low Swipe | [Away][+][FP]
+Hop Kick | [Towards][+][FK]
+Sweep | [Away][+][BK]
+Throw (Away) | [THROW]
+Throw (Towards) | [Towards][+][THROW]
+# KOMBO ATTACKS
+Cold Blooded | [FP][,][BP][,][BK]
+Carnivore Bash | [FP][,][BP][,][BP][,][FP]
+Deadly Venom | [FP][,][BP][,][Away][+][FP]
+Just Hatched | [BP][,][Towards][+][FK]
+Hybrid Blast | [BP][,][FK][+][BK]
+Hybrid Crush | [BP][,][Towards][+][FK][,][FP][+][BP]
+Evolution | [Towards][+][BP][,][Away][+][FP]
+Amphibian Charge | [FK][,][BP][,][FP]
+Slithered | [FK][,][BP][,][Away][+][BK]
+Swamp Strikes | [Towards][+][FK][,][FP][+][BP]
+# FAST TAGS
+Carnivorous | [FP][,][BP][,][BP][,][FP][,][TAG]
+Nocturnal | [Towards][+][BP][,][Away][+][FP][,][TAG]
+Aquatic | [FK][,][BP][,][FP][,][TAG]
+Shedding Skin | [Away][Towards][BP][+][BLOCK][,][TAG]
+# TAG KOMBOS
+Toxic | [FP][,][BP][,][TAG]
+Ravenous | [FP][,][BP][,][BP][,][TAG]
+Scaly Serpent | [BP][,][Towards][+][FK][,][TAG]
+Bad Blood | [Towards][+][BP][,][TAG]
+Anguish | [FK][,][BP][,][TAG]
+# SPECIAL ATTACKS
+Slow Force Ball | [Away][Away][FP]
+Fast Force Ball | [Away][Away][FK]
+Slide | [Away][Towards][BK]
+Acid Hand | [Down][Away][BP]
+Invisibility | [Down][Up][BK]
+Acid Spit | [Down][Towards][FP]
+Elbow Dash | [Away][Towards][BP]
+# ENHANCED ATTACKS
+  note: Uses one bar of super
+Slow Mega Ball | [Away][Away][FP][+][BLOCK] | Hold [FP] To charge
+Fast Mega Ball | [Away][Away][FK][+][BLOCK] | Hold [FK] To charge
+Slime Trail | [Away][Towards][BK][+][BLOCK]
+Reptilian Hand | [Down][Away][BP][+][BLOCK]
+Vanish | [Down][Up][BK][+][BLOCK]
+Acid Stream | [Down][Towards][FP][+][BLOCK]
+Reptilian Elbow | [Away][Towards][BP][+][BLOCK]
+# TAG SPECIALS
+Tag Out | [TAG]
+Tag Attack | [Down][,][Towards][+][TAG]
+Tag Assist | [Down][,][Away][+][TAG]
+# X-RAY ATTACK
+  note: Uses three bars of super
+Tricky Lizard | [L2][+][BLOCK]
+# FINISHING MOVES
+Acid Yak | [Towards][Towards][Down][Up][FK]
+Weight Loss | [Down][Down][Towards][Away][FP]
+Yummy! | [Away][Away][Towards][Down][BLOCK] | Jump
+Stage Fatality | [Towards][Down][Down][BLOCK] | Varies
+Babality | [Away][Towards][Away][Down][FK]

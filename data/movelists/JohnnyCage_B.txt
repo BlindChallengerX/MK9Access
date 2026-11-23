@@ -1,0 +1,57 @@
+# BASIC ATTACKS
+Front Punch | [FP]
+Back Punch | [BP]
+Front Kick | [FK]
+Back Kick | [BK]
+Uppercut | [Down][+][BP]
+Charge Palm (Hold) | [Away][+][BP] | Can be canceled by a dash
+2-Hit Elbow | [Towards][+][BP]
+Pop Up | [Away][+][FK]
+Rising Knee | [Towards][+][FK]
+Axe Kick | [Towards][+][BK]
+Sweep | [Away][+][BK]
+Throw (Away) | [THROW]
+Throw (Towards) | [Towards][+][THROW]
+# KOMBO ATTACKS
+Out Take | [FP][,][FP][,][FP]
+Showtime | [FP][,][FP][,][Towards][+][FP]
+Stand In | [FP][,][FP][,][BK]
+Cross Cutting | [FP][,][FK][,][BP]
+Widescreen | [BP][,][FP][,][Towards][+][BP]
+Director's Cut | [BP][,][FP][,][Away][+][BK]
+Take Two | [Towards][+][FK][,][BP]
+Money Shot | [BK][,][BK]
+That's The Ticket | [Towards][+][FK][,][FK][,][Away][+][FK]
+# FAST TAGS
+Cliffhanger |  | Requires a full charge
+Fade Out | [Towards][+][BK][,][TAG]
+Bootleg | [Away][+][FK][,][TAG]
+Stunt Double | [BP][,][FP][,][Towards][+][BP][,][TAG]
+# TAG KOMBOS
+Cameo | [FP][,][FK][,][TAG]
+Double Feature | [BP][,][FP][,][TAG]
+Stand-In | [Towards][+][FK][,][FK][,][TAG]
+# SPECIAL ATTACKS
+Low Forceball | [Down][Towards][BP]
+High Forceball | [Down][Away][BP]
+Flipkick | [Down][Away][FK]
+Shadow Kick | [Away][Towards][+][BK]
+Nut Punch | [Away][Down][+][FP]
+# ENHANCED ATTACKS
+  note: Uses one bar of super
+Double Low ball | [Down][Towards][BP][+][BLOCK]
+Double High ball | [Down][Away][BP][+][BLOCK]
+Ultra Flipkick | [Down][Away][FK][+][BLOCK]
+Eclipse Kick | [Away][Towards][BK][+][BLOCK]
+Nutcracker | [Away][Down][FP][+][BLOCK]
+# TAG SPECIALS
+Tag Out | [TAG]
+Tag Attack | [Down][,][Towards][+][TAG]
+Tag Assist | [Down][,][Away][+][TAG]
+# X-RAY ATTACK
+  note: Uses three bars of super
+Ball Buster | [L2][+][BLOCK] | Counter Attack
+# FINISHING MOVES
+Heads Up! | [Towards][Towards][Away][Down][FK] | Touching; And The Winner Is; [Down][Towards][Down][Towards][BK]
+Stage Fatality | [Down][Away][Towards][BLOCK] | Varies
+Babality | [Towards][Away][Towards][BK] | Jump

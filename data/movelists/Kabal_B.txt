@@ -1,0 +1,49 @@
+# BASIC ATTACKS
+Front Punch | [FP]
+Back Punch | [BP]
+Front Kick | [FK]
+Back Kick | [BK]
+Uppercut | [Down][+][BP]
+Hook Swipe | [Away][+][FP]
+Strong Fist | [Away][+][BP]
+Step Kick | [Towards][+][FK]
+Big Knee | [Towards][+][BK]
+Sweep | [Away][+][BK]
+Throw (Away) | [THROW]
+Throw (Towards) | [Towards][+][THROW]
+# KOMBO ATTACKS
+Last Breath | [FP][,][FP][,][FP]
+Extermination | [FP][,][FP][,][Away][+][BK][,][FK]
+Mutilation | [Away][+][FP][,][BP][,][FP]
+Vanquish | [BP][,][FP][,][BP]
+Nomad's Fear | [Towards][+][FK][,][BP]
+Eviscerate | [Towards][+][BK][,][FP][+][BP]
+# FAST TAGS
+Up Next | [Away][+][FP][,][BP][,][FP][,][TAG]
+# TAG KOMBOS
+Your Turn | [FP][,][FP][,][Away][+][BK][,][TAG]
+Partners In Crime | [Away][+][FP][,][BP][,][TAG]
+Rebirth | [BP][,][FP][,][TAG]
+# SPECIAL ATTACKS
+Gas Blast | [Away][Away][FP] | Can be done in the air
+Nomad Dash | [Away][Towards][BK]
+Buzzsaw | [Away][Away][FK]
+Tornado Slam | [Down][Away][BP]
+# ENHANCED ATTACKS
+  note: Uses one bar of super
+Vapor Blast | [Away][Away][FP][+][BLOCK]
+Nomad Charge | [Away][Towards][BK][+][BLOCK]
+Saw Blades | [Away][Away][FK][+][BLOCK]
+Cyclone Slam | [Down][Away][BP][+][BLOCK]
+# TAG SPECIALS
+Tag Out | [TAG]
+Tag Attack | [Down][,][Towards][+][TAG]
+Tag Assist | [Down][,][Away][+][TAG]
+# X-RAY ATTACK
+  note: Uses three bars of super
+Kabal's Deep | [L2][+][BLOCK]
+# FINISHING MOVES
+Hook Up | [Away][Towards][Away][Towards][FP]
+It Takes Guts | [Down][Down][Away][Towards][BLOCK]
+Stage Fatality | [Down][Down][BK] | Varies
+Babality | [Towards][Down][Away][FK] | Jump

@@ -1,0 +1,54 @@
+# BASIC ATTACKS
+Front Punch | [FP]
+Back Punch | [BP]
+Front Kick | [FK]
+Back Kick | [BK]
+Swipe | [Away][+][FP]
+Uppercut | [Down][+][BP]
+Force Claws (Hold) | [Away][+][BP] | Can be canceled by a dash
+Big Leg | [Towards][+][BK]
+Sweep | [Away][+][BK]
+Throw (Away) | [THROW]
+Throw (Towards) | [Towards][+][THROW]
+# KOMBO ATTACKS
+Frosty | [FP][,][FP]
+Cold Feet | [FP][,][FK][,][Towards][+][BK]
+Arctic Blast | [FP][,][FK][,][Away][+][BK]
+Ice Pick | [Away][+][FP][,][BP][,][FP]
+Ice Cold | [Away][+][FP][,][BP][,][BK]
+Frost Bitten | [BP][,][FP][,][BP]
+Ices Up | [BP][,][FP][,][BK]
+Tundra Slice | [Towards][+][BK][,][FP][+][BP]
+Winter Blade | [BP][,][BP][,][BP]
+Cold Steel | [BP][,][BP][,][BK]
+Chill Out | [FK][,][Towards][+][BK]
+# FAST TAGS
+Absolute Zero | [BP][,][FP][,][TAG]
+# TAG KOMBOS
+Freezer Burn | [FP][,][FK][,][TAG]
+Arctic Assault | [Away][+][FP][,][BP][,][TAG]
+Ability To Freeze | [BP][,][BP][,][TAG]
+# SPECIAL ATTACKS
+Iceball | [Down][Towards][FK]
+Slide | [Away][Towards][BK]
+Ice Clone | [Down][Away][FP]
+Ice Puddle | [Down][Away][FK]
+# ENHANCED ATTACKS
+  note: Uses one bar of super
+Icebeam | [Down][Towards][FK][+][BLOCK]
+Power Slide | [Away][Towards][BK][+][BLOCK]
+Ice Statue | [Down][Away][FP][+][BLOCK]
+Ground Freeze | [Down][Away][FK][+][BLOCK]
+# TAG SPECIALS
+Tag Out | [TAG]
+Tag Attack | [Down][,][Towards][+][TAG]
+Tag Assist | [Down][,][Away][+][TAG]
+# X-RAY ATTACK
+  note: Uses three bars of super
+Deep Freeze | [L2][+][BLOCK] | Hold To charge
+# FINISHING MOVES
+Have An Ice Day | [Away][Towards][Down][Towards][BK]
+Spinal Smash | [Down][Away][Down][Towards][BP]
+Spine Rip | [Towards][Down][Towards][BP]
+Stage Fatality | [Towards][Down][Away][BP] | Varies
+Babality | [Down][Away][Down][BK] | Jump

@@ -1,0 +1,58 @@
+# BASIC ATTACKS
+Front Punch | [FP]
+Back Punch | [BP]
+Front Kick | [FK]
+Back Kick | [BK]
+Uppercut | [Down][+][BP]
+Elbow Poke | [Away][+][FP]
+Forearm Strike | [Away][+][BP]
+Elbow Blast | [Towards][+][BP]
+Shin Attack | [Towards][+][FK]
+Quick Knee | [Towards][+][BK]
+Sweep | [Away][+][BK]
+Throw (Away) | [THROW]
+Throw (Towards) | [Towards][+][THROW]
+# KOMBO ATTACKS
+Bad Omen | [FP][,][BP][,][FP]
+Soul Stain | [FP][,][BP][,][BP]
+Soul Torment | [FP][,][FK]
+Reserved Pain | [Away][+][FP][,][BP][,][FP][,][BK]
+Death Walker | [BP][,][BP][,][FP]
+Restored Youth | [BP][,][BP][,][Away][+][BK]
+Play Time | [Towards][+][FK][,][BK]
+Deadly Truth | [Towards][+][BK][,][FK][,][BK]
+# FAST TAGS
+Side By Side | [Away][+][FP][,][BP][,][FP][,][TAG]
+Ruthless | [BP][,][BP][,][FP][,][TAG]
+# TAG KOMBOS
+Soul Stealer | [FP][,][BP][,][TAG]
+Burning Evil | [Away][+][FP][,][BP][,][TAG]
+B-Trade | [BP][,][BP][,][TAG]
+Two Of A Kind | [Towards][+][BK][,][FK][,][TAG]
+# SPECIAL ATTACKS
+Fire Skull | [Away][Away][FP]
+Up Skull (Above) | [Down][Up][BP]
+Up Skull (Behind) | [Down][Towards][BP]
+Up Skull (In Front) | [Down][Away][BP]
+Ground Skull (Close) | [Down][Up][BK]
+Ground Skull (Medium) | [Down][Away][BK]
+Ground Skull (Far) | [Down][Towards][BK]
+Soul Steal | [Towards][Down][Away][FK]
+# ENHANCED ATTACKS
+  note: Uses one bar of super
+Triple Skulls | [Away][Away][FP][+][BLOCK]
+Skull Storm | [Down][Up][BP][+][BLOCK]
+Ground Eruption | [Down][Up][BK][+][BLOCK]
+Soul Capture | [Towards][Down][Away][FK][+][BLOCK]
+# TAG SPECIALS
+Tag Out | [TAG]
+Tag Attack | [Down][,][Towards][+][TAG]
+Tag Assist | [Down][,][Away][+][TAG]
+# X-RAY ATTACK
+  note: Uses three bars of super
+Your Soul Is Mine | [L2][+][BLOCK]
+# FINISHING MOVES
+Bang Bang! | [Away][Down][Towards][FK]
+Identity Theft | [Down][Down][Away][Down][BP] | Jump
+Stage Fatality | [Up][Up][Away][FP] | Varies
+Babality | [Down][Away][Down][FK]

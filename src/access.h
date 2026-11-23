@@ -1,0 +1,158 @@
+/* Shared declarations for MK9Access (screen reader mod for MK9 by Lauta). */
+#pragma once
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <stdint.h>
+#include "rex_mod.h"
+
+#define MOD_VERSION "1.0.0"
+
+extern wchar_t g_game_dir[MAX_PATH];   /* folder of mk9.exe, with trailing backslash */
+extern wchar_t g_mod_dir[MAX_PATH];    /* g_game_dir + "MK9Access\" */
+extern const RexModHost *g_host;       /* port plugin host (rex_mod.h); NULL when started without the plugin */
+
+void log_line(const char *fmt, ...);
+char *to_utf8(const wchar_t *w);       /* malloc'd; caller frees */
+wchar_t *from_utf8(const char *s);     /* malloc'd; caller frees */
+int game_has_focus(void);
+
+/* Game threads currently inside mod hooks; reload waits for zero. */
+extern volatile LONG g_inflight;
+#define CALL_ORIG(o, c, b) do { InterlockedIncrement(&g_inflight); (o)(c, b); InterlockedDecrement(&g_inflight); } while (0)
+
+/* speech.c */
+void speech_init(void);
+void speech_shutdown(void);
+void speak(const wchar_t *text, int interrupt);
+void speak_utf8(const char *text, int interrupt);
+void speakf(int interrupt, const char *fmt, ...);
+void speak_repeat(void);
+void speech_stop(void);
+
+/* guest.c: the Xbox 360 memory and the recompiled game code.
+ * Guest memory is mapped at 0x100000000 (the log says "virtual base"), big-endian.
+ * Recompiled functions: table at image base + image size, 8-byte host pointers
+ * indexed by (guest address - CODE_BASE) / 4 (the log's "Function table initialized"). */
+extern uintptr_t g_guest_base;
+#define CODE_BASE    0x82360000u
+#define CODE_END     0x83376864u
+#define FTABLE       0x83560000u
+
+typedef struct {
+    uint64_t r3, r0, r1, r2, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15,
+             r16, r17, r18, r19, r20, r21, r22, r23, r24, r25, r26, r27, r28, r29, r30, r31;
+} PPCContext;
+typedef void (*guest_fn)(PPCContext *ctx, uint8_t *base);
+
+static inline uint8_t *gptr(uint32_t a) { return (uint8_t *)(g_guest_base + a + (a >= 0xE0000000u ? 0x1000 : 0)); }
+int  guest_ok(uint32_t a, uint32_t len);
+uint32_t g32(uint32_t a);
+uint16_t g16(uint32_t a);
+uint8_t  g8(uint32_t a);
+float    gf(uint32_t a);
+void     w32(uint32_t a, uint32_t v);
+void    *guest_host_fn(uint32_t guest);
+uint32_t guest_fn_of_host(uintptr_t rip);
+int  guest_ready(void);
+int  guest_hook(uint32_t guest, void *detour, void **orig);
+void guest_hooks_apply(void);
+int  guest_hooks_bad(void);
+void tools_init(void);
+void tools_shutdown(void);
+void update_init(void);                /* update.c: port updates (download now, install on close) */
+void update_announce_start(void);
+void update_poll(void);
+void tools_poll(void);                 /* RE commands from MK9Access\cmd.txt */
+
+/* pad.c */
+void pad_init(void);
+void pad_shutdown(void);
+void pad_inject(const char *names, int ms);
+void pad_pin(uint32_t addr, uint32_t val, int ms);
+uint16_t pad_ui_take_edges(void);
+int pad_motion(int user, DWORD since, char *out, int cap);   /* recent directions L R U D + attack buttons 1-4 */
+extern volatile uint16_t g_pad_buttons;
+extern volatile LONG g_pad_moves;
+extern volatile uint8_t g_pad_lt, g_pad_rt;
+extern volatile int16_t g_pad_lx, g_pad_ly, g_pad_rx, g_pad_ry;
+
+/* imgui.c: text of the port's own screens */
+void im_init(void);
+void im_shutdown(void);
+void im_dump(void);
+void im_poll(void);
+int im_menu_on(void);
+extern const wchar_t k_name_hint[];
+extern volatile int g_loaded_said;     /* "MK9 Access loaded" has been said */
+int im_name_prompt_open(void);         /* the port's Online username window is showing */
+int im_read_screen(void);
+int im_practice_record_on(void);       /* Practice: the port's opponent-recording panel (F5/F6/F7 are the port's) */
+int im_practice_nothing_recorded(void);
+void im_frame_data_key(int shift);      /* F10: the Practice frame data panel */
+
+/* movelist.c */
+void ml_spoken(const char *in, char *out, size_t cap);
+int ml_load(const char *fighter);
+void ml_step(int dir);
+
+/* health.c */
+void selfcheck_log_versions(void);
+void selfcheck_fail(const char *what);
+int selfcheck_failed(void);
+void selfcheck_poll(void);
+
+/* audio.c: tones and continuous hums on a waveOut stream */
+enum { W_SINE, W_SQUARE, W_TRI, W_SAW, W_NOISE, W_WIND, W_REED, W_SOFT };
+void audio_init(void);
+void audio_shutdown(void);
+void audio_stat(void);
+void audio_rec(int seconds);             /* development: record the mix to MK9Access\audiorec.wav */
+void audio_rec_poll(void);
+void tone(float f0, float f1, float seconds, float gain, float pan, int wave);
+void tone_at(float delay, float f0, float f1, float seconds, float gain, float pan, int wave);
+void hum_set(int slot, float freq, float gain, float pan, int wave);
+void hum_trem(int slot, float depth);
+void hum_all_off(void);
+void clip_play(const wchar_t *path, float gain);   /* play a recorded WAV (e.g. a fatality description) over ducked cues */
+void clip_stop(void);
+int clip_playing(void);
+int sfx_load(const wchar_t *file);     /* MK9Access\sounds\<file>: id or -1 */
+void sfx_play(int id, float delay, float gain, float pan, float rate);
+extern volatile LONG g_speak_count;    /* every message queued for speech */
+extern volatile float g_master;
+
+/* fight.c: cues during a fight */
+void fight_poll(void);
+
+/* minigame.c: Test Your Might / Strike meter tones, Test Your Sight tracking */
+void mg_resolve(uint32_t holder, const char *path);
+void mg_invoke(uint32_t holder, const char *p, const char *arg);
+void mg_sight(int what);               /* 1 Begin prompt, 2 Begin pressed, 3 select phase, 4 ended */
+void mg_poll(void);
+void fight_key(int vk, int shift, int ctrl);
+
+/* menu.c: the game's own menus (Localize hook) */
+int krypt_key(int vk, int shift);      /* menu.c: F4 in the Krypt; 0 when not in the Krypt */
+void fatality_init(void);
+int fatality_try(const char *text);   /* a fatality name -> speak name + input; 1 if handled */
+void fatality_input_settext(uint32_t obj, const char *val);   /* tutorial input display -> detect the fatality performed */
+void fatality_poll(void);              /* live matches: Finish Him, fatality cinematic -> described fatality */
+int fatality_finish_him(void);         /* Finish Him on, fatality not started (keep the distance hum) */
+void menu_init(void);
+void menu_shutdown(void);
+void menu_poll(void);
+void menu_debug(int on);
+const char *loc_get(const char *section, const char *key);
+void text_tidy(const char *in, char *out, size_t cap);   /* game text -> speech (Title Case for ALL CAPS) */
+
+/* sysdialog.c: the runtime's system dialogs (XamShowMessageBoxUI), spoken and answerable */
+void sysdialog_init(void);
+void sysdialog_shutdown(void);
+void sysdialog_poll(void);
+int sysdialog_recent(void);            /* a system dialog is up, or was shown in the last 2 s */
+
+/* game.c */
+void game_init(void);
+void game_shutdown(void);
+void game_poll(void);
+void game_key(int vk, int shift, int ctrl);

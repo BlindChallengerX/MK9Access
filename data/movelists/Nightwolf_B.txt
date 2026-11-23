@@ -1,0 +1,59 @@
+# BASIC ATTACKS
+Front Punch | [FP]
+Back Punch | [BP]
+Front Kick | [FK]
+Back Kick | [BK]
+Uppercut | [Down][+][BP]
+Knife Stab | [Away][+][FP]
+Big Chop | [Away][+][BP]
+Neck Stab | [Towards][+][BP]
+Toe Stomp | [Towards][+][FK]
+Sweep | [Away][+][BK]
+Throw (Away) | [THROW]
+Throw (Towards) | [Towards][+][THROW]
+# KOMBO ATTACKS
+Blade And Edge | [FP][,][FP][,][BP]
+Axe Blast | [FP][,][BP][,][BP][,][FP]
+Dagger Stab | [Away][+][FP][,][FP][,][FP]
+Deadly Dance | [FP][,][FP][,][BK]
+New Earth | [BP][,][FK][,][BK]
+Tomahawk Smash | [Away][+][BP][,][BP][,][FP]
+Full Moon | [Towards][+][FK][,][FP][,][BP]
+Spirit Tracks | [Towards][+][FK][,][Away][+][BK]
+# FAST TAGS
+Waning Moon | [Towards][+][FK][,][FP][,][BP][,][TAG]
+Rising Hawk | [Down][Towards][FP][,][TAG]
+Diving Eagle | [Down][Towards][FP][+][BLOCK][,][TAG]
+# TAG KOMBOS
+Razor's Edge | [FP][,][FP][,][TAG]
+Falcon Swap | [FP][,][BP][,][BP][,][TAG]
+Deadly Talon | [BP][,][FK][,][TAG]
+Howling Wolf | [Away][+][BP][,][BP][,][TAG]
+Bull And Bear | [Towards][+][FK][,][FP][,][TAG]
+# SPECIAL ATTACKS
+Shoulder | [Towards][Towards][BK]
+Lightning | [Down][Away][FK]
+Arrow Shot | [Down][Away][FP]
+Reflect | [Down][Away][BP]
+Axe Swing | [Down][Towards][FP]
+Choke | [Down][Towards][BP]
+# ENHANCED ATTACKS
+  note: Uses one bar of super
+Power Charge | [Towards][Towards][BK][+][BLOCK]
+Thunder Storm | [Down][Away][FK][+][BLOCK]
+Multi-Arrow | [Down][Away][FP][+][BLOCK]
+Absorb | [Down][Away][BP][+][BLOCK]
+Tomahawk Bash | [Down][Towards][FP][+][BLOCK]
+Strangle | [Down][Towards][BP][+][BLOCK]
+# TAG SPECIALS
+Tag Out | [TAG]
+Tag Attack | [Down][,][Towards][+][TAG]
+Tag Assist | [Down][,][Away][+][TAG]
+# X-RAY ATTACK
+  note: Uses three bars of super
+Ancestors Call | [L2][+][BLOCK]
+# FINISHING MOVES
+Little Off The Top | [Down][Towards][Down][Away][BK] | Jump
+Ascension | [Down][Down][Towards][Away][FP]
+Stage Fatality | [Down][Down][Down][BLOCK] | Varies
+Babality | [Towards][Away][Towards][Away][FP]

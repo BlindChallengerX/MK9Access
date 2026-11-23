@@ -1,0 +1,59 @@
+# BASIC ATTACKS
+Front Punch | [FP]
+Back Punch | [BP]
+Front Kick | [FK]
+Back Kick | [BK]
+Uppercut | [Down][+][BP]
+Hook Swipe | [Away][+][FP]
+Big Leg | [Towards][+][FK]
+Shin Kick | [Towards][+][BK]
+Sweep | [Away][+][BK]
+Throw (Away) | [THROW]
+Throw (Towards) | [Towards][+][THROW]
+Triple Slam | [FP][+][BK] | During throw
+Quad Slam | [BP][+][FK] | During Triple Slam
+# KOMBO ATTACKS
+Major Force | [FP][,][BP][,][FK]
+Boot Kamp | [Away][+][FP][,][BP][,][BK]
+Active Duty | [BP][,][FP]
+Field Grade | [BP][,][BP]
+Chain Of Command | [BP][,][Towards][+][BP][,][Away][+][FP]
+Advance Force | [Towards][+][BK][,][FP][,][FK]
+Code Of Conduct | [Towards][+][BK][,][FP][,][BK]
+# FAST TAGS
+Majority Rules | [Down][Away][FK][,][TAG]
+Outranked | [Down][Away][FK][+][BLOCK][,][TAG]
+# TAG KOMBOS
+Major Muscle | [Away][+][FP][,][BP][,][TAG]
+Alloy-Over You | [BP][,][Towards][+][BP][,][TAG]
+Briggs Da Noise | [BP][,][Towards][+][BP][,][Away][+][FP][,][TAG]
+# SPECIAL ATTACKS
+Energy Wave | [Down][Away][BP]
+Dash Punch | [Down][Towards][BP]
+Ground Pound (Close) | [Down][Away][FK]
+Ground Pound (Medium) | [Down][Towards][FK]
+Ground Pound (Far) | [Down][Away][Towards][FK]
+Gotcha Grab | [Down][Towards][FP]
+Air Gotcha Grab | [Down][Away][FP]
+Overhead Smash | [Down][Up][BK]
+Back Breaker |  | While in the air
+# ENHANCED ATTACKS
+  note: Uses one bar of super
+Assault Wave | [Down][Away][BP][+][BLOCK]
+Dash Fist | [Down][Towards][BP][+][BLOCK]
+Ground Quake | [Down][Away][FK][+][BLOCK]
+Gotcha Beatdown | [Down][Towards][FP][+][BLOCK]
+Air Gotcha Blast | [Down][Away][FP][+][BLOCK]
+Elite Smash | [Down][Up][BK][+][BLOCK]
+# TAG SPECIALS
+Tag Out | [TAG]
+Tag Attack | [Down][,][Towards][+][TAG]
+Tag Assist | [Down][,][Away][+][TAG]
+# X-RAY ATTACK
+  note: Uses three bars of super
+Briggs Bash | [L2][+][BLOCK]
+# FINISHING MOVES
+Smash And Grab | [Away][Towards][Towards][Away][BP] | Touching
+Three Points! | [Towards][Towards][Away][Down][FK]
+Stage Fatality | [Down][Towards][Down][FP] | Varies
+Babality | [Down][Down][Down][FK] | Jump

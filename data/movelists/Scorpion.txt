@@ -1,0 +1,54 @@
+# BASIC ATTACKS
+Front Punch | [FP]
+Back Punch | [BP]
+Front Kick | [FK]
+Back Kick | [BK]
+Uppercut | [Down][+][BP]
+Doom Slice | [Towards][+][BP]
+Blade Overhead | [Away][+][BP]
+Heel Kicks | [Towards][+][FK]
+Shin Blast | [Towards][+][BK]
+Sweep | [Away][+][BK]
+Throw (Away) | [THROW]
+Throw (Towards) | [Towards][+][THROW]
+# KOMBO ATTACKS
+Torment | [FP][,][FP][,][FP]
+Damnation | [FP][,][FP][,][BK]
+Brimstone | [BP][,][FP][,][BP]
+Gravedigger | [BP][,][FP][+][BP]
+Doom Blade | [Towards][+][BP][,][FP][,][BK]
+Dead End | [FK][,][FK][,][BK]
+Grievance | [Towards][+][BK][,][FK]
+# FAST TAGS
+Underworld | [BP][,][FP][+][BP][,][TAG]
+Soulless | [Away][+][BP][,][TAG]
+# TAG KOMBOS
+Eternal Vengeance | [FP][,][FP][,][TAG]
+Punishment | [BP][,][FP][,][TAG]
+Affliction | [Towards][+][BP][,][FP][,][TAG]
+Revenge | [FK][,][FK][,][TAG]
+# SPECIAL ATTACKS
+Spear | [Away][Away][FP]
+Demon Fire | [Down][Away][BP]
+Teleport | [Down][Away][FK] | Can be done in the air
+Takedown | [Down][Away][BK]
+Air Throw |  | While in the air
+# ENHANCED ATTACKS
+  note: Uses one bar of super
+Flame Spear | [Away][Away][FP][+][BLOCK]
+Hell Fire | [Down][Away][BP][+][BLOCK]
+Flameport | [Down][Away][FK][+][BLOCK]
+Takeout | [Down][Away][BK][+][BLOCK]
+# TAG SPECIALS
+Tag Out | [TAG]
+Tag Attack | [Down][,][Towards][+][TAG]
+Tag Assist | [Down][,][Away][+][TAG]
+# X-RAY ATTACK
+  note: Uses three bars of super
+Scorpion Sting | [L2][+][BLOCK]
+# FINISHING MOVES
+Split Decision | [Towards][Down][Towards][BP] | Touching
+Nether-Gate | [Away][Towards][Away][FK]
+Toasty! | [Down][Up][Up][BP] | Jump
+Stage Fatality | [Towards][Up][Up][FP] | Varies
+Babality | [Down][Away][Towards][Down][BP]

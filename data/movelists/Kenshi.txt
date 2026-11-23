@@ -1,0 +1,59 @@
+# BASIC ATTACKS
+Front Punch | [FP]
+Back Punch | [BP]
+Front Kick | [FK]
+Back Kick | [BK]
+Uppercut | [Down][+][BP]
+Blade Stab | [Away][+][BP]
+Blade Swipe | [Towards][+][BP]
+Shin Kick | [Towards][+][FK]
+Snap Kick | [Towards][+][BK]
+Windmill | [Up][+][BK]
+Sweep | [Away][+][BK]
+Throw (Away) | [THROW]
+Throw (Towards) | [Towards][+][THROW]
+Telekinetic Rush | [FP][,][FP][,][FP]
+Blind Justice | [FP][,][FP][,][BP]
+Off Balance | [FP][,][FP][,][BK]
+Heightened Senses | [BP][,][FP][,][Away][+][BP]
+Stolen Soul | [BP][,][FP][,][Towards][+][BK]
+Absentminded | [Towards][+][BP][,][BP][,][Away][+][FP]
+Shortsighted | [Towards][+][BP][,][BP][,][Away][+][BP]
+Brainpower | [Towards][+][FK][,][BP]
+# FAST TAGS
+Concentration | [BP][,][FP][,][Away][+][BP][,][TAG]
+Gray Matter | [Towards][+][BP][,][BP][,][Away][+][FP][,][TAG]
+Blind Fury | [Towards][+][FK][,][BP][,][TAG]
+# TAG KOMBOS
+Lost Way | [FP][,][FP][,][TAG]
+Blind Swordsman | [BP][,][FP][,][TAG]
+Farsighted | [Towards][+][BP][,][BP][,][TAG]
+# SPECIAL ATTACKS
+Spirit Charge | [Away][Towards][BP]
+Rising Karma | [Down][Away][FP]
+Telekinetic Slash (Close) | [Down][Away][BK]
+Telekinetic Slash (Medium) | [Down][Towards][BK]
+Telekinetic Slash (Far) | [Down][Away][Towards][BK]
+Tele-Flurry | [Away][Towards][FK]
+Blade Reflect | [Down][Away][BP]
+# ENHANCED ATTACKS
+  note: Uses one bar of super
+Spirit Vengeance | [Away][Towards][BP][+][BLOCK]
+Karma Eruption | [Down][Away][FP][+][BLOCK]
+Telekinetic Blade (Close) | [Down][Away][BK][+][BLOCK]
+Telekinetic Blade (Medium) | [Down][Towards][BK][+][BLOCK]
+Telekinetic Blade (Far) | [Down][Away][Towards][BK][+][BLOCK]
+Tele-Beatdown | [Away][Towards][FK][+][BLOCK]
+Blade Absorb | [Down][Away][BP][+][BLOCK]
+# TAG SPECIALS
+Tag Out | [TAG]
+Tag Attack | [Down][,][Towards][+][TAG]
+Tag Assist | [Down][,][Away][+][TAG]
+# X-RAY ATTACK
+  note: Uses three bars of super
+Soul Blade | [L2][+][BLOCK]
+# FINISHING MOVES
+Scatterbrained | [Up][Down][Up][Down][BLOCK]
+Split Ends | [Away][Towards][Down][Towards][BP] | Jump
+Stage Fatality | [Down][Towards][Down][FK] | Varies
+Babality | [Down][Away][Down][FP]
