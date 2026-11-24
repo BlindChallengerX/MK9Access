@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include "rex_mod.h"
 
-#define MOD_VERSION "1.0.7"
+#define MOD_VERSION "1.0.8"
 
 extern wchar_t g_game_dir[MAX_PATH];   /* folder of mk9.exe, with trailing backslash */
 extern wchar_t g_mod_dir[MAX_PATH];    /* g_game_dir + "MK9Access\" */
@@ -136,12 +136,15 @@ extern volatile float g_master;
 
 /* fight.c: cues during a fight */
 void fight_poll(void);
+void fight_hold(void);                   /* a challenge result: no fight cues behind its Continue menu */
+void fight_resume(void);                 /* something loads: cues allowed again */
 
 /* minigame.c: Test Your Might / Strike meter tones, Test Your Sight tracking */
 void mg_resolve(uint32_t holder, const char *path);
 void mg_invoke(uint32_t holder, const char *p, const char *arg);
 void mg_sight(int what);               /* 1 Begin prompt, 2 Begin pressed, 3 select phase, 4 ended */
 void mg_poll(void);
+void mg_reset(void);                    /* a menu came up: any minigame cue stops */
 void fight_key(int vk, int shift, int ctrl);
 /* the round winner as a player: an online username, or "Player 2" in local 2-player Versus; 0 = say the character */
 int fight_winner_name(char *out, size_t cap);

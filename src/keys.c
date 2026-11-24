@@ -307,6 +307,18 @@ const char *lang_or(void) {
 }
 const wchar_t *lang_file_ext(void) { int i = lang_index(g_lang); return k_lang[i < 0 ? 0 : i].ext; }
 
+/* A port setting as text (rex::cvar::GetFlagByName), "" when unknown. */
+static void flag_str(const char *name, char *v, size_t cap) {
+    v[0] = 0;
+    if (!p_getflag) return;
+    _Alignas(16) unsigned char ret[32] = { 0 };
+    SV n = { name, strlen(name) };
+    p_getflag(ret, &n);
+    size_t len = *(size_t *)(ret + 16), c = *(size_t *)(ret + 24);
+    const char *d = c > 15 ? *(const char **)ret : (const char *)ret;   /* MSVC std::string: short ones inline */
+    if (d && len < cap) { memcpy(v, d, len); v[len] = 0; }
+}
+
 /* user_language as the port has it: rex::cvar::GetFlagByName, else mk9.toml, else English */
 static int read_lang(void) {
     char v[32] = "";
@@ -361,4 +373,6 @@ void keys_init(void) {
     g_lang = read_lang();
     log_line("keys: %s layout, live switch %s; game language %d", keys_pc_on() ? "PC" : "port",
              p_setflag ? "available" : "not available", g_lang);
+    char udr[MAX_PATH]; flag_str("user_data_root", udr, sizeof udr);
+    log_line("saves: user_data_root = %s", udr[0] ? udr : "(none: Documents)");
 }

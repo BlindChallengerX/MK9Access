@@ -128,24 +128,36 @@ static int toml_user_data_root(const wchar_t *game_dir, wchar_t *out, int cap) {
     return 0;
 }
 
-/* Started without --user_data_root (not through the launch .cmd): start mk9.exe
- * again with the toml's save folder and the same other arguments, then end this
- * copy. Runs before the game's first instruction, so nothing has been saved yet.
- * The environment variable stops a loop if the flag ever fails to arrive. */
+/* Saves in the folder mk9.toml names (Controlled Folder Access crashes the port in Documents), whichever way the game
+ * starts. The port reads user_data_root from the command line or the REX_USER_DATA_ROOT environment variable before
+ * any plugin loads (cvar ApplyEnvironment; the command line outranks it), never from mk9.toml in time.
+ * - Every copy puts the toml's folder in REX_USER_DATA_ROOT, so the copies the port starts itself inherit it: an
+ *   online room's session passes its own --user_data_root (which wins), and the way back to the lobby (session.cpp
+ *   Back) passes none and gets the saves folder from the variable. Before 1.0.8 that restart came up without the
+ *   folder, the mod restarted it a second time, and the window of that second copy could open without the keyboard
+ *   focus (forum report 2026-11-24: "the app would unfocus and become unresponsive").
+ * - Started with neither (a bare mk9.exe, not the launch .cmd): start mk9.exe again with the folder and the same
+ *   arguments, then end this copy (before the game's first instruction, nothing saved yet). That copy may take the
+ *   foreground. MK9ACCESS_RELAUNCHED stops a loop and is cleared again in the new copy, so its own children don't
+ *   inherit it. */
 static void relaunch_for_saves(void) {
     const wchar_t *cmd = GetCommandLineW();
-    if (wcsstr(cmd, L"--user_data_root")) return;
-    if (GetEnvironmentVariableW(L"MK9ACCESS_RELAUNCHED", NULL, 0)) {
-        plog("started without --user_data_root after a relaunch; saves may go to Documents");
-        return;
-    }
-    wchar_t exe[MAX_PATH], dir[MAX_PATH], root[MAX_PATH];
+    int relaunched = GetEnvironmentVariableW(L"MK9ACCESS_RELAUNCHED", NULL, 0) != 0;
+    SetEnvironmentVariableW(L"MK9ACCESS_RELAUNCHED", NULL);
+    wchar_t exe[MAX_PATH], dir[MAX_PATH], root[MAX_PATH], env[MAX_PATH];
     GetModuleFileNameW(NULL, exe, MAX_PATH);
     wcscpy(dir, exe);
     wchar_t *slash = wcsrchr(dir, L'\\');
     if (!slash) return;
     slash[1] = 0;
     if (!toml_user_data_root(dir, root, MAX_PATH)) return;   /* player chose Documents */
+    int inherited = GetEnvironmentVariableW(L"REX_USER_DATA_ROOT", env, MAX_PATH) > 0;
+    SetEnvironmentVariableW(L"REX_USER_DATA_ROOT", root);    /* for the copies the port starts */
+    if (wcsstr(cmd, L"--user_data_root") || inherited) return;
+    if (relaunched) {
+        plog("started without --user_data_root after a relaunch; saves may go to Documents");
+        return;
+    }
 
     /* The original arguments without argv[0]. */
     const wchar_t *args = cmd;
@@ -156,6 +168,7 @@ static void relaunch_for_saves(void) {
     static wchar_t line[32768];
     swprintf(line, 32768, L"\"%ls\" %ls%ls--user_data_root=\"%ls\"", exe, args, *args ? L" " : L"", root);
     SetEnvironmentVariableW(L"MK9ACCESS_RELAUNCHED", L"1");
+    AllowSetForegroundWindow(ASFW_ANY);                      /* the new copy's window may come to the front */
     STARTUPINFOW si; PROCESS_INFORMATION pi;
     memset(&si, 0, sizeof si); si.cb = sizeof si;
     if (!CreateProcessW(exe, line, NULL, NULL, FALSE, 0, NULL, dir, &si, &pi)) {

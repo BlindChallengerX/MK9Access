@@ -24,6 +24,7 @@ GA=$(cd "$G" && pwd); [ -d data ] && (cd data && for x in *; do [ "$x" = story ]
 # the game folder, English, lightest graphics on a first start), then the game starts with --user_data_root
 # (the command line wins; the toml is read too late for that one).
 cp dist/setup.ps1 "$G/MK9Access/setup.ps1"
+cp dist/install.ps1 "$G/MK9Access/install.ps1"
 cp dist/launch.cmd "$G/MK9 Access launch.cmd"
 # The port's own update banner only works with a mouse and its installer fails here: turn it off.
 if [ -f "$G/mk9.toml" ]; then

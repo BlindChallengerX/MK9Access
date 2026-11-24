@@ -1330,10 +1330,47 @@ static int btncfg_event(FocusEv *e) {
     return 0;
 }
 
+/* Pause menu > Controller Preset (forum report 2026-11-24: not read). Select opens a number selector beside the item
+ * (mc_option_N.SubToggle.PresetSelector, value by SetVariable optionText.var_valueTxt "1".."n"); its arrows build on
+ * when it opens and off when it closes (Select keeps the value, Back puts the old one back first). A new value waits
+ * 80 ms so the open/close announcement can take its place. */
+static char g_preset_val[32];
+static DWORD g_preset_t;
+static int g_preset_open, g_preset_pending;
+static int preset_event(FocusEv *e) {
+    if (e->stop == 5 && ends_with(e->target, ".SubToggle.PresetSelector")) {
+        snprintf(g_preset_val, sizeof g_preset_val, "%s", e->arg);
+        g_preset_pending = g_preset_open; g_preset_t = GetTickCount();
+        return 1;
+    }
+    if (ends_with(e->target, "PresetSelector.arrowLeft")) {
+        char m[200];
+        if (!_stricmp(e->arg, "BuildOn") && !g_preset_open) {
+            g_preset_open = 1;
+            snprintf(m, sizeof m, "Controller preset %s. Left and Right change it, Select keeps it, Back cancels.", g_preset_val);
+            say(m, NULL);
+        } else if (!_stricmp(e->arg, "BuildOff") && g_preset_open) {
+            g_preset_open = 0;
+            snprintf(m, sizeof m, "Controller preset %s", g_preset_val);
+            say(m, NULL);
+        }
+        g_preset_pending = 0;
+        return 1;
+    }
+    return ends_with(e->target, "PresetSelector.arrowRight") || ends_with(e->target, "PresetSelector");
+}
+static void preset_poll(void) {
+    if (!g_preset_pending || GetTickCount() - g_preset_t < 80) return;
+    g_preset_pending = 0;
+    char m[48]; snprintf(m, sizeof m, "Preset %s", g_preset_val);
+    say(m, NULL);
+}
+
 static void on_focus_event(FocusEv *e) {
     if (g_debug) log_line("FOCUS %08x %s %s%s", e->holder, e->target, e->arg, e->stop ? " (stop)" : "");
     size_t tl0 = strlen(e->target);
     if (e->stop == 2) { ml_highlight(atoi(e->arg), e->t); return; }   /* said once the move's events are in */
+    if (preset_event(e)) return;
     if (e->stop == 5) {                       /* an option row's new value (Options > Gameplay), after Left/Right */
         /* not the value set while the screen opens: the row's own announcement has it */
         if (e->holder == g_focus_h && !strcmp(e->target, g_focus_target) && GetTickCount() - g_input_t < 1000 &&
@@ -1345,7 +1382,7 @@ static void on_focus_event(FocusEv *e) {
     if (slot_event(e)) return;
     /* challenge / minigame result (Challenge Tower, Test Your Might, Sight, Strike) */
     if (!strcmp(e->target, "practiceHUD") && (!_stricmp(e->arg, "Success") || !_stricmp(e->arg, "Failure"))) {
-        say(e->arg, NULL); mg_sight(4); return;
+        say(e->arg, NULL); mg_sight(4); fight_hold(); return;
     }
     if (!strcmp(e->target, "SightNavGrp")) {          /* Test Your Sight: Begin pressed / the pick starts */
         if (!_stricmp(e->arg, "BuildOff")) mg_sight(2);
@@ -1398,7 +1435,7 @@ static void on_focus_event(FocusEv *e) {
         }
     }
     if (e->stop == 3) {                                          /* card art (Challenge Tower) */
-        if (strstr(e->target, "challengeInfo") || !strncmp(e->target, "playerModule", 12)) { g_tower_evt_t = GetTickCount(); g_tower_session = 1; tower_image(e); }
+        if (strstr(e->target, "challengeInfo") || !strncmp(e->target, "playerModule", 12)) { g_tower_evt_t = GetTickCount(); g_tower_session = 1; mg_reset(); tower_image(e); }
         return;
     }
     if (e->stop) {
@@ -1567,6 +1604,8 @@ static void on_focus_event(FocusEv *e) {
 }
 
 static void on_group(LocCall *g, int n) {
+    /* a fight or challenge loading: the cues may come back (fight.c holds them after a challenge result) */
+    for (int i = 0; i < n; i++) if (!_stricmp(g[i].key, "LOADING")) { fight_resume(); break; }
     DWORD now = GetTickCount();
     uint32_t first_label = 0, focus_label = 0;
     int nlabels = 0, focus = -1, picker = 0;
@@ -1623,7 +1662,7 @@ static void on_group(LocCall *g, int n) {
      * purchase ([Krypt] SHORT<n>), the action at a koffin (Claim Prize, Enter), the welcome. */
     for (int i = 0; i < n; i++) if (!_stricmp(g[i].sec, "MainMenu")) { g_krypt_active_t = 0; g_krypt_locked = 0; break; }
     /* the main menu list itself (not [MainMenu] LOADING, which every challenge load uses) */
-    for (int i = 0; i < n; i++) if (!_stricmp(g[i].sec, "MainMenu") && !_stricmp(g[i].key, "ChallengeTower")) { g_tower_session = 0; break; }
+    for (int i = 0; i < n; i++) if (!_stricmp(g[i].sec, "MainMenu") && !_stricmp(g[i].key, "ChallengeTower")) { g_tower_session = 0; mg_reset(); break; }
     {   /* main menu header (Up from the first item): the 1 Player / 2 Players switch, Left/Right change it.
          * Focus = a lone [MainMenu] NumPLayersToggleDesc; a switch = NumPlayersN + the rebuilt menu. */
         static char players[24] = "1 player";
@@ -1902,6 +1941,7 @@ void menu_poll(void) {
         if (!have) break;
         on_focus_event(&e);
     }
+    preset_poll();
     ml_say_pending();
     if (g_tower_pfx[0] && GetTickCount() - g_tower_t >= 500) { tower_say_card(); g_tower_pfx[0] = 0; }
     if (g_krypt_ping_t && (LONG)(GetTickCount() - g_krypt_ping_t) >= 0) {

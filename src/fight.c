@@ -160,6 +160,13 @@ static void hp_tones(int p, float before, float after, float pan) {
     }
 }
 
+/* A Challenge Tower result (Success / Failure): the game stays in the fight state with both fighters behind the
+ * "Continue? Retry" menu, so the hum played under that menu (forum report 2026-11-24). Held until something loads
+ * (Retry, Return To Tower: [MainMenu] LOADING), the fight state ends, or both fighters are back at full health. */
+static volatile int s_hold;
+void fight_hold(void) { s_hold = 1; log_line("fight: cues held (challenge result)"); }
+void fight_resume(void) { if (s_hold) log_line("fight: cues resumed"); s_hold = 0; }
+
 void fight_poll(void) {
     Fighter me, op;
     /* the hum carries on through Finish Him (state 11) until the fatality starts: range matters there */
@@ -171,6 +178,13 @@ void fight_poll(void) {
     if (!inplay) {
         if (s_inplay) { hum_set(0, 110, 0, 0, W_SOFT); hum_trem(0, 0); s_hp[0] = s_hp[1] = -1; log_line("fight: cues off"); }
         s_inplay = 0;
+        s_hold = 0;
+        return;
+    }
+    if (s_hold && me.hp >= 0.999f && op.hp >= 0.999f) fight_resume();
+    if (s_hold) {
+        if (s_inplay) { hum_set(0, 110, 0, 0, W_SOFT); hum_trem(0, 0); }
+        s_hp[0] = me.hp; s_hp[1] = op.hp;
         return;
     }
     if (!s_inplay) log_line("fight: cues on");

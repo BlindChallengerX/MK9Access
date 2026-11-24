@@ -14,6 +14,7 @@ files = [
     ('out/MK9Access/MK9Access.dll', 'MK9Access/MK9Access.dll'),
     ('out/MK9Access/prism.dll', 'MK9Access/prism.dll'),
     ('dist/setup.ps1', 'MK9Access/setup.ps1'),
+    ('dist/install.ps1', 'MK9Access/install.ps1'),
     ('dist/mk9update.ps1', 'MK9Access/mk9update.ps1'),
     ('data/fatalities.tsv', 'MK9Access/fatalities.tsv'),
     ('third_party/prism/LICENSE', 'licenses/Prism-MPL-2.0.txt'),

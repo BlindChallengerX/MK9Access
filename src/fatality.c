@@ -302,7 +302,10 @@ void fatality_poll(void) {
     DWORD now = GetTickCount();
     uint32_t a0 = pl_actor(0), a1 = pl_actor(1);
     float x0 = a0 ? gf(a0 + A_X) : 0, x1 = a1 ? gf(a1 + A_X) : 0;
-    if (s == 8) { g_finish = 0; g_cine = 0; g_snap_n = 0; }
+    if (s == 8) {
+        g_finish = 0; g_cine = 0; g_snap_n = 0;
+        if (g_prev_state != 8) g_cur_clip[0] = 0;      /* a new fight: a Fatality Tutorial name from before is stale */
+    }
     else if (s == 11 && g_prev_state == 8) {
         g_finish = 1; g_cine = 0; g_snap_n = 0;
         log_line("fatality: finish him");
@@ -311,8 +314,10 @@ void fatality_poll(void) {
     if (seq != g_cb_seen) {
         g_cb_seen = seq;
         char cb[64]; memcpy(cb, g_cb_name, sizeof cb); cb[63] = 0;
-        /* the tutorial plays its own clip when the input display completes */
-        if (s == GS_FATALITY && now - g_tut_t > 30000 && now - g_play_t > 3000) named_fatality(cb);
+        /* The Fatality Tutorial plays its clip when its input display completes; the game's callback then names the
+         * same fatality, so skip it after a clip of the last 8 s. Not keyed on the input display itself: the Challenge
+         * Tower's fatality challenges show one too and were left silent (forum report 2026-11-24). */
+        if (s == GS_FATALITY && now - g_play_t > 8000) named_fatality(cb);
         else log_line("fatality callback %s (state %d, not named)", cb, s);
     }
     if ((s == 8 || (s == 11 && g_finish && !g_cine)) && a0 && a1) {
@@ -323,7 +328,7 @@ void fatality_poll(void) {
             g_cine = 1;
             log_line("fatality: cinematic started (x %.2f / %.2f)", x0, x1);
             /* fallback when the game's callback name was not seen */
-            if (now - g_tut_t > 30000 && now - g_play_t > 3000 && now - g_named_t > 5000) match_fatality();
+            if (now - g_tut_t > 30000 && now - g_play_t > 8000 && now - g_named_t > 5000) match_fatality();
         }
     }
     if (g_pend_clip[0] && (LONG)(now - g_pend_t) >= 0) {
@@ -384,9 +389,11 @@ void fatality_input_settext(uint32_t obj, const char *val) {
     for (int i = 0; i < g_in_n; i++) {           /* another display already holds this full input */
         if (i == slot || g_in[i].obj == obj) continue;
         if (strcmp(g_in[i].val, val)) continue;
-        if (GetTickCount() - g_play_t < 3000) return;   /* already fired for this fatality */
-        g_play_t = GetTickCount();
+        if (GetTickCount() - g_play_t < 8000) return;   /* already fired for this fatality (display or callback) */
+        /* only a clip played counts as described: the Challenge Tower's display completes too, with no name
+         * looked up before it (no clip), and the game's callback must still name it then */
         if (g_cur_clip[0]) {
+            g_play_t = GetTickCount();
             wchar_t cp[MAX_PATH];
             swprintf(cp, MAX_PATH, L"%lsfatalities\\%hs", g_mod_dir, g_cur_clip);
             clip_play(cp, 1.0f);

@@ -32,6 +32,7 @@ static render_fn o_render;
 static ctx_fn p_ctx;
 static void *t_addtext, *t_addtext_rt, *t_itemadd, *t_render;
 static uint32_t g_off_nav = 0x1fbc;
+static uint32_t g_off_active = 0x14e4;    /* ActiveId: the item being used (a text box being typed in) */
 static uint32_t g_off_io = 0x28;        /* ImGuiContext.IO; io.ConfigFlags is its first field */
 static int g_ready;
 
@@ -107,6 +108,11 @@ static void read_offsets(HMODULE rt) {
     if (f)
         for (int i = 0; i < 24; i++)
             if (f[i] == 0x8B && f[i + 1] == 0x88) { memcpy(&g_off_nav, f + i + 2, 4); log_line("imgui: NavId at +%x", g_off_nav); break; }
+    /* IsItemActive: mov rax,[rip+G]; mov ecx,[rax+ActiveId] */
+    f = (const uint8_t *)GetProcAddress(rt, "?IsItemActive@ImGui@@YA_NXZ");
+    if (f)
+        for (int i = 0; i < 24; i++)
+            if (f[i] == 0x8B && f[i + 1] == 0x88) { memcpy(&g_off_active, f + i + 2, 4); log_line("imgui: ActiveId at +%x", g_off_active); break; }
     /* GetIO: mov rax,[rip+G]; add rax,imm8 (48 83 C0 xx) or imm32 (48 05 xxxxxxxx) */
     f = (const uint8_t *)GetProcAddress(rt, "?GetIO@ImGui@@YAAEAUImGuiIO@@XZ");
     if (f)
@@ -247,12 +253,43 @@ static uint32_t nav_id(void) {
     uint8_t *c = p_ctx ? (uint8_t *)p_ctx() : NULL;
     return c ? *(uint32_t *)(c + g_off_nav) : 0;
 }
+static uint32_t active_id(void) {
+    uint8_t *c = p_ctx ? (uint8_t *)p_ctx() : NULL;
+    return c ? *(uint32_t *)(c + g_off_active) : 0;
+}
 
 /* The port only turns on ImGui's gamepad navigation: F1/F2 then answer the controller and the mouse, and the keyboard
  * reaches nothing but a text box that already has focus (the username could not be typed without a mouse). Keyboard
  * navigation (arrows move, Enter or Space choose, Escape backs out, Tab steps through) is ImGui's own; while a port
  * window is open the port keeps every input device from the game (mk9_overlay_input GameMayRead), so the keys do not
  * also move the game's menu behind it. Set again every poll: the port rebuilds the flags it owns. */
+int im_menu_on(void);
+static uint32_t nav_id(void);
+
+/* Escape at the top of a port window (and some window changes) leave ImGui with no focused item: Tab then does
+ * nothing at all, only an arrow key brings the focus back. To a player that is a window gone dead (2026-11-24).
+ * So a Tab with nothing focused in an open port window sends one Down arrow, which focuses the first item. */
+static void tab_revive(void) {
+    static int was;
+    HWND fg = GetForegroundWindow();
+    DWORD pid = 0;
+    if (fg) GetWindowThreadProcessId(fg, &pid);
+    int down = pid == GetCurrentProcessId() && (GetAsyncKeyState(VK_TAB) & 0x8000);
+    if (down && !was && im_menu_on() && !nav_id()) {
+        INPUT in[2];
+        memset(in, 0, sizeof in);
+        in[0].type = in[1].type = INPUT_KEYBOARD;
+        in[0].ki.wVk = in[1].ki.wVk = VK_DOWN;
+        in[0].ki.dwFlags = in[1].ki.dwFlags = KEYEVENTF_EXTENDEDKEY;
+        in[1].ki.dwFlags |= KEYEVENTF_KEYUP;
+        SendInput(1, &in[0], sizeof(INPUT));
+        Sleep(40);
+        SendInput(1, &in[1], sizeof(INPUT));
+        log_line("imgui: Tab with nothing focused: Down sent");
+    }
+    was = down;
+}
+
 static void keyboard_nav(void) {
     uint8_t *c = p_ctx ? (uint8_t *)p_ctx() : NULL;
     if (!c) return;
@@ -261,6 +298,7 @@ static void keyboard_nav(void) {
         InterlockedOr((volatile LONG *)flags, 1);   /* ImGuiConfigFlags_NavEnableKeyboard */
         log_line("imgui: keyboard navigation on");
     }
+    tab_revive();
 }
 
 static ImT g_view[IMT_MAX];
@@ -329,7 +367,10 @@ static int join_item(uint32_t id, char *out, size_t cap) {
         int wide = box->x1 - box->x0 > 2.5f * (box->y1 - box->y0);
         if (out[0]) strncat(out, out[strlen(out) - 1] == ':' ? " " : ", ", cap - strlen(out) - 1);
         strncat(out, inside ? "list. Enter goes into it, Escape comes back out." :
-                     wide ? "text box. Enter to type in it, Enter again when done." : "picture button", cap - strlen(out) - 1);
+                     /* Tab into a text box starts typing in it at once (ImGui); arrows only focus it. Before 1.0.8
+                      * the hint always said "Enter to type": after Tab that Enter closed the box again (2026-11-24). */
+                     !wide ? "picture button" : active_id() == id ? "text box, typing. Type, then press Enter." :
+                     "text box. Enter to type in it, Enter again when done.", cap - strlen(out) - 1);
     }
     return own0 >= 0;
 }
@@ -574,7 +615,7 @@ static void badge_poll(void) {
         if (strcmp(g_badge[i].s, "vs") || badge_ms_line(g_badge[i + 1].s)) continue;
         if (strcmp(g_badge_rival, g_badge[i + 1].s)) {
             snprintf(g_badge_rival, sizeof g_badge_rival, "%s", g_badge[i + 1].s);
-            speakf(0, "Connected to %s. F5 reads the connection.", g_badge_rival);
+            speakf(0, "Connected to %s. F5 reads the connection. To leave, press F1 and choose End the session.", g_badge_rival);
             log_line("online: session with %s", g_badge_rival);
         }
         break;
@@ -717,17 +758,21 @@ void im_poll(void) {
     char sig[2048];
     screen_text(sig, sizeof sig, 1);
     uint32_t nav = nav_id();
-    /* The focused button gone (Create private room, once the room opens): ImGui keeps its id, and Tab does nothing
-     * until an arrow key is pressed. After 300 ms the focus moves to the window's first button below its title. */
+    /* The focused button gone (Create private room, once the room opens; I'm ready, which becomes Cancel ready):
+     * ImGui keeps its id, and Tab does nothing until an arrow key is pressed. After 300 ms the focus moves to the
+     * labelled item now where the old one was (the renamed button), or, with nothing there, to the window's first
+     * button below its title (before 1.0.8 always the first: I'm ready threw the player to the top). */
     {
         static DWORD lost_t;
+        static ImItem last;                              /* the focused item's box while it was there */
         int alive = !nav;
-        for (int i = 0; i < g_niview && !alive; i++) alive = g_iview[i].id == nav;
+        for (int i = 0; i < g_niview && !alive; i++) if (g_iview[i].id == nav) { alive = 1; last = g_iview[i]; }
         if (alive || !g_niview) lost_t = 0;
         else if (!lost_t) lost_t = GetTickCount();
         else if (GetTickCount() - lost_t > 300) {
-            /* the two topmost labelled items: the title bar, then the first button */
-            const ImItem *top[2] = { NULL, NULL };
+            /* the two topmost labelled items: the title bar, then the first button; and the one over the old box */
+            const ImItem *top[2] = { NULL, NULL }, *same = NULL;
+            float same_d = 1e9f;
             for (int i = 0; i < g_niview; i++) {
                 const ImItem *it = &g_iview[i];
                 int texted = 0;
@@ -737,8 +782,15 @@ void im_poll(void) {
                 if (ABOVE(it, top[0])) { top[1] = top[0]; top[0] = it; }
                 else if (ABOVE(it, top[1])) top[1] = it;
                 #undef ABOVE
+                /* the renamed button starts exactly where the old one did; something merely overlapping its box (a
+                 * table's header row under a vanished Leave the room) may sit in a child window, where Tab is dead */
+                if (last.id && fabsf(it->x0 - last.x0) <= 3 && fabsf(it->y0 - last.y0) <= 3) {
+                    float d = fabsf(it->x0 - last.x0) + fabsf(it->y0 - last.y0);
+                    if (d < same_d) { same_d = d; same = it; }
+                }
             }
-            const ImItem *best = top[1];
+            const ImItem *best = same ? same : top[1];
+            last.id = 0;
             uint8_t *c = p_ctx ? (uint8_t *)p_ctx() : NULL;
             if (c && best && *(volatile uint32_t *)(c + g_off_nav) == nav) {
                 *(volatile uint32_t *)(c + g_off_nav) = best->id;

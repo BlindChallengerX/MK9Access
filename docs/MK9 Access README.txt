@@ -1,4 +1,4 @@
-MK9 Access 1.0.7
+MK9 Access 1.0.8
 
 A screen reader and audio mod for Mortal Kombat Komplete Edition on PC, using
 MK9 by Lauta (a fan PC port of the Xbox 360 game, by Lauta / machinebreak).
@@ -49,12 +49,18 @@ MK9 by Lauta, the port, is downloaded for you. If you don't have it yet:
    start the .cmd again. You can also download the port yourself from
    https://github.com/machinebreak/mk9-lauta/releases (the
    windows-x64.zip) and unzip it into the same folder.
-4. The first time, the port opens its "mk9-lauta - Setup" window, a normal
-   Windows window: Tab moves between its buttons. Choose "Choose the ISO...",
-   pick your .iso file in the Open window and press Enter. The port checks the
-   file and copies about 7 GB of game files from it, which takes a few
-   minutes; a progress bar shows how far it is. Then the game starts by
+4. The first time, the game files are not there yet, and the same console
+   window asks for your .iso. It lists the Mortal Kombat .iso files it finds
+   in Downloads, the Desktop, Documents and the game folder: type the number
+   of yours and press Enter. Or type B and press Enter to pick the file in a
+   Windows Open window, or paste the full path of the .iso (or of a folder
+   where it is already unpacked, the one with default.xex) and press Enter.
+   Q quits. The port then checks the file and copies about 7 GB of game files
+   from it, which takes a few minutes. The console reads the progress ("Copied
+   2.3 GB of about 7 GB") and says when it is done; then the game starts by
    itself, and the mod starts speaking once the game has loaded.
+   (The port's own "mk9-lauta - Setup" window opens behind it and copies by
+   itself: you don't need to use it. Its buttons can't be reached with Tab.)
    The first start of port 1.4.2 also prepares extra costumes from your game
    files and downloads a small package for them; this takes a few seconds.
 
@@ -222,8 +228,17 @@ price, and your koin balance on entry. F4 lists the other koffins in view
 Buying reads what you unlocked and your new balance. The map reads each zone
 with how many koffins you have opened.
 
+Fatality challenges ("Perform the displayed Fatality Input") read the input,
+and the fatality you perform is named and described as in any fight. After a
+challenge's Success or Failure the distance hum stays quiet behind the
+"Continue? Retry" menu.
+
+The pause menu's Controller Preset: Select opens a number beside it; Left and
+Right change it ("Preset 2"), Select keeps it and Back cancels.
+
 Test Your Might and Test Your Strike: a rising tone follows the meter, with a
-pip at the line you need. Test Your Sight: a tone follows the cup that hides
+pip at the line you need. Pausing hushes the tone, and it stops if you leave
+the minigame from the pause menu. Test Your Sight: a tone follows the cup that hides
 the eye, from left to right as it moves. Test Your Luck: each reel is read as
 it stops.
 
@@ -239,8 +254,11 @@ does too). In it, and in the options window (F2):
   Arrows           move around the window
   Enter or Space   choose
   Escape           come back out of a list or a text box
-On a text box (your username, a room code, a chat line), press Enter, type,
-and press Enter again. A list (the open rooms, the chats, replays) is entered
+On a text box (your username, a room code, a chat line): reached with Tab,
+you are already typing in it ("text box, typing"): type and press Enter.
+Reached with the arrows, press Enter first, type, and press Enter again. If
+nothing answers to Tab (after Escape at the top of the window), Tab puts the
+focus back on the first item. A list (the open rooms, the chats, replays) is entered
 with Enter; then the arrows move through its rows and Escape leaves it. Each
 row is read whole, for example "Sala de Strato, Strato, about 228 ms, playing,
 10 min, Watch". New chat messages, rooms that open and people who come in are
@@ -293,6 +311,8 @@ keys are kept. The updater's log is MK9Access\update.log.
 - Loading the Krypt sometimes crashes the game. It is a bug in the port and
   has been reported.
 - Babalities and stage fatalities are not named.
+- The pause menu's Controller Preset reads the preset's number only, not
+  which button does what in it (Options > Controller reads that).
 
 
 11. CREDITS AND LICENSES

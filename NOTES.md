@@ -582,3 +582,56 @@ the hooked AddText); attract-mode "Loading" from the title screen interrupts lob
 1.0.5 also: the room code is spelled ("Room R V A U J K"; "Sala" too) and the port's own "Copy code" button (it copies
 silently) is confirmed from the clipboard sequence number: "Code copied: R V A U J K. Paste it to the other player;
 they choose Join with a code." ("Copy diagnostics" -> "Diagnostics copied."). F2 options also move by keyboard now.
+
+## 1.0.8: forum report of 2026-11-24 (played on 1.0.6)
+- First install: the port's installer window (mk9_installer.cpp) has BS_PUSHBUTTONs without WS_TABSTOP and no initial
+  focus, so Tab reaches nothing (the player needed ViewPoint to click "Choose the ISO"). dist/install.ps1, run by
+  launch.cmd in its console after setup.ps1: if no game files (toml game_data_root, game_root / assets\game_root /
+  .nxpack here or in a parent, as mk9_app.h OnConfigurePaths), lists Mortal Kombat .iso files >= 6 GB (Downloads
+  depth 3, Desktop, Documents, game folder, its parent), or B = WinForms OpenFileDialog, or a typed/pasted path
+  (.iso or folder with default.xex); starts mk9.exe with MK9_TEST_INSTALL = that path (the installer's WM_TIMER starts
+  copying by itself), pulls the console back to the front (AttachThreadInput + SetForegroundWindow), prints
+  "Copied X GB of about 7 GB" every 15 s from game_root.partial and "[installer]" warnings from logs\mk9_*.log, exits 3
+  when game_root\default.xex exists (launch.cmd then does not start a second copy). Tested end to end in workresh
+  (port download + ISO install ~40 s + game start + mod speech); input piped, so the console-front step is untested.
+- Hum "in the menu after minigames": (1) after a challenge's Success/Failure the game stays in state 8 with both
+  fighters behind "Continue? Retry", so fight.c kept the hum on. fight_hold() on practiceHUD Success/Failure, released
+  on [*] LOADING (Retry, Return To Tower), when the fight state ends or both fighters are back at full health.
+  (2) minigame tones only stopped on lockIn/buildOff/Select/result: Quit from the pause menu left the meter tone or
+  the Test Your Sight head tone on in the tower menu. Meter: silent when no meter frame for 1 s (paused), off after
+  20 s; Sight: off when a head actor's class word changes or after 90 s, silent while paused; mg_reset() on tower
+  card events and the main menu list. Verified: tone off 1 s after pausing Test Your Might, stays off in the tower.
+- Pause menu > Controller Preset (tower and fights): Select opens mc_option_N.SubToggle.PresetSelector (value by
+  SetVariable optionText.var_valueTxt "1".."3", arrows' BuildOn/BuildOff with target "PresetSelector.arrowLeft"
+  relative to the SubToggle holder). menu.c preset_event: open "Controller preset 1. Left and Right change it, Select
+  keeps it, Back cancels.", change "Preset 2" (80 ms wait so open/close replace it), close "Controller preset N"
+  (Back restores the old value first). Verified both ways.
+- Fatalities in the tower (challenge 5 "Training: Finishing Techniques"): its HUD shows the input as bracket strings
+  like the Fatality Tutorial, so fatality_input_settext set g_tut_t and g_play_t (with no clip) and the callback name
+  was skipped as "tutorial". Now only a played clip sets g_play_t, the callback is skipped only within 8 s of a clip,
+  and g_cur_clip is cleared when a fight state starts. Verified: "Scissor Split" named + clip in challenge 5. In that
+  challenge round 1 is a normal KO; Finish Him comes when Baraka's health is poked low and he is hit (bot:
+  tools/tower_fatality.py, side-aware, walks to ~230 units = jump range).
+- Online "the app unfocuses and becomes unresponsive", "could not get out of the room": tested with two copies on
+  this PC (tools/duo.py: host = game\ on test saves, guest = workresh with name MKATest; post_key sends keys to the
+  window not in front). Found and fixed:
+  1. session.cpp Back() (end of session -> lobby) restarts the game without --user_data_root; the plugin's
+     relaunch_for_saves then restarted it AGAIN, and that second copy (started by a windowless process) could open
+     without the keyboard focus. MK9ACCESS_RELAUNCHED was also inherited by later children. Now every copy sets
+     REX_USER_DATA_ROOT (toml value; the port applies REX_<CVAR> env before plugins, the command line outranks it), so
+     the port's own restarts inherit the saves folder and no relaunch happens; the loop marker is cleared in the new
+     copy; a bare-start relaunch calls AllowSetForegroundWindow(ASFW_ANY). Verified: session -> Back = one restart per
+     copy, mod logs "saves: user_data_root = .../game/saves" in the Back copy.
+  2. Escape at the top of a port window leaves NavId 0: Tab does nothing until an arrow. tab_revive (imgui.c): Tab
+     edge with nothing focused in an open port window sends one Down. Verified.
+  3. Tab into a text box activates it (ImGui); the hint said "Enter to type", and that Enter closed the box. Hint now
+     reads ActiveId (offset from rexruntimerd IsItemActive, +14e4): "text box, typing. Type, then press Enter."
+  4. Focus lost when the focused button disappears now goes to a labelled item at exactly the old position (I'm
+     ready -> Not ready keeps the focus there), else the first button; a merely overlapping item (the rooms table
+     header under a vanished "Leave the room") was in a child window where Tab is dead.
+  Session corner message adds "To leave, press F1 and choose End the session." Leaving a room, ending a session from
+  the host (guest hears "Session over... Back to the lobby in 6 s") and the room events (join, ready, leave) all
+  worked by keyboard. Not reproduced: the foreground actually moving away on a single-copy PC (two copies on one PC
+  share the foreground, so this test cannot show it).
+- Krypt crash: port bug, machinebreak/mk9-lauta#19 (Lauta could not reproduce on 1.4.2 and asked for dumps, CPU, disk,
+  whether the plugin writes game memory).

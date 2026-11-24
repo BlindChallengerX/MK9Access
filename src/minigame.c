@@ -38,7 +38,7 @@ static float rdf(uint32_t a) { uint32_t u = g32(a); float f; memcpy(&f, &u, 4); 
 /* ---------------- meters ---------------- */
 static volatile uint32_t s_fill_h;
 static volatile int s_fill = -1, s_target = -1, s_strike, s_on, s_charged;
-static volatile DWORD s_target_t;
+static volatile DWORD s_target_t, s_fill_t;
 static int s_above, s_was_on;
 static DWORD s_pip_t;
 
@@ -48,15 +48,15 @@ void mg_resolve(uint32_t holder, const char *path) {
 
 /* every Invoke (game thread): p = path.method, arg = its first value */
 void mg_invoke(uint32_t holder, const char *p, const char *arg) {
-    if (s_fill_h && holder == s_fill_h && !strcmp(p, "gotoAndStop")) { s_fill = atoi(arg); return; }
+    if (s_fill_h && holder == s_fill_h && !strcmp(p, "gotoAndStop")) { s_fill = atoi(arg); s_fill_t = GetTickCount(); return; }
     if (strncmp(p, "meter", 5) && strcmp(p, "gotoAndPlay")) return;
     if (!strcmp(p, "meter.pointPosition.gotoAndStop")) { s_target = atoi(arg); s_strike = 0; s_target_t = GetTickCount(); }
     else if (!strcmp(p, "meter.pointCell.gotoAndStop")) { s_target = atoi(arg); s_strike = 1; s_target_t = GetTickCount(); }
     else if (!strcmp(p, "meter.fill.fill_loop.fill.gotoAndPlay")) {
-        if (!_stricmp(arg, "lockIn")) s_on = 0;
+        if (!_stricmp(arg, "lockIn")) { s_on = 0; log_line("minigame: lock in at %d, target %d", s_fill, s_target); }
         else if (!_stricmp(arg, "ready")) { s_charged = 1; s_on = 0; }
     } else if (!strcmp(p, "gotoAndPlay")) {
-        if (!_stricmp(arg, "buildOn") && s_target > 0 && GetTickCount() - s_target_t < 30000) { s_on = 1; s_charged = 0; s_fill = 0; }
+        if (!_stricmp(arg, "buildOn") && s_target > 0 && GetTickCount() - s_target_t < 30000) { s_on = 1; s_charged = 0; s_fill = 0; s_fill_t = GetTickCount(); }
         else if (!_stricmp(arg, "buildOff")) s_on = 0;
     }
 }
@@ -67,10 +67,16 @@ static void meter_poll(void) {
         tone(880, 880, 0.07f, 0.10f, 0, W_SINE); tone_at(0.09f, 1320, 1320, 0.10f, 0.10f, 0, W_SINE);
         speak(L"Charged", 0);
     }
-    if (!s_on) {
-        if (s_was_on) { hum_set(SLOT_MG, 220, 0, 0, W_TRI); hum_trem(SLOT_MG, 0); s_was_on = 0; s_above = 0; }
+    /* The meter's frame is set every game frame while it runs. No update for a second = paused, or the minigame left
+     * without its lockIn / buildOff (Quit from the pause menu: the tone used to carry on into the Challenge Tower
+     * menu, forum report 2026-11-24). Silent then; it comes back if the frames do. */
+    int stale = GetTickCount() - s_fill_t > 1000;
+    if (s_on && GetTickCount() - s_fill_t > 20000) s_on = 0;
+    if (!s_on || stale) {
+        if (s_was_on) { hum_set(SLOT_MG, 220, 0, 0, W_TRI); hum_trem(SLOT_MG, 0); s_was_on = 0; s_above = 0; log_line("minigame: meter tone off (%s)", s_on ? "no meter frames" : "ended"); }
         return;
     }
+    if (!s_was_on) log_line("minigame: meter tone on");
     s_was_on = 1;
     float r = s_target > 0 && s_fill > 0 ? (float)s_fill / (float)s_target : 0;
     if (r > 2) r = 2;
@@ -174,6 +180,14 @@ static void sight_poll(void) {
     else if (req == 2 && s_ts == TS_ARMED) { s_ts = TS_RUN; s_run_t = GetTickCount(); }
     else if (req == 3 && s_ts == TS_RUN) { s_ts = TS_SELECT; hum_set(SLOT_MG + 1, 330, 0, 0, W_SOFT); }
     else if (req == 4) { s_ts = TS_IDLE; hum_set(SLOT_MG + 1, 330, 0, 0, W_SOFT); }
+    /* Left without a result (Quit from the pause menu, a crash back to the menu): the head's actor is gone or reused,
+     * or the shuffle has run far longer than any does. Paused: silent until play goes on. */
+    if (s_ts == TS_RUN || s_ts == TS_SELECT) {
+        int gone = GetTickCount() - s_run_t > 90000;
+        for (int j = 0; j < s_nhead && !gone; j++) gone = g32(s_head[j]) != VT_HEAD;
+        if (gone) { s_ts = TS_IDLE; hum_set(SLOT_MG + 1, 330, 0, 0, W_SOFT); log_line("sight: left without a result"); return; }
+        if (g32(0x833DD100u)) { hum_set(SLOT_MG + 1, 330, 0, 0, W_SOFT); return; }
+    }
     if (s_ts == TS_RUN) {
         DWORD dt = GetTickCount() - s_run_t;
         if (dt < 2500)                                  /* the heads lift off the table: that marks them */
@@ -215,3 +229,6 @@ static void sight_poll(void) {
 }
 
 void mg_poll(void) { meter_poll(); sight_poll(); }
+
+/* A menu came up (Challenge Tower card, main menu): whatever minigame was running is over. Game thread: only flags. */
+void mg_reset(void) { s_on = 0; s_ts_req = 4; }
