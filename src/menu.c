@@ -24,6 +24,15 @@
 
 /* ---------- localization table ---------- */
 typedef struct { char *sec, *key, *val; } LocE;
+/* The 2 Players main menu's Versus Mode (Versus2Mode, then its One VS One / Two VS Two): each side is one player.
+ * Not Team Ladder (both players against the CPU) nor 3-4 player Versus (Versus3Mode/Versus4Mode: two on a side).
+ * Set from the main menu item last focused. */
+static int g_local_versus;
+int menu_local_versus(void) { return g_local_versus; }
+static void mainmenu_focus(const char *key) {
+    if (!_stricmp(key, "Versus2Mode")) g_local_versus = 1;
+    else if (_stricmp(key, "VersusOneOnOne") && _stricmp(key, "VersusTwoOnTwo")) g_local_versus = 0;
+}
 static LocE *g_loc; static int g_nloc, g_loccap;
 static int *g_lochash; static int g_lochsize;
 
@@ -1758,6 +1767,7 @@ static void on_group(LocCall *g, int n) {
     if (focus >= 0) {
         char labkey[96], a[512], b[1024], title[512] = "", msg[1100];
         gstr(focus_label, labkey, sizeof labkey);
+        if (!_stricmp(g[focus].sec, "MainMenu")) mainmenu_focus(labkey);
         const char *label = loc_get(g[focus].sec, labkey);
         if (!label) { if (g_debug) log_line("menu: no text for [%s] %s", g[focus].sec, labkey); return; }
         tidy(label, a, sizeof a); tidy(g[focus].val, b, sizeof b);
@@ -1788,7 +1798,9 @@ static void on_group(LocCall *g, int n) {
     for (int i = 0; i < n; i++) {
         if (_stricmp(g[i].sec, "Gameplay.Fighting") || _stricmp(g[i].key, "Wins")) continue;
         char who[96] = "", m[160];
-        for (int j = 0; j < n; j++) if (!_stricmp(g[j].sec, "PlayerSelect")) tidy(g[j].val, who, sizeof who);
+        /* a match between players names the player who won (forum request 2026-11-23), not the character */
+        if (!fight_winner_name(who, sizeof who))
+            for (int j = 0; j < n; j++) if (!_stricmp(g[j].sec, "PlayerSelect")) tidy(g[j].val, who, sizeof who);
         snprintf(m, sizeof m, "%s%swins", who, who[0] ? " " : "");
         say(m, NULL);
         return;

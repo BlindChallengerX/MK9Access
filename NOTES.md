@@ -130,6 +130,15 @@ Cues (spatial-audio-kit rules; SC2 Access synth copied, plus tremolo and a clean
 - keys: F6 health ("Scorpion 72 percent. Sub-Zero 40 percent."), (the F9/F4 opponent-side key was removed 2026-11-18: no time to hear speech mid-fight), metres, airborne,
   F8 hum on/off, Shift+F8 health tones on/off. Round winner spoken from `[Gameplay.Fighting] Wins` ("Noob wins",
   checked in a Ladder fight). The game state stays 8 between rounds, so the hum continues through the round reset.
+- Round winner as a player (forum request 2026-11-23, fight_winner_name): online 1-on-1 sessions say the username
+  ("BlindChallengerX wins": own name from --mk9_online_name on the session's command line, else online_name.txt;
+  rival from the session corner), local 2 Players > Versus Mode says "Player 1 wins" / "Player 2 wins"; against the
+  CPU (Ladder, Team Ladder), watching, replays, King of the Hill and an even double KO keep the character. Winner =
+  more health left when WINS is drawn (KO, time-out, after Finish Him). Local Versus = main menu focus Versus2Mode,
+  kept through its One VS One / Two VS Two items. Tested 2026-11-23 on test saves: Scorpion mirror match with the
+  port's second keyboard player (--mnk_second_player=true; NumLock is off here, so the bot sends numpad keys as
+  VK_NUMPAD codes, not scancodes): "Player 2 wins", "Player 1 wins", "Player 1 wins" after Finish Him; Ladder still
+  "Scorpion wins". Not tested in a real online match (needs a second player).
 - RE command `audiorec SECONDS` writes MK9Access\audiorec.wav; analyse with spatial-audio-kit\analyze.py.
 
 ## Saves in the game folder (Controlled Folder Access)

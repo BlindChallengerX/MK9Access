@@ -597,6 +597,8 @@ static void badge_poll(void) {
     }
 }
 
+const char *im_rival_name(void) { return g_badge_rival; }
+
 int im_practice_record_on(void) { return g_ready && GetTickCount() - g_rec_panel_t < 500; }
 int im_practice_nothing_recorded(void) { return im_practice_record_on() && g_rec.mode == 1 && !g_rec.len[0]; }
 

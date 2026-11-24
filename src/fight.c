@@ -93,6 +93,55 @@ static void fighter_name(int p, char *out, size_t cap) {
 
 static float clampf(float v, float lo, float hi) { return v < lo ? lo : v > hi ? hi : v; }
 
+/* This player's online name: the port starts a session with --mk9_online_name=<name> (session.cpp; the whole
+ * argument is quoted when the name has a space), saved before that in online_name.txt beside mk9.exe. */
+static void own_online_name(char *out, size_t cap) {
+    out[0] = 0;
+    const wchar_t *cl = GetCommandLineW(), *a = cl ? wcsstr(cl, L"--mk9_online_name=") : NULL;
+    if (a) {
+        int quoted = a > cl && a[-1] == L'"';
+        a += wcslen(L"--mk9_online_name=");
+        wchar_t w[96]; int n = 0;
+        while (a[n] && n < 95 && (quoted ? a[n] != L'"' : a[n] != L' ')) { w[n] = a[n]; n++; }
+        w[n] = 0;
+        WideCharToMultiByte(CP_UTF8, 0, w, -1, out, (int)cap, NULL, NULL);
+    }
+    if (!out[0]) {
+        wchar_t path[MAX_PATH];
+        swprintf(path, MAX_PATH, L"%lsonline_name.txt", g_game_dir);
+        FILE *f = _wfopen(path, L"rb");
+        if (f) { if (!fgets(out, (int)cap, f)) out[0] = 0; fclose(f); }
+        if (!strncmp(out, "\xef\xbb\xbf", 3)) memmove(out, out + 3, strlen(out + 3) + 1);
+    }
+    size_t n = strlen(out);
+    while (n && (out[n - 1] == '\r' || out[n - 1] == '\n' || out[n - 1] == ' ')) out[--n] = 0;
+}
+
+/* The round winner as a player, for "<who> wins" (forum request 2026-11-23: a multiplayer match names the player,
+ * not the character). The winner is the side with more health left when the game says WINS (a KO leaves the loser
+ * at 0, a time-out goes to the one ahead). Online 1-on-1 sessions: this player's name or the rival's from the
+ * session corner. Local 2-player Versus Mode: "Player 1" / "Player 2". Returns 0 to
+ * keep the character's name: against the CPU (Team Ladder too), an even double KO, watching or a replay, King of the Hill. */
+int fight_winner_name(char *out, size_t cap) {
+    Fighter f[2];
+    if (!read_fighter(0, &f[0]) || !read_fighter(1, &f[1]) || fabsf(f[0].hp - f[1].hp) < 0.001f) return 0;
+    int w = f[0].hp > f[1].hp ? 0 : 1;
+    const wchar_t *cl = GetCommandLineW();
+    int online = cl && (wcsstr(cl, L"--mk9_net_role=host") || wcsstr(cl, L"--mk9_net_role=guest") ||
+                        wcsstr(cl, L"--mk9_net_join=") || wcsstr(cl, L"--mk9_net_host="))
+                 && !wcsstr(cl, L"--mk9_net_koth") && !wcsstr(cl, L"--mk9_net_replay");
+    out[0] = 0;
+    if (online) {
+        if (w == me_slot()) own_online_name(out, cap);
+        else snprintf(out, cap, "%s", im_rival_name());
+        if (!out[0]) snprintf(out, cap, "Player %d", w + 1);   /* a direct test session has no names */
+    } else if (menu_local_versus()) {
+        snprintf(out, cap, "Player %d", w + 1);
+    } else return 0;
+    log_line("fight: round won by player %d (%s), health %.2f / %.2f", w + 1, out, f[0].hp, f[1].hp);
+    return 1;
+}
+
 static void hp_tones(int p, float before, float after, float pan) {
     if (!s_hp_tones) return;
     static const float marks[2] = { 0.5f, 0.25f };

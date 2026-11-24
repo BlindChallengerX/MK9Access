@@ -1,4 +1,4 @@
-MK9 Access 1.0.6
+MK9 Access 1.0.7
 
 A screen reader and audio mod for Mortal Kombat Komplete Edition on PC, using
 MK9 by Lauta (a fan PC port of the Xbox 360 game, by Lauta / machinebreak).
@@ -167,8 +167,11 @@ below a quarter of your health. Two rising notes, from the opponent's side,
 when they do. F6 tells you both health values in percent. Shift+F8 turns the
 tones off.
 
-The round winner is spoken, and so are the game's fight messages. Combo hit
-counts and damage are not spoken.
+The round winner is spoken, and so are the game's fight messages. Against
+the computer you hear the winning character ("Scorpion wins"). In a match
+between players you hear the player: the online username of whoever won, or
+"Player 1 wins" / "Player 2 wins" in 2 players Versus Mode on one PC. Combo
+hit counts and damage are not spoken.
 
 
 5. FATALITIES

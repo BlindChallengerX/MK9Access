@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include "rex_mod.h"
 
-#define MOD_VERSION "1.0.6"
+#define MOD_VERSION "1.0.7"
 
 extern wchar_t g_game_dir[MAX_PATH];   /* folder of mk9.exe, with trailing backslash */
 extern wchar_t g_mod_dir[MAX_PATH];    /* g_game_dir + "MK9Access\" */
@@ -98,6 +98,7 @@ extern const wchar_t k_name_hint[];
 extern volatile int g_loaded_said;     /* "MK9 Access loaded" has been said */
 int im_name_prompt_open(void);         /* the port's Online username window is showing */
 int im_read_screen(void);
+const char *im_rival_name(void);       /* online session: the rival's username ("" before the corner showed it) */
 int im_practice_record_on(void);       /* Practice: the port's opponent-recording panel (F5/F6/F7 are the port's) */
 int im_practice_nothing_recorded(void);
 void im_frame_data_key(int shift);      /* F10: the Practice frame data panel */
@@ -142,8 +143,11 @@ void mg_invoke(uint32_t holder, const char *p, const char *arg);
 void mg_sight(int what);               /* 1 Begin prompt, 2 Begin pressed, 3 select phase, 4 ended */
 void mg_poll(void);
 void fight_key(int vk, int shift, int ctrl);
+/* the round winner as a player: an online username, or "Player 2" in local 2-player Versus; 0 = say the character */
+int fight_winner_name(char *out, size_t cap);
 
 /* menu.c: the game's own menus (Localize hook) */
+int menu_local_versus(void);           /* a local 2-player Versus Mode match was chosen */
 int krypt_key(int vk, int shift);      /* menu.c: F4 in the Krypt; 0 when not in the Krypt */
 void fatality_init(void);
 int fatality_try(const char *text);   /* a fatality name -> speak name + input; 1 if handled */
