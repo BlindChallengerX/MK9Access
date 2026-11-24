@@ -231,6 +231,9 @@ asked user in MK9Access.log (`sysdialog: user N`); then make the mod skip it for
   releases/latest with a local zip path. Verified 2026-11-23: scratch folder 1.0.4 -> real 1.0.5 (798 files,
   mk9.toml + user file kept), current check, first-install port download; in game with a local 1.0.6 feed:
   "ready" spoken while playing, installed 6 s after close, "MK9 Access updated to 1.0.6" logged at next start.
+  Released as 1.0.6 (2026-11-23); verified from GitHub: a 1.0.5 folder pulled 1.0.6 (798 files). Known: run by hand,
+  the port version is unknown (1.4.x logs no "this program X.Y.Z", mk9.exe has no VERSIONINFO), so a hand run only
+  updates the mod; in-game runs get -Installed from the host.
 - The launch .cmd no longer runs the updater (it was a silent 30 s wait); it only passes --user_data_root.
 - Verified 2026-11-18 on the user's folder: bare mk9.exe start on 1.4.0 -> download 3 s, "ready 1.4.1" spoken; game
   closed -> 53 files installed 2 s later, mk9.toml kept; relaunch -> port 1.4.1, 5 hooks, "Game updated to version
