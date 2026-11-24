@@ -38,6 +38,7 @@ Screen reader mod for MK9 by Lauta (fan PC recomp of Mortal Kombat Komplete Edit
 - Updating the port: the mod does it (see "Port updates" below). The port's in-game banner is OFF
   (`mk9_update_check = false`, set by deploy.sh): mouse-only, and its installer failed here (in-use DLLs).
   By hand, with the game CLOSED: `powershell -File game\MK9Access\mk9update.ps1` (no -WaitPid = install now).
+  The same script updates the mod itself from its GitHub releases (see "Port updates").
 
 ## How the game's menus are read (menu.c)
 Game functions (guest addresses, unchanged by port updates because the 360 code is fixed):
@@ -218,6 +219,18 @@ asked user in MK9Access.log (`sysdialog: user N`); then make the mod skip it for
   mk9.toml copied (kept only when one exists), no update_status. Failure prints the reason, pauses, exits 1.
   Tested 2026-11-22 in a scratch folder: 1.4.2 downloaded (74 MB, ~5 s) and installed, setup wrote English etc.;
   404 path tested with a bad repo name.
+- Mod self-update (2026-11-23, for 1.0.6): the same script also checks BlindChallengerX/MK9Access releases/latest
+  (asset `MK9Access-*.zip`, marker `plugins\mk9access.dll`) against `-ModVersion` (update.c passes MOD_VERSION; by
+  hand it reads plugins\mk9access.dll's ProductVersion - build.sh fails if plugin.rc and MOD_VERSION differ).
+  Pending zips in `MK9Access\pending\port|mod\<ver>`; mod status in `MK9Access\mod_update_status.txt`, same
+  words; speech "MK9 Access update X is ready. It installs when you close the game." / "MK9 Access updated to
+  version X." On close the port installs first, then the mod (each with its own backup/restore); the new zip
+  replaces mk9update.ps1 itself (safe: PowerShell has read the script). First install (no mk9.exe) skips the mod.
+  Releases must keep the zip asset name `MK9Access-<ver>.zip` and tag `v<ver>`. 1.0.5 and older only update the
+  port, so players move to 1.0.6 by hand once. Test without publishing: MK9A_MOD_FEED = local JSON shaped like
+  releases/latest with a local zip path. Verified 2026-11-23: scratch folder 1.0.4 -> real 1.0.5 (798 files,
+  mk9.toml + user file kept), current check, first-install port download; in game with a local 1.0.6 feed:
+  "ready" spoken while playing, installed 6 s after close, "MK9 Access updated to 1.0.6" logged at next start.
 - The launch .cmd no longer runs the updater (it was a silent 30 s wait); it only passes --user_data_root.
 - Verified 2026-11-18 on the user's folder: bare mk9.exe start on 1.4.0 -> download 3 s, "ready 1.4.1" spoken; game
   closed -> 53 files installed 2 s later, mk9.toml kept; relaunch -> port 1.4.1, 5 hooks, "Game updated to version

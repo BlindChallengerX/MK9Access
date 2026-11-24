@@ -1,12 +1,14 @@
 /*
- * Port updates. At every game start the mod runs MK9Access\mk9update.ps1
+ * Port and mod updates. At every game start the mod runs MK9Access\mk9update.ps1
  * hidden with the game's process id (however the game was launched: the
  * launcher, the Arcade Cabinet or a bare mk9.exe). The script downloads a newer
- * mk9-lauta release while the game runs and installs it once the game closes;
- * it reports through MK9Access\update_status.txt, one line:
+ * mk9-lauta release and a newer MK9 Access release while the game runs and
+ * installs them once the game closes. It reports through one status file each,
+ * MK9Access\update_status.txt (port) and MK9Access\mod_update_status.txt (mod),
+ * one line:
  *   "ready X.Y.Z"    downloaded, installs on close  -> spoken once this session
  *   "applied X.Y.Z"  installed                      -> spoken at the next start
- *   "failed X.Y.Z"   the copy failed, game left as it was (retried next close)
+ *   "failed X.Y.Z"   the copy failed, left as it was (retried next close)
  * The port's own banner is off (mk9_update_check = false): mouse-only here.
  * MK9A_NOUPDATE=1 skips it (test bots).
  */
@@ -15,12 +17,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-static wchar_t g_status_path[MAX_PATH];
-static int g_ready_said;
+static wchar_t g_status_path[MAX_PATH], g_mod_status_path[MAX_PATH];
+static int g_ready_said, g_mod_ready_said;
 static DWORD g_last_poll, g_started;
 
-static int read_status(char *word, size_t wn, char *ver, size_t vn) {
-    FILE *f = _wfopen(g_status_path, L"rb");
+static int read_status(const wchar_t *path, char *word, size_t wn, char *ver, size_t vn) {
+    FILE *f = _wfopen(path, L"rb");
     if (!f) return 0;
     char line[128] = { 0 };
     size_t n = fread(line, 1, sizeof line - 1, f);
@@ -51,8 +53,8 @@ static void start_script(void) {
     }
     swprintf(cmd, 2048,
              L"\"%ls\" -NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -File \"%ls\" "
-             L"-GameDir \"%ls\" -WaitPid %lu%ls",
-             ps, script, game, GetCurrentProcessId(), port);
+             L"-GameDir \"%ls\" -WaitPid %lu%ls -ModVersion %hs",
+             ps, script, game, GetCurrentProcessId(), port, MOD_VERSION);
     STARTUPINFOW si = { sizeof si };
     si.dwFlags = STARTF_USESHOWWINDOW;
     si.wShowWindow = SW_HIDE;
@@ -69,36 +71,51 @@ static void start_script(void) {
 /* Called once at mod start, before "MK9 Access loaded". */
 void update_init(void) {
     swprintf(g_status_path, MAX_PATH, L"%lsupdate_status.txt", g_mod_dir);
+    swprintf(g_mod_status_path, MAX_PATH, L"%lsmod_update_status.txt", g_mod_dir);
     g_started = GetTickCount();
-    if (getenv("MK9A_NOUPDATE")) { g_ready_said = 1; return; }
+    if (getenv("MK9A_NOUPDATE")) { g_ready_said = g_mod_ready_said = 1; return; }
     start_script();
 }
 
-/* Called after "MK9 Access loaded" has been queued: what the last close did. */
-void update_announce_start(void) {
+/* What the last close installed (or failed to), for one status file. */
+static void announce(const wchar_t *path, const char *what_updated, const char *what_update) {
     char word[32], ver[32];
-    if (!read_status(word, sizeof word, ver, sizeof ver)) return;
+    if (!read_status(path, word, sizeof word, ver, sizeof ver)) return;
     if (!strcmp(word, "applied")) {
-        speakf(0, "Game updated to version %s.", ver);
-        DeleteFileW(g_status_path);
-        log_line("update: told the player the port is now %s", ver);
+        speakf(0, "%s updated to version %s.", what_updated, ver);
+        DeleteFileW(path);
+        log_line("update: told the player: %s updated to %s", what_updated, ver);
     } else if (!strcmp(word, "failed")) {
-        speakf(0, "The game update to version %s could not be installed. It will try again when you close the game.", ver);
-        DeleteFileW(g_status_path);
+        speakf(0, "The %s update to version %s could not be installed. It will try again when you close the game.",
+               what_update, ver);
+        DeleteFileW(path);
     }
 }
 
-/* Mod thread, every frame after the announcement: speak "ready" once when the download finishes. */
+/* Called after "MK9 Access loaded" has been queued. */
+void update_announce_start(void) {
+    announce(g_mod_status_path, "MK9 Access", "MK9 Access");
+    announce(g_status_path, "Game", "game");
+}
+
+/* Mod thread, every frame after the announcement: speak "ready" once per download when it finishes. */
 void update_poll(void) {
-    if (g_ready_said) return;
+    if (g_ready_said && g_mod_ready_said) return;
     DWORD now = GetTickCount();
     if (now - g_last_poll < 2000) return;
     g_last_poll = now;
-    if (now - g_started > 30 * 60 * 1000) { g_ready_said = 1; return; }   /* a 30-minute download: give up talking */
+    if (now - g_started > 30 * 60 * 1000) { g_ready_said = g_mod_ready_said = 1; return; }   /* 30-minute download: stop */
     char word[32], ver[32];
-    if (!read_status(word, sizeof word, ver, sizeof ver) || strcmp(word, "ready")) return;
-    if (g_host && g_host->port_version && !strcmp(g_host->port_version, ver)) return;
-    speakf(0, "Game update %s is ready. It installs when you close the game.", ver);
-    log_line("update: %s ready, told the player", ver);
-    g_ready_said = 1;
+    if (!g_ready_said && read_status(g_status_path, word, sizeof word, ver, sizeof ver) && !strcmp(word, "ready") &&
+        !(g_host && g_host->port_version && !strcmp(g_host->port_version, ver))) {
+        speakf(0, "Game update %s is ready. It installs when you close the game.", ver);
+        log_line("update: port %s ready, told the player", ver);
+        g_ready_said = 1;
+    }
+    if (!g_mod_ready_said && read_status(g_mod_status_path, word, sizeof word, ver, sizeof ver) && !strcmp(word, "ready") &&
+        strcmp(ver, MOD_VERSION)) {
+        speakf(0, "MK9 Access update %s is ready. It installs when you close the game.", ver);
+        log_line("update: mod %s ready, told the player", ver);
+        g_mod_ready_said = 1;
+    }
 }

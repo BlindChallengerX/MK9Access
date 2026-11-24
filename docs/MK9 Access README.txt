@@ -1,4 +1,4 @@
-MK9 Access 1.0.5
+MK9 Access 1.0.6
 
 A screen reader and audio mod for Mortal Kombat Komplete Edition on PC, using
 MK9 by Lauta (a fan PC port of the Xbox 360 game, by Lauta / machinebreak).
@@ -27,7 +27,7 @@ CONTENTS
   6. Practice
   7. Challenge Tower, Krypt and minigames
   8. Online
-  9. Game updates
+  9. Game and mod updates
   10. Known limits
   11. Credits and licenses
 
@@ -267,13 +267,14 @@ Both players need the same version of MK9 by Lauta; the mod keeps yours up to
 date (section 9).
 
 
-9. GAME UPDATES
+9. GAME AND MOD UPDATES
 
-The mod keeps MK9 by Lauta up to date. At each start it checks for a newer
-version, downloads it while you play, and says "Game update X is ready. It
-installs when you close the game." The next time you start, you hear "Game
-updated to version X." Your settings are kept. The updater's log is
-MK9Access\update.log.
+The mod keeps both MK9 by Lauta and itself up to date. At each start it
+checks for newer versions of both, downloads them while you play, and says
+"Game update X is ready" or "MK9 Access update X is ready. It installs when
+you close the game." The next time you start, you hear "Game updated to
+version X" or "MK9 Access updated to version X." Your settings, saves and
+keys are kept. The updater's log is MK9Access\update.log.
 
 
 10. KNOWN LIMITS

@@ -1,40 +1,47 @@
-# MK9 Access updater for the port (machinebreak/mk9-lauta).
+# MK9 Access updater: keeps both the port (machinebreak/mk9-lauta) and the mod
+# itself (BlindChallengerX/MK9Access) on their latest GitHub releases.
 #
 # The mod starts this hidden every time the game starts (src/update.c), however
-# the game was launched, with -WaitPid <the game's process id>:
-#   1. asks GitHub for the latest release; stops here if the port is current.
-#   2. downloads and unpacks the windows-x64 zip into MK9Access\pending\ while
-#      the game runs, then writes "ready X.Y.Z" to MK9Access\update_status.txt
-#      (the mod speaks: "Game update X.Y.Z is ready. It installs when you close
-#      the game").
+# the game was launched, with -WaitPid <the game's process id> -Installed <port
+# version> -ModVersion <mod version>:
+#   1. asks GitHub for the latest release of each; stops here if both are current.
+#   2. downloads and unpacks each newer zip into MK9Access\pending\<port|mod>\
+#      while the game runs, then writes "ready X.Y.Z" to its status file:
+#        port: MK9Access\update_status.txt      ("Game update X.Y.Z is ready ...")
+#        mod:  MK9Access\mod_update_status.txt  ("MK9 Access update X.Y.Z is ready ...")
+#      Both files are read and spoken by the mod.
 #   3. waits until the game (every mk9.exe from this folder) has closed, then
-#      copies the new files over the game and writes "applied X.Y.Z" (the mod
-#      says "Game updated to version X.Y.Z" on the next start).
-# Without -WaitPid (run by hand with the game closed) it installs at once.
+#      copies the new files over the game folder (port first, then the mod) and
+#      writes "applied X.Y.Z" (said on the next start) or "failed X.Y.Z".
+# Without -WaitPid (run by hand with the game closed) it installs at once. Without
+# -ModVersion the mod version is read from plugins\mk9access.dll (its VERSIONINFO).
 #
 # First install: "MK9 Access launch.cmd" runs this in its console window when
 # the folder has no mk9.exe yet (the mod zip was unzipped into an empty
-# folder). It then downloads the latest port, unpacks it here and says each
-# step in the console, so the screen reader reads it.
+# folder). It then downloads the latest port only (the mod was just unzipped),
+# unpacks it here and says each step in the console for the screen reader.
 #
 # The port's own in-game banner is turned off (mk9_update_check = false): it
 # only works with a mouse, and its installer failed here (in-use DLLs).
 # Kept: mk9.toml (mk9_plugins = true, the user's settings) and everything the
-# release zip does not contain (saves, game_root, MK9Access, plugins).
+# release zips do not contain (saves, game_root, the mod's own settings).
+# The updater replaces itself too: PowerShell has read the whole script before
+# it runs, so copying a new mk9update.ps1 over this one is safe.
 # A failed copy puts the replaced files back. Log: MK9Access\update.log.
+# Testing only: MK9A_MOD_FEED = path of a local JSON file shaped like GitHub's
+# releases/latest answer (tag_name, assets[].name/size/browser_download_url as a
+# local path), used instead of the mod's GitHub release.
 
-param([string]$GameDir, [int]$WaitPid = 0, [string]$Installed = '')
+param([string]$GameDir, [int]$WaitPid = 0, [string]$Installed = '', [string]$ModVersion = '')
 
 $ErrorActionPreference = 'Stop'
-$repo = 'machinebreak/mk9-lauta'
-$keep = @('mk9.toml')                                   # release files we must NOT overwrite
 $headers = @{ 'User-Agent' = 'MK9Access-Updater' }      # generic UA, no personal data
 
 if (-not $GameDir) { $GameDir = Split-Path -Parent $PSScriptRoot }   # MK9Access\ -> game\
 $GameDir = (Resolve-Path $GameDir).Path.TrimEnd('\')
 $modDir  = Join-Path $GameDir 'MK9Access'
-$status  = Join-Path $modDir 'update_status.txt'
 $logFile = Join-Path $modDir 'update.log'
+$pendingRoot = Join-Path $modDir 'pending'
 
 function Log($msg) {
     try {
@@ -45,7 +52,6 @@ function Log($msg) {
 }
 $fresh = -not (Test-Path (Join-Path $GameDir 'mk9.exe'))   # first install: no port in this folder yet
 function Say($msg) { Log $msg; if ($fresh) { Write-Host $msg } }
-function Set-Status($text) { if (-not $fresh) { Set-Content -Path $status -Encoding ascii -Value $text } }
 
 function Get-LoggedVersion {
     # the port logs "this program X.Y.Z" every launch; read the newest log.
@@ -60,6 +66,14 @@ function Get-LoggedVersion {
     return $null
 }
 
+function Get-ModDllVersion {
+    try {
+        $v = (Get-Item (Join-Path $GameDir 'plugins\mk9access.dll')).VersionInfo.ProductVersion
+        if ($v -match '^\d+\.\d+\.\d+') { return $Matches[0] }
+    } catch {}
+    return $null
+}
+
 function Test-GameRunning {
     # any mk9.exe started from this folder (the one that started us, or a new start meanwhile)
     $exe = Join-Path $GameDir 'mk9.exe'
@@ -69,77 +83,91 @@ function Test-GameRunning {
     return $false
 }
 
-# One updater at a time: a second game start while one waits just leaves it to the first.
-$lock = $null
-try {
-    $lock = [IO.File]::Open((Join-Path $modDir 'update.lock'), 'OpenOrCreate', 'ReadWrite', 'None')
-} catch { exit 0 }
+# What gets updated. Marker = a file every release zip has, relative to the zip's
+# root (= the game folder); it finds the root if a zip ever wraps it in a folder.
+$port = @{ Name = 'port'; Label = 'MK9 by Lauta'; Repo = 'machinebreak/mk9-lauta'; Asset = '*windows-x64.zip'
+           Marker = 'mk9.exe'; Keep = @('mk9.toml'); Status = (Join-Path $modDir 'update_status.txt'); Installed = $Installed }
+$mod  = @{ Name = 'mod'; Label = 'MK9 Access'; Repo = 'BlindChallengerX/MK9Access'; Asset = 'MK9Access-*.zip'
+           Marker = 'plugins\mk9access.dll'; Keep = @(); Status = (Join-Path $modDir 'mod_update_status.txt'); Installed = $ModVersion
+           Feed = $env:MK9A_MOD_FEED }
 
-try {
-    if ($fresh) { $Installed = '0.0.0'; Say 'MK9 by Lauta is not in this folder yet. Asking GitHub for its latest version.' }
-    if (-not $Installed) { $Installed = Get-LoggedVersion }
-    if (-not $Installed) { Log 'no installed version known yet: nothing to do'; exit 0 }
-    $installedV = [version]$Installed
+function Set-Status($c, $text) { if (-not $fresh) { Set-Content -Path $c.Status -Encoding ascii -Value $text } }
 
-    $rel = Invoke-RestMethod -Uri "https://api.github.com/repos/$repo/releases/latest" -Headers $headers -TimeoutSec 20
-    $latest = ($rel.tag_name -replace '^v', '')
-    $latestV = [version]$latest
-    $pendingRoot = Join-Path $modDir 'pending'
-    if ($latestV -le $installedV) {
-        Log "check: port $Installed is current (latest $latest)"
-        if (Test-Path $pendingRoot) { Remove-Item -Path $pendingRoot -Recurse -Force -ErrorAction SilentlyContinue }
-        # a stale "ready"/"failed" (installed some other way meanwhile) must not be spoken; "applied" is the mod's to clear
-        if ((Test-Path $status) -and ((Get-Content -Path $status -Raw) -match '^(ready|failed) ')) { Remove-Item -Path $status -Force }
-        exit 0
+function Get-Release($c) {
+    if ($c.Feed) { return (Get-Content -Path $c.Feed -Raw | ConvertFrom-Json) }
+    return Invoke-RestMethod -Uri "https://api.github.com/repos/$($c.Repo)/releases/latest" -Headers $headers -TimeoutSec 20
+}
+
+function Save-Asset($c, $asset, $zip) {
+    if ($c.Feed) { Copy-Item -Path $asset.browser_download_url -Destination $zip -Force; return }
+    $ProgressPreference = 'SilentlyContinue'                      # PS 5.1's progress bar slows downloads a lot
+    Invoke-WebRequest -Uri $asset.browser_download_url -OutFile $zip -Headers $headers -TimeoutSec 1800 -UseBasicParsing
+}
+
+# Step 1 + 2 for one component: returns the unpacked root to install from, or $null (current, offline, no asset).
+function Get-Pending($c) {
+    try {
+        if (-not $c.Installed) { Log "$($c.Name): no installed version known yet: nothing to do"; return $null }
+        $installedV = [version]$c.Installed
+        $rel = Get-Release $c
+        $latest = ($rel.tag_name -replace '^v', '')
+        $latestV = [version]$latest
+        $croot = Join-Path $pendingRoot $c.Name
+        if ($latestV -le $installedV) {
+            Log "check: $($c.Name) $($c.Installed) is current (latest $latest)"
+            if (Test-Path $croot) { Remove-Item -Path $croot -Recurse -Force -ErrorAction SilentlyContinue }
+            # a stale "ready"/"failed" (installed some other way meanwhile) must not be spoken; "applied" is the mod's to clear
+            if ((Test-Path $c.Status) -and ((Get-Content -Path $c.Status -Raw) -match '^(ready|failed) ')) { Remove-Item -Path $c.Status -Force }
+            return $null
+        }
+        $pending = Join-Path $croot $latest
+        $files   = Join-Path $pending 'files'
+        $done    = Join-Path $pending 'complete'
+        if (-not (Test-Path $done)) {                             # kept across starts until installed
+            $asset = $rel.assets | Where-Object { $_.name -like $c.Asset } | Select-Object -First 1
+            if (-not $asset) { Log "check: $($c.Name) $latest has no $($c.Asset)"; if ($fresh) { throw "version $latest has no Windows download yet" }; return $null }
+            Log "update $($c.Name) $($c.Installed) -> $latest : downloading $($asset.name)"
+            if ($fresh) { Write-Host ("Downloading $($c.Label) $latest, {0} MB. This can take a few minutes." -f [math]::Round($asset.size / 1MB)) }
+            if (Test-Path $croot) { Remove-Item -Path $croot -Recurse -Force }
+            New-Item -ItemType Directory -Path $pending -Force | Out-Null
+            $zip = Join-Path $pending 'update.zip'
+            Save-Asset $c $asset $zip
+            if ((Get-Item $zip).Length -ne $asset.size) { throw "download is $((Get-Item $zip).Length) bytes, expected $($asset.size)" }
+            if ($fresh) { Write-Host 'Download finished. Unpacking.' }
+            Expand-Archive -Path $zip -DestinationPath $files -Force
+            Remove-Item -Path $zip -Force
+            $leaf = Split-Path -Leaf $c.Marker
+            $hit = Get-ChildItem -Path $files -Recurse -Filter $leaf |
+                   Where-Object { $_.FullName.EndsWith('\' + $c.Marker, [StringComparison]::OrdinalIgnoreCase) } | Select-Object -First 1
+            if (-not $hit) { throw "the zip has no $($c.Marker)" }
+            $root = $hit.FullName.Substring(0, $hit.FullName.Length - $c.Marker.Length).TrimEnd('\')
+            Set-Content -Path $done -Encoding ascii -Value $root
+            Log "update $($c.Name) $latest downloaded and unpacked"
+        }
+        $c.Latest = $latest
+        $c.Backup = Join-Path $pending 'backup'
+        Set-Status $c "ready $latest"
+        return (Get-Content -Path $done | Select-Object -First 1)
+    } catch {
+        Log ("$($c.Name) update check failed: " + $_.Exception.Message)   # offline, GitHub down: try again next start
+        if ($fresh) { throw }
+        return $null
     }
+}
 
-    # 2. download + unpack while the game runs (kept across starts until installed)
-    $pending = Join-Path $pendingRoot $latest
-    $files   = Join-Path $pending 'files'
-    $done    = Join-Path $pending 'complete'
-    if (-not (Test-Path $done)) {
-        $asset = $rel.assets | Where-Object { $_.name -like '*windows-x64.zip' } | Select-Object -First 1
-        if (-not $asset) { Log "check: $latest has no windows-x64.zip"; if ($fresh) { throw "version $latest has no Windows download yet" }; exit 0 }
-        Log "update $Installed -> $latest : downloading $($asset.name)"
-        if ($fresh) { Write-Host ("Downloading MK9 by Lauta $latest, {0} MB. This can take a few minutes." -f [math]::Round($asset.size / 1MB)) }
-        if (Test-Path $pendingRoot) { Remove-Item -Path $pendingRoot -Recurse -Force }
-        New-Item -ItemType Directory -Path $pending -Force | Out-Null
-        $zip = Join-Path $pending 'port.zip'
-        $ProgressPreference = 'SilentlyContinue'                  # PS 5.1's progress bar slows downloads a lot
-        Invoke-WebRequest -Uri $asset.browser_download_url -OutFile $zip -Headers $headers -TimeoutSec 1800 -UseBasicParsing
-        if ((Get-Item $zip).Length -ne $asset.size) { throw "download is $((Get-Item $zip).Length) bytes, expected $($asset.size)" }
-        if ($fresh) { Write-Host 'Download finished. Unpacking.' }
-        Expand-Archive -Path $zip -DestinationPath $files -Force
-        Remove-Item -Path $zip -Force
-        # the release lays files at the zip root; be robust if a future zip wraps them in a folder.
-        $exe = Get-ChildItem -Path $files -Recurse -Filter 'mk9.exe' | Select-Object -First 1
-        if (-not $exe) { throw 'the zip has no mk9.exe' }
-        Set-Content -Path $done -Encoding ascii -Value (Split-Path -Parent $exe.FullName)
-        Log "update $latest downloaded and unpacked"
-    }
-    $root = (Get-Content -Path $done | Select-Object -First 1)
-    Set-Status "ready $latest"
-
-    # 3. install once the game has closed
-    if ($WaitPid) {
-        try { Wait-Process -Id $WaitPid -ErrorAction SilentlyContinue } catch {}
-        while (Test-GameRunning) { Start-Sleep -Seconds 2 }
-        Start-Sleep -Seconds 1                                    # let Windows release the exe and DLLs
-    } elseif (Test-GameRunning) {
-        Log "update $latest waits: the game is running"; exit 0
-    }
-
-    $backup = Join-Path $pending 'backup'
+# Step 3 for one component, with the game closed. Returns $true when installed.
+function Install-Pending($c, $root) {
     $copied = New-Object System.Collections.Generic.List[string]
     try {
-        # mk9.exe first: if it is still locked nothing else has been touched yet.
-        $items = Get-ChildItem -Path $root -Recurse -File | Sort-Object { if ($_.Name -ieq 'mk9.exe') { 0 } else { 1 } }
+        # mk9.exe / the plugin first: if it is still locked nothing else has been touched yet.
+        $first = Split-Path -Leaf $c.Marker
+        $items = Get-ChildItem -Path $root -Recurse -File | Sort-Object { if ($_.Name -ieq $first) { 0 } else { 1 } }
         foreach ($f in $items) {
             $relPath = $f.FullName.Substring($root.Length).TrimStart('\')
             $target = Join-Path $GameDir $relPath
-            if (($keep -contains $relPath) -and (Test-Path $target)) { continue }   # a first install takes the port's mk9.toml
+            if (($c.Keep -contains $relPath) -and (Test-Path $target)) { continue }   # a first install takes the port's mk9.toml
             if (Test-Path $target) {
-                $b = Join-Path $backup $relPath
+                $b = Join-Path $c.Backup $relPath
                 New-Item -ItemType Directory -Path (Split-Path -Parent $b) -Force | Out-Null
                 Copy-Item -Path $target -Destination $b -Force
             } else {
@@ -151,23 +179,61 @@ try {
     } catch {
         $why = $_.Exception.Message
         foreach ($relPath in $copied) {                               # put the replaced files back
-            $b = Join-Path $backup $relPath
+            $b = Join-Path $c.Backup $relPath
             try {
                 if (Test-Path $b) { Copy-Item -Path $b -Destination (Join-Path $GameDir $relPath) -Force }
                 else { Remove-Item -Path (Join-Path $GameDir $relPath) -Force }
             } catch {}
         }
-        if (Test-Path $backup) { Remove-Item -Path $backup -Recurse -Force -ErrorAction SilentlyContinue }
-        Log "update $latest could not be installed, game left as it was: $why"
-        Set-Status "failed $latest"
-        exit 1
+        if (Test-Path $c.Backup) { Remove-Item -Path $c.Backup -Recurse -Force -ErrorAction SilentlyContinue }
+        Log "update $($c.Name) $($c.Latest) could not be installed, left as it was: $why"
+        Set-Status $c "failed $($c.Latest)"
+        return $false
     }
-    Remove-Item -Path $pendingRoot -Recurse -Force -ErrorAction SilentlyContinue
-    Set-Status "applied $latest"
-    Log "update to $latest installed ($($copied.Count) files)"
-    if ($fresh) { Write-Host "MK9 by Lauta $latest is installed. Starting the game." }
+    Remove-Item -Path (Join-Path $pendingRoot $c.Name) -Recurse -Force -ErrorAction SilentlyContinue
+    Set-Status $c "applied $($c.Latest)"
+    Log "update $($c.Name) to $($c.Latest) installed ($($copied.Count) files)"
+    return $true
+}
+
+# One updater at a time: a second game start while one waits just leaves it to the first.
+$lock = $null
+try {
+    $lock = [IO.File]::Open((Join-Path $modDir 'update.lock'), 'OpenOrCreate', 'ReadWrite', 'None')
+} catch { exit 0 }
+
+try {
+    # pending\<version> folders from the port-only updater (1.0.5 and older)
+    if (Test-Path $pendingRoot) {
+        Get-ChildItem -Path $pendingRoot -Directory | Where-Object { $_.Name -notin @('port', 'mod') } |
+            Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+    }
+    if ($fresh) { $port.Installed = '0.0.0'; Say 'MK9 by Lauta is not in this folder yet. Asking GitHub for its latest version.' }
+    if (-not $port.Installed) { $port.Installed = Get-LoggedVersion }
+    if (-not $mod.Installed) { $mod.Installed = Get-ModDllVersion }
+
+    $todo = @()
+    $r = Get-Pending $port; if ($r) { $todo += , @($port, $r) }
+    if (-not $fresh) { $r = Get-Pending $mod; if ($r) { $todo += , @($mod, $r) } }
+    if (-not $todo.Count) { exit 0 }
+
+    # 3. install once the game has closed
+    if ($WaitPid) {
+        try { Wait-Process -Id $WaitPid -ErrorAction SilentlyContinue } catch {}
+        while (Test-GameRunning) { Start-Sleep -Seconds 2 }
+        Start-Sleep -Seconds 1                                    # let Windows release the exe and DLLs
+    } elseif (Test-GameRunning) {
+        Log 'updates wait: the game is running'; exit 0
+    }
+    $ok = $true
+    foreach ($t in $todo) { if (-not (Install-Pending $t[0] $t[1])) { $ok = $false } }
+    if ($fresh) {
+        if (-not $ok) { Write-Host 'MK9 by Lauta could not be installed.'; exit 1 }
+        Write-Host "MK9 by Lauta $($port.Latest) is installed. Starting the game."
+    }
+    if (-not $ok) { exit 1 }
 } catch {
-    Log ('update check failed: ' + $_.Exception.Message)   # offline, GitHub down: try again next start
+    Log ('update failed: ' + $_.Exception.Message)
     if ($fresh) { Write-Host ('The download did not work: ' + $_.Exception.Message); exit 1 }
 } finally {
     if ($lock) { $lock.Close() }

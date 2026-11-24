@@ -7,6 +7,10 @@ cd "$(dirname "$0")"
 W64DEVKIT="${W64DEVKIT:-$HOME/tools/w64x64/w64devkit}"
 export PATH="$W64DEVKIT/bin:$PATH"
 MH=third_party/minhook
+# The updater reads the mod version from both places (MOD_VERSION on its command line, the plugin's
+# VERSIONINFO when run by hand): they must match.
+V=$(sed -n 's/^#define MOD_VERSION "\(.*\)"/\1/p' src/access.h)
+grep -q "\"ProductVersion\", \"$V\"" src/plugin.rc || { echo "src/plugin.rc version is not $V (MOD_VERSION)"; exit 1; }
 mkdir -p out/MK9Access out/plugins
 # Honest VERSIONINFO so Defender's ML heuristic does not flag the small DLL
 # (the proxy-DLL FP, Bearfoos.B!ml, that hit the old version.dll loader). Keep it.
