@@ -638,4 +638,4 @@ they choose Join with a code." ("Copy diagnostics" -> "Diagnostics copied."). F2
 - Krypt crash rerun 2026-11-24 on port 1.4.2 (tools/krypt_crashrate.py 4): mod unloaded 2 crashes of 4 (write 0x8210DA68
   at mk9.exe+0x263AFB4 sub_8280F3D8+0x11E4; writes 0x78780080/0x78780000 at +0x2F99091 sub_8294B270+0xD51), mod loaded
   0 of 4. crash_*.dmp were 0 bytes (the script kills the game 30 s after Select). Comment for #19 drafted in
-  work\drafts\lauta-issue19-comment.md (posting to Lauta's repo was blocked by the auto-mode classifier).
+  work\drafts\lauta-issue19-comment.md (posted 2026-11-24). Installer Tab bug filed as machinebreak/mk9-lauta#24.
