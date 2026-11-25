@@ -376,3 +376,64 @@ void keys_init(void) {
     char udr[MAX_PATH]; flag_str("user_data_root", udr, sizeof udr);
     log_line("saves: user_data_root = %s", udr[0] ? udr : "(none: Documents)");
 }
+
+/* ---------- PC layout: keys the original PC version leaves alone (forum report 2026-11-25) ----------
+ * The port's SDL layer turns Left and Right Shift into one Shift key, and Left and Right Ctrl into one Control
+ * (sdk/src/ui/sdl_virtual_key.cpp), so with the PC layout Right Shift flipped stance and Right Ctrl threw, which the
+ * 2013 PC release never did. Enter and Backspace (menu accept / back there) also kicked in fights through the A and B
+ * binds. A binding can't tell the sides apart, so a message hook on the game window's thread drops those key presses
+ * before SDL sees them: Right Shift and Right Ctrl always, Enter and Backspace only while a fight is being played (not
+ * paused, no port window). Key-ups always pass, so nothing can stay held. Port layout: nothing is touched. */
+static HHOOK g_msg_hook;
+static DWORD g_hook_tid;
+
+static int pc_drop(const MSG *m) {
+    if (m->message != WM_KEYDOWN && m->message != WM_SYSKEYDOWN) return 0;
+    if (g_pc_on <= 0) return 0;
+    unsigned scan = (unsigned)(m->lParam >> 16) & 0xFF, ext = (unsigned)(m->lParam >> 24) & 1;
+    if (m->wParam == VK_SHIFT && scan == 0x36) return 1;            /* Right Shift */
+    if (m->wParam == VK_RSHIFT || m->wParam == VK_RCONTROL) return 1;
+    if (m->wParam == VK_CONTROL && ext) return 1;                   /* Right Ctrl */
+    if ((m->wParam == VK_RETURN || m->wParam == VK_BACK) && fight_live()) return 1;
+    return 0;
+}
+
+static LRESULT CALLBACK getmsg_proc(int code, WPARAM wp, LPARAM lp) {
+    if (code == HC_ACTION && lp) {
+        MSG *m = (MSG *)lp;
+        if (pc_drop(m)) {
+            static DWORD last;
+            if (GetTickCount() - last > 1000) { last = GetTickCount(); log_line("keys: PC layout, key %u dropped", (unsigned)m->wParam); }
+            m->message = WM_NULL;
+        }
+    }
+    (void)wp;
+    return CallNextHookEx(g_msg_hook, code, wp, lp);
+}
+
+typedef struct { HWND best; LONG area; } WinFind;
+static BOOL CALLBACK find_game_win(HWND h, LPARAM l) {
+    WinFind *w = (WinFind *)l;
+    DWORD pid = 0; GetWindowThreadProcessId(h, &pid);
+    if (pid != GetCurrentProcessId() || !IsWindowVisible(h) || GetWindow(h, GW_OWNER)) return TRUE;
+    RECT r; GetWindowRect(h, &r);
+    LONG a = (r.right - r.left) * (r.bottom - r.top);
+    if (a > w->area) { w->area = a; w->best = h; }
+    return TRUE;
+}
+
+/* Every second until the game window exists: hook its thread's message queue. */
+void keys_poll(void) {
+    static DWORD last;
+    if (g_msg_hook || GetTickCount() - last < 1000) return;
+    last = GetTickCount();
+    keys_pc_on();
+    WinFind w = { NULL, 0 };
+    EnumWindows(find_game_win, (LPARAM)&w);
+    if (!w.best) return;
+    g_hook_tid = GetWindowThreadProcessId(w.best, NULL);
+    g_msg_hook = SetWindowsHookExW(WH_GETMESSAGE, getmsg_proc, NULL, g_hook_tid);
+    log_line("keys: message hook on the window thread %lu %s", g_hook_tid, g_msg_hook ? "on" : "FAILED");
+}
+
+void keys_shutdown(void) { if (g_msg_hook) { UnhookWindowsHookEx(g_msg_hook); g_msg_hook = NULL; } }

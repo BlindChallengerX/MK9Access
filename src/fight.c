@@ -14,10 +14,13 @@
  * The camera keeps the fighters at most 600 apart; standing in contact is
  * about 89.
  *
+ * Distance cue, chosen with F8 (saved in MK9Access\settings.txt): clicks (default since 2026-11-25), the hum, or off.
  * Sound channels, one meaning each (spatial-audio-kit rules):
+ *   click rate          = distance (a parking sensor: 2.2 ticks/s far .. 11.8 touching, geometric)
+ *   click pitch         = the opponent is in the air (a fourth up, with hysteresis)
  *   hum pitch and level = distance (110 Hz far .. 330 Hz touching, as SC2 Access)
- *   hum pan             = the opponent's side (equal power, width 0.8)
  *   hum tremolo         = the opponent is in the air
+ *   pan (both)          = the opponent's side (equal power, width 0.8)
  *   short note pairs    = a fighter's health passed half / a quarter
  *                         (mine fall and sit in the middle, theirs rise from their side)
  */
@@ -55,7 +58,48 @@ static int me_slot(void) {
     return slot;
 }
 
-static int s_hum_on = 1, s_hp_tones = 1;
+enum { CUE_OFF, CUE_CLICKS, CUE_HUM, CUE_N };
+static int s_cue = CUE_CLICKS, s_hp_tones = 1, s_vol = 2, s_fight_speech = 0;
+static const float k_vol[4] = { 0.5f, 0.71f, 1.0f, 1.41f };    /* about -6, -3, 0, +3 dB */
+static volatile int s_live;             /* both fighters in play (fight_live adds pause, port window, result menu) */
+static volatile int s_hold;             /* a challenge result menu is up (fight_hold) */
+static int s_air;                       /* opponent airborne, with hysteresis */
+
+/* MK9Access\settings.txt: "distance_cue=clicks" etc. The updater overlays the zip, which has no settings file. */
+static void settings_path(wchar_t *p) { swprintf(p, MAX_PATH, L"%lssettings.txt", g_mod_dir); }
+static void settings_save(void) {
+    static const char *cue[CUE_N] = { "off", "clicks", "hum" };
+    wchar_t p[MAX_PATH]; settings_path(p);
+    FILE *f = _wfopen(p, L"w");
+    if (!f) { log_line("fight: settings not saved"); return; }
+    fprintf(f, "distance_cue=%s\ndistance_volume=%d\nhealth_tones=%d\nfight_speech=%d\n", cue[s_cue], s_vol + 1, s_hp_tones, s_fight_speech);
+    fclose(f);
+}
+static void settings_load(void) {
+    static int done;
+    if (done) return;
+    done = 1;
+    wchar_t p[MAX_PATH]; settings_path(p);
+    FILE *f = _wfopen(p, L"r");
+    if (!f) return;
+    char line[128], v[64];
+    int n;
+    while (fgets(line, sizeof line, f)) {
+        if (sscanf(line, "distance_cue=%63s", v) == 1) s_cue = !strcmp(v, "off") ? CUE_OFF : !strcmp(v, "hum") ? CUE_HUM : CUE_CLICKS;
+        else if (sscanf(line, "distance_volume=%d", &n) == 1 && n >= 1 && n <= 4) s_vol = n - 1;
+        else if (sscanf(line, "health_tones=%d", &n) == 1) s_hp_tones = n != 0;
+        else if (sscanf(line, "fight_speech=%d", &n) == 1) s_fight_speech = n != 0;
+    }
+    fclose(f);
+    log_line("fight: settings cue %d volume %d health tones %d fight speech %d", s_cue, s_vol + 1, s_hp_tones, s_fight_speech);
+}
+
+/* Read from any thread before speaking. The pause menu, the port overlay and a challenge result speak at once,
+ * without waiting for the next poll. */
+int fight_live(void) { return s_live && !s_hold && !g32(PAUSED) && !im_menu_on(); }
+int fight_quiet(void) { return !s_fight_speech && fight_live(); }
+
+static void cues_off(void) { hum_set(0, 110, 0, 0, W_SOFT); hum_trem(0, 0); click_set(0, 0, 0, 700); }
 static float s_hp[2] = { -1, -1 };
 static int s_inplay;
 
@@ -163,40 +207,53 @@ static void hp_tones(int p, float before, float after, float pan) {
 /* A Challenge Tower result (Success / Failure): the game stays in the fight state with both fighters behind the
  * "Continue? Retry" menu, so the hum played under that menu (forum report 2026-11-24). Held until something loads
  * (Retry, Return To Tower: [MainMenu] LOADING), the fight state ends, or both fighters are back at full health. */
-static volatile int s_hold;
 void fight_hold(void) { s_hold = 1; log_line("fight: cues held (challenge result)"); }
 void fight_resume(void) { if (s_hold) log_line("fight: cues resumed"); s_hold = 0; }
 
 void fight_poll(void) {
     Fighter me, op;
     /* the hum carries on through Finish Him (state 11) until the fatality starts: range matters there */
+    settings_load();
     int st = game_state();
     int ms = me_slot();
     int inplay = (st == GS_PLAY || (st == GS_FATALITY && fatality_finish_him())) && read_fighter(ms, &me) && read_fighter(1 - ms, &op);
     /* Story Mode loads the next fight behind its movies (state 8 with both fighters from 3 s in): no cues there */
     if (story_playing()) inplay = 0;
     if (!inplay) {
-        if (s_inplay) { hum_set(0, 110, 0, 0, W_SOFT); hum_trem(0, 0); s_hp[0] = s_hp[1] = -1; log_line("fight: cues off"); }
+        if (s_inplay) { cues_off(); s_hp[0] = s_hp[1] = -1; log_line("fight: cues off"); }
         s_inplay = 0;
+        s_live = 0;
         s_hold = 0;
         return;
     }
     if (s_hold && me.hp >= 0.999f && op.hp >= 0.999f) fight_resume();
     if (s_hold) {
-        if (s_inplay) { hum_set(0, 110, 0, 0, W_SOFT); hum_trem(0, 0); }
+        if (s_inplay) cues_off();
+        s_live = 0;
         s_hp[0] = me.hp; s_hp[1] = op.hp;
         return;
     }
     if (!s_inplay) log_line("fight: cues on");
     s_inplay = 1;
+    s_live = 1;
     /* paused (engine flag 0x833DD100, found 2026-11-16) or the port's overlay up: hush, keep counting */
-    if (g32(PAUSED) || im_menu_on()) { hum_set(0, 110, 0, 0, W_SOFT); return; }
+    if (g32(PAUSED) || im_menu_on()) { cues_off(); return; }
     float dx = op.x - me.x, d = fabsf(dx);
     float k = clampf((D_FAR - d) / (D_FAR - D_NEAR), 0, 1);
     /* full side as soon as they are apart (contact is 89): the side matters most up close, for cross-ups */
     float pan = 0.8f * clampf(dx / 60.0f, -1, 1);
-    hum_set(0, 110.0f * powf(3.0f, k), s_hum_on ? 0.035f + 0.065f * k : 0, pan, W_SOFT);
-    hum_trem(0, op.z > 40 ? 0.6f : 0);
+    if (op.z > 40) s_air = 1; else if (op.z < 25) s_air = 0;
+    float vol = k_vol[s_vol];
+    if (s_cue == CUE_HUM) {
+        hum_set(0, 110.0f * powf(3.0f, k), (0.035f + 0.065f * k) * vol, pan, W_SOFT);
+        hum_trem(0, s_air ? 0.6f : 0);
+    } else { hum_set(0, 110, 0, 0, W_SOFT); hum_trem(0, 0); }
+    if (s_cue == CUE_CLICKS) {
+        /* 450 ms between ticks far away down to 85 ms touching: equal steps in ratio, so each step closer is
+         * heard as the same speed-up; level rises a little with it */
+        float interval = 0.450f * powf(0.085f / 0.450f, k);
+        click_set(1.0f / interval, (0.075f + 0.035f * k) * vol, pan, s_air ? 935.0f : 700.0f);
+    } else click_set(0, 0, 0, 700);
     float hp[2] = { me.hp, op.hp };
     for (int p = 0; p < 2; p++) {
         /* a new round refills health: start counting again without tones */
@@ -206,7 +263,6 @@ void fight_poll(void) {
 }
 
 void fight_key(int vk, int shift, int ctrl) {
-    (void)ctrl;
     Fighter me, op;
     int st = game_state();
     int ms = me_slot();
@@ -221,9 +277,22 @@ void fight_key(int vk, int shift, int ctrl) {
         break;
     /* No spoken opponent-position key: in a fight there's no time to listen to it;
      * the distance hum carries side, distance and airborne. */
-    case VK_F8:
-        if (shift) { s_hp_tones = !s_hp_tones; speak(s_hp_tones ? L"Health tones on" : L"Health tones off", 1); }
-        else { s_hum_on = !s_hum_on; speak(s_hum_on ? L"Distance hum on" : L"Distance hum off", 1); }
+    case VK_F8:                                   /* settings, saved at once */
+        settings_load();
+        if (shift && ctrl) {
+            s_fight_speech = !s_fight_speech;
+            speak(s_fight_speech ? L"Speech during fights on" : L"Speech during fights off", 1);
+        } else if (ctrl) {
+            s_vol = (s_vol + 1) % 4;
+            speakf(1, "Distance volume %d of 4", s_vol + 1);
+        } else if (shift) {
+            s_hp_tones = !s_hp_tones; speak(s_hp_tones ? L"Health tones on" : L"Health tones off", 1);
+        } else {
+            s_cue = (s_cue + 1) % CUE_N;
+            static const wchar_t *names[CUE_N] = { L"Distance cue off", L"Distance clicks", L"Distance hum" };
+            speak(names[s_cue], 1);
+        }
+        settings_save();
         break;
     }
 }

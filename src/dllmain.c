@@ -111,7 +111,7 @@ static DWORD WINAPI mod_thread(LPVOID unused) {
             int shift = GetAsyncKeyState(VK_SHIFT) < 0, ctrl = GetAsyncKeyState(VK_CONTROL) < 0;
             for (int i = 0; i < NKEYS; i++) {
                 int d = GetAsyncKeyState(k_keys[i]) < 0;
-                if (d && !down[i]) game_key(k_keys[i], shift, ctrl);
+                if (d && !down[i]) { int was = speech_force(1); game_key(k_keys[i], shift, ctrl); speech_force(was); }
                 down[i] = d;
             }
         }

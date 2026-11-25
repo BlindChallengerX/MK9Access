@@ -53,6 +53,16 @@ static SfxVoice s_sfx[NSFX];
 static Tone s_tones[NTONES];
 static Hum s_hums[NHUMS];
 static Clip s_clip;                   /* one voice clip at a time */
+
+/* The distance clicker (a parking sensor): wooden ticks at `rate` per second, timed sample-accurately here so the
+ * rhythm stays even (the 16 ms mod thread would jitter it). Each tick keeps the pan, gain and pitch it started with. */
+typedef struct {
+    float rate, gain, pan, pitch;     /* targets from click_set */
+    double ph;                        /* 0..1 to the next tick */
+    float t, f, g, p;                 /* the ringing tick: age, pitch, gain, pan */
+    int ringing;
+} Clicker;
+static Clicker s_click;
 static float s_duck = 1.0f, s_duck_target = 1.0f;   /* the mod's own tones/hums dip under a clip */
 static uint32_t s_noise = 22222;
 volatile float g_master = 1.2f;
@@ -127,7 +137,18 @@ void hum_trem(int slot, float depth) {
     LeaveCriticalSection(&s_lock);
 }
 
+/* Distance clicks: rate ticks/s (0 = stop), gain, pan -1..1, pitch of the tick body in Hz. */
+void click_set(float rate, float gain, float pan, float pitch) {
+    if (bad(rate) || bad(gain) || bad(pan) || bad(pitch) || pitch <= 0) return;
+    EnterCriticalSection(&s_lock);
+    if (s_click.rate <= 0 && rate > 0) s_click.ph = 0.999;   /* starting: tick at once */
+    s_click.rate = rate < 0 ? 0 : rate > 30 ? 30 : rate;
+    s_click.gain = gain; s_click.pan = pan < -1 ? -1 : pan > 1 ? 1 : pan; s_click.pitch = pitch;
+    LeaveCriticalSection(&s_lock);
+}
+
 void hum_all_off(void) {
+    s_click.rate = 0;
     EnterCriticalSection(&s_lock);
     for (int i = 0; i < NHUMS; i++) s_hums[i].gain = 0;
     LeaveCriticalSection(&s_lock);
@@ -274,6 +295,25 @@ static void mix(short *out, int frames) {
                 s *= 1.0f - h->ctrem * (0.5f - 0.5f * cosf(PI2 * h->tph));
             }
             buf[2 * n] += s * sqrtf(0.5f * (1 - h->cp)); buf[2 * n + 1] += s * sqrtf(0.5f * (1 + h->cp));
+        }
+    }
+    {   /* distance clicks: a damped wooden body + a short second mode + a 1 ms noise tap */
+        Clicker *c = &s_click;
+        for (int n = 0; n < frames; n++) {
+            if (c->rate > 0 && c->gain > 0) {
+                c->ph += c->rate * dt;
+                if (c->ph >= 1.0) { c->ph -= floor(c->ph); c->ringing = 1; c->t = 0; c->f = c->pitch; c->g = c->gain; c->p = c->pan; }
+            }
+            if (!c->ringing) continue;
+            if (c->t >= 0.05f) { c->ringing = 0; continue; }
+            float t = c->t;
+            float env = fminf(1.0f, t / 0.0006f) * fminf(1.0f, (0.05f - t) / 0.005f);
+            float s = sinf(PI2 * c->f * t) * expf(-t / 0.009f)
+                    + 0.35f * sinf(PI2 * 2.76f * c->f * t) * expf(-t / 0.0035f)
+                    + 0.25f * osc(W_NOISE, 0) * expf(-t / 0.0012f);
+            s *= env * c->g;
+            buf[2 * n] += s * sqrtf(0.5f * (1 - c->p)); buf[2 * n + 1] += s * sqrtf(0.5f * (1 + c->p));
+            c->t += dt;
         }
     }
     for (int i = 0; i < NSFX; i++) {

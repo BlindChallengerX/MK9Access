@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include "rex_mod.h"
 
-#define MOD_VERSION "1.0.8"
+#define MOD_VERSION "1.0.9"
 
 extern wchar_t g_game_dir[MAX_PATH];   /* folder of mk9.exe, with trailing backslash */
 extern wchar_t g_mod_dir[MAX_PATH];    /* g_game_dir + "MK9Access\" */
@@ -27,6 +27,7 @@ void speak(const wchar_t *text, int interrupt);
 void speak_utf8(const char *text, int interrupt);
 void speakf(int interrupt, const char *fmt, ...);
 void speak_repeat(void);
+int speech_force(int on);              /* this thread's speech gets through during a fight (keys, tower objectives) */
 void speech_stop(void);
 
 /* guest.c: the Xbox 360 memory and the recompiled game code.
@@ -81,6 +82,8 @@ void keys_init(void);
 void keys_toggle(void);
 void keys_game_thread(void);
 int keys_pc_on(void);
+void keys_poll(void);                  /* hooks the game window's messages (PC layout: right Shift/Ctrl, Enter/Backspace in fights) */
+void keys_shutdown(void);
 int keys_for_button(const char *token, char *out, size_t cap);
 int lang_code(void);                   /* the game's language: 1 English, 5 Spanish, 9 Portuguese, 4 French, 3 German, 6 Italian */
 const wchar_t *lang_file_ext(void);    /* its Coalesced.* extension: eng, spa, ... */
@@ -126,6 +129,7 @@ void tone_at(float delay, float f0, float f1, float seconds, float gain, float p
 void hum_set(int slot, float freq, float gain, float pan, int wave);
 void hum_trem(int slot, float depth);
 void hum_all_off(void);
+void click_set(float rate, float gain, float pan, float pitch);   /* distance clicks; rate 0 stops */
 void clip_play(const wchar_t *path, float gain);   /* play a recorded WAV (e.g. a fatality description) over ducked cues */
 void clip_stop(void);
 int clip_playing(void);
@@ -138,6 +142,8 @@ extern volatile float g_master;
 void fight_poll(void);
 void fight_hold(void);                   /* a challenge result: no fight cues behind its Continue menu */
 void fight_resume(void);                 /* something loads: cues allowed again */
+int fight_live(void);                    /* a fight is being played: not paused, no port window, no result menu */
+int fight_quiet(void);                   /* a fight is on: the screen reader stays silent unless forced */
 
 /* minigame.c: Test Your Might / Strike meter tones, Test Your Sight tracking */
 void mg_resolve(uint32_t holder, const char *path);

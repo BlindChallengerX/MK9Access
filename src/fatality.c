@@ -267,7 +267,7 @@ static void match_fatality(void) {
     log_line("fatality match: %s, motion %s (pad %d) -> %s score %d",
              gname, shown[0] ? shown : "-", best_user, best ? best->clip : "none", best_sc);
     if (!best) return;                                 /* the CPU's, a stage fatality, or unknown */
-    speak_utf8(best->name, 1);
+    { int was = speech_force(1); speak_utf8(best->name, 1); speech_force(was); }   /* fatality names speak even mid-fight */
     snprintf(g_pend_clip, sizeof g_pend_clip, "%s", best->clip);
     g_pend_t = GetTickCount() + 1100;                  /* let the name finish first */
     g_play_t = GetTickCount();
@@ -290,7 +290,7 @@ static void named_fatality(const char *cb) {
     char msg[160];
     if (atk == 0) snprintf(msg, sizeof msg, "%s", F->name);
     else snprintf(msg, sizeof msg, "%s: %s", F->who, F->name);
-    speak_utf8(msg, 1);
+    { int was = speech_force(1); speak_utf8(msg, 1); speech_force(was); }
     snprintf(g_pend_clip, sizeof g_pend_clip, "%s", F->clip);
     g_pend_t = GetTickCount() + (atk == 0 ? 1100 : 1700);   /* let the name finish first */
     g_play_t = g_named_t = GetTickCount();
@@ -354,7 +354,7 @@ int fatality_try(const char *text) {
             char msg[320];
             if (g_fat[i].input[0]) snprintf(msg, sizeof msg, "%s. %s.", text, g_fat[i].input);
             else snprintf(msg, sizeof msg, "%s.", text);
-            speak_utf8(msg, 1);
+            { int was = speech_force(1); speak_utf8(msg, 1); speech_force(was); }
         }
         return 1;
     }

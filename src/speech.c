@@ -130,8 +130,19 @@ static void enqueue(const wchar_t *text, int interrupt, int stop) {
     SetEvent(g_qevent);
 }
 
+/* During a fight nothing is spoken on its own (players lock in on the opponent by sound; forum feedback
+ * 2026-11-25). The player's own mod keys and the Challenge Tower's objectives still speak: they force it. */
+static __thread int t_force;
+int speech_force(int on) { int was = t_force; t_force = on; return was; }
+
 void speak(const wchar_t *text, int interrupt) {
     if (!text || !*text) return;
+    if (!t_force && fight_quiet()) {
+        char *q = to_utf8(text);
+        log_line("QUIET (fight): %s", q ? q : "?");
+        free(q);
+        return;
+    }
     wcsncpy(g_last, text, 2047); g_last[2047] = 0;
     char *u = to_utf8(text);
     log_line("SAY%s: %s", interrupt ? "" : "+", u ? u : "?");

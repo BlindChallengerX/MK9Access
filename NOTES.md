@@ -141,6 +141,31 @@ Cues (spatial-audio-kit rules; SC2 Access synth copied, plus tremolo and a clean
   "Scorpion wins". Not tested in a real online match (needs a second player).
 - RE command `audiorec SECONDS` writes MK9Access\audiorec.wav; analyse with spatial-audio-kit\analyze.py.
 
+### Distance clicks, fight silence, PC-layout key filter (2026-11-25, forum feedback; deployed, not released)
+- Forum (an old MK9 player): wanted the extra cues and the "constant humming" switchable, and no screen reader in fights.
+  User's call: the distance cue becomes clicks that speed up as the opponent nears, panned to their side; no speech in fights.
+- Clicks (audio.c click_set, timed in the mix thread so the rhythm stays even): damped 700 Hz body + 2.76x mode + 1 ms
+  noise tap, 50 ms. Interval 450 ms (d 600) to 85 ms (contact 89), geometric in k; gain (0.075 + 0.035k) x volume;
+  pan as the hum; opponent airborne (z > 40 on, < 25 off) = 935 Hz, a fourth up. Measured in a Practice fight with
+  audiorec: 2.2/s far, 11.8/s contact, peak -21.5 to -18.2 dBFS, -36 LUFS, 5 % in 1-4 kHz, right-left +9.5 dB.
+  Airborne pitch not heard in game (the dummy never jumped).
+- F8 cycles clicks / hum / off, Ctrl+F8 volume 1-4 (x0.5, 0.71, 1, 1.41), Shift+F8 health tones, Ctrl+Shift+F8
+  speech during fights (off by default). Saved in MK9Access\settings.txt (not in the zip, so updates keep it).
+- Fight silence: speech.c drops every speak() while fight_quiet() (both fighters in play, not paused, no port window,
+  no challenge-result hold) and logs it as "QUIET (fight)". speech_force() lets a thread through: the key loop
+  (every mod key), Challenge Tower objectives/narrator/move to land, Test Your Might material, fatality names. The
+  challenge result now holds the cues before it speaks. Verified: Practice "Scorpion. Sub-Zero" card held back,
+  F8/Ctrl+F8 spoken mid-fight, pause menu read.
+- PC layout (Shift+F12): SDL in the port folds both Shifts into kShift and both Ctrls into kControl
+  (sdk/src/ui/sdl_virtual_key.cpp), so Right Shift flipped stance and Right Ctrl threw; Enter/Backspace kicked through
+  the A/B binds. keys.c hooks WH_GETMESSAGE on the game window's thread (keys_poll takes the biggest visible window
+  of the process) and turns those WM_KEYDOWNs into WM_NULL: right Shift (scan 0x36) and right Ctrl (extended bit)
+  always, Enter/Backspace only while fight_live(). Key-ups always pass. Port layout untouched. Verified by bot in
+  Practice: right Ctrl/Shift, Enter, Backspace at contact did nothing (no damage, "key N dropped" in the log), left
+  Ctrl threw (12 %), Escape paused and Enter resumed.
+- The title's attract demo is a fight (state 8, both fighters): cues play and speech is held during it, as the hum
+  did before. "Press Start" came after it ended in the test.
+
 ## Saves in the game folder (Controlled Folder Access)
 Windows Security's Controlled Folder Access blocks mk9.exe writing to `OneDrive\Documents` (Defender event 1123);
 the port throws (E06D7363 on the save thread) and the game closes on its first save. The user chose (2026-11-16)

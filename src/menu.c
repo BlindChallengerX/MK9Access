@@ -1382,7 +1382,7 @@ static void on_focus_event(FocusEv *e) {
     if (slot_event(e)) return;
     /* challenge / minigame result (Challenge Tower, Test Your Might, Sight, Strike) */
     if (!strcmp(e->target, "practiceHUD") && (!_stricmp(e->arg, "Success") || !_stricmp(e->arg, "Failure"))) {
-        say(e->arg, NULL); mg_sight(4); fight_hold(); return;
+        fight_hold(); say(e->arg, NULL); mg_sight(4); return;   /* hold first: the result speaks past the fight silence */
     }
     if (!strcmp(e->target, "SightNavGrp")) {          /* Test Your Sight: Begin pressed / the pick starts */
         if (!_stricmp(e->arg, "BuildOff")) mg_sight(2);
@@ -1743,7 +1743,7 @@ static void on_group(LocCall *g, int n) {
     for (int i = 0; i < n; i++) {
         if ((!_stricmp(g[i].sec, "TestYourMight") || !_stricmp(g[i].sec, "TestYourStrike")) && !_strnicmp(g[i].key, "Material", 8)) {
             char t[128], m[200]; tidy(g[i].val, t, sizeof t);
-            snprintf(m, sizeof m, "Break: %s", t); say(m, NULL); return;
+            snprintf(m, sizeof m, "Break: %s", t); int was = speech_force(1); say(m, NULL); speech_force(was); return;
         }
         if (!_stricmp(g[i].sec, "TowerMission") && !_stricmp(g[i].key, "TEST_YOUR_SIGHT_NAV_BEGIN")) mg_sight(1);
         if (!_stricmp(g[i].sec, "TowerMission") && !_stricmp(g[i].key, "TEST_YOUR_SIGHT_NAV_SELECT")) mg_sight(3);
@@ -1794,7 +1794,10 @@ static void on_group(LocCall *g, int n) {
                  * behind a message that is probably still being spoken (~55 ms a character), unless the
                  * player pressed something since (Continue on a narrator line = skip to the next). */
                 int queue = (LONG)(busy_until - now) > 0 && g_input_t < last_t;
+                /* a challenge's objective and the move to land are needed mid-fight: they get past the fight silence */
+                int was = speech_force(1);
                 if (queue) { char fx[1400]; fix_dots(text, fx, sizeof fx); speak_utf8(fx, 0); } else say(text, NULL);
+                speech_force(was);
                 last_t = now;
                 busy_until = (queue && (LONG)(busy_until - now) > 0 ? busy_until : now) + (DWORD)(strlen(text) * 55);
                 g_focus_holder = 0;

@@ -6,8 +6,10 @@ MK9 by Lauta (a fan PC port of the Xbox 360 game, by Lauta / machinebreak).
 - Menus, character select, move lists, the Challenge Tower, the Krypt, the
   minigames and the port's own windows are spoken through your screen reader
   using Prism. If no screen reader is running, the Windows voice is used.
-- In fights, a soft hum tells you where the opponent is: which side, how far,
-  and whether they are in the air. Short tones tell you when either fighter
+- In fights, clicks tell you where the opponent is: they come from the
+  opponent's side, speed up as the opponent comes closer and go higher while
+  they are in the air. F8 swaps them for a soft hum or turns them off. The
+  screen reader stays silent while you fight. Short tones tell you when either fighter
   drops below half and a quarter of their health.
 - Every fatality is named and described, yours and the ones done to you.
 - Story Mode's cutscenes are described: a narrator speaks in the pauses
@@ -120,6 +122,9 @@ the keys you had before. It works at once and is kept for the next start.
   Tab                 tag
   1 or Escape         pause
   4                   the controller's Back button
+As in the PC release, Right Ctrl and Right Shift do nothing, and Enter and
+Backspace only accept and go back in menus (and the pause menu): in a fight
+they don't kick.
   G or Enter          select in menus
   J or Backspace      back in menus
 Either Ctrl and either Shift work. If Windows is set to switch keyboard
@@ -136,8 +141,11 @@ Mod keys:
   F5          read the port's window that is open (F1 online, F2 options);
               in an online session with no window open: the connection
   F6          health of both fighters, in percent
-  F8          distance hum on or off
+  F8          distance cue: clicks, hum, or off
+  Ctrl+F8     distance cue volume, 4 steps
   Shift+F8    health tones on or off
+  Ctrl+Shift+F8  speech during fights on or off (off at first)
+              These four settings are kept for the next start.
   F10         Practice: the last attack's frame data
   Shift+F10   Practice: frame data read after every attack, on or off
   F4          Krypt: the other koffins in view
@@ -164,16 +172,27 @@ Port keys:
 
 4. FIGHTS
 
-The hum plays the whole fight. It comes from the side the opponent is on,
-gets higher as they come closer, and wobbles while they are in the air. It
-stops while the game is paused or a port window is open. F8 turns it off.
+The distance clicks play the whole fight, like a parking sensor. They come
+from the side the opponent is on and speed up as they come closer: about two
+a second at full screen apart, about twelve when you touch. While the
+opponent is in the air the clicks go higher. F8 switches to the soft hum
+(higher as they come closer, wobbling while they are in the air), then to no
+distance cue at all, then back to the clicks. Ctrl+F8 sets its volume. It
+stops while the game is paused or a port window is open.
+
+The screen reader is silent while you fight. The pause menu, the port's
+windows and the results speak as usual, and so do the mod keys you press
+yourself (F6 for health, F8 and the others). Challenge Tower objectives and
+the move a challenge asks for are still read, as are fatality names.
+Ctrl+Shift+F8 turns speech during fights back on.
 
 Health tones: two falling notes, in the middle, when you drop below half and
 below a quarter of your health. Two rising notes, from the opponent's side,
 when they do. F6 tells you both health values in percent. Shift+F8 turns the
 tones off.
 
-The round winner is spoken, and so are the game's fight messages. Against
+With speech during fights on (Ctrl+Shift+F8), the round winner is spoken,
+and so are the game's fight messages. Against
 the computer you hear the winning character ("Scorpion wins"). In a match
 between players you hear the player: the online username of whoever won, or
 "Player 1 wins" / "Player 2 wins" in 2 players Versus Mode on one PC. Combo
@@ -230,7 +249,7 @@ with how many koffins you have opened.
 
 Fatality challenges ("Perform the displayed Fatality Input") read the input,
 and the fatality you perform is named and described as in any fight. After a
-challenge's Success or Failure the distance hum stays quiet behind the
+challenge's Success or Failure the distance cue stays quiet behind the
 "Continue? Retry" menu.
 
 The pause menu's Controller Preset: Select opens a number beside it; Left and
@@ -278,7 +297,7 @@ connected to the other player. Don't press anything while it restarts.
 You hear "Connected to (name)". Then it is the game's own menus: 2 players
 (Up from Fight, then Right), Versus Mode, One VS One; the other player joins
 with Start, and each picks a fighter. Both players move the menus. There is no
-pause in online fights. The hum and F6 always follow your own fighter, also
+pause in online fights. The distance cue and F6 always follow your own fighter, also
 when you are player 2. A bad connection is said once ("Unstable connection",
 "Waiting for (name)"); F5 reads the opponent's name, the ping and the input
 delay. After the match the loser chooses Rematch, another fighter or the menu.
@@ -304,7 +323,7 @@ keys are kept. The updater's log is MK9Access\update.log.
   track's timing. Only the opening chapter has been tried so far; the
   short scenes before and after each story fight are not described.
 - Online: King of the Hill and the four-PC 2 vs 2 have not been tried with
-  the mod; in them the hum may take the wrong fighter as yours. Checkboxes in
+  the mod; in them the distance cue may take the wrong fighter as yours. Checkboxes in
   the port's windows don't say whether they are ticked, and the letters you
   type in a text box are not read back by the mod.
 - The round timer and the pause screen's match stats are not read.
