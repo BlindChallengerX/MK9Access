@@ -1749,6 +1749,40 @@ static void on_group(LocCall *g, int n) {
         if (!_stricmp(g[i].sec, "TowerMission") && !_stricmp(g[i].key, "TEST_YOUR_SIGHT_NAV_SELECT")) mg_sight(3);
         if (n == 1 && !_stricmp(g[i].sec, "TowerMission") && !_stricmp(g[i].key, "CHALLENGE_NAME")) return;   /* "Challenge": the result says it */
     }
+    /* Fatality Tutorial intro card (practiceHUD.messageBox): [TutorialMissions] <NAME> + <NAME>_MSG (the tagline),
+     * then a second lookup of the two start choices, FATALITY_LEFT_LABEL on [X] and FATALITY_RIGHT_LABEL on [A]
+     * (seen 2026-11-25 with menudebug). Was silent: the player had to guess which key starts it. */
+    {
+        static char tag[300]; static DWORD tag_t;
+        int left = -1, right = -1;
+        for (int i = 0; i < n; i++) {
+            if (_stricmp(g[i].sec, "TutorialMissions")) continue;
+            if (ends_with(g[i].key, "_MSG")) {
+                char nm[64] = "", t[240];
+                size_t kl = strlen(g[i].key) - 4;
+                for (int j = 0; j < n; j++)       /* the name: the lookup keyed <NAME> */
+                    if (!_stricmp(g[j].sec, "TutorialMissions") && strlen(g[j].key) == kl &&
+                        !_strnicmp(g[j].key, g[i].key, kl)) tidy(g[j].val, nm, sizeof nm);
+                for (char *p = nm, prev = ' '; *p; prev = *p++)   /* "SUB-ZERO" -> "Sub-Zero" */
+                    *p = (char)(isalpha((unsigned char)prev) ? tolower((unsigned char)*p) : toupper((unsigned char)*p));
+                tidy(g[i].val, t, sizeof t);
+                snprintf(tag, sizeof tag, "%s%s%s", nm, nm[0] ? ". " : "", t);
+                tag_t = now;
+            }
+            if (!_stricmp(g[i].key, "FATALITY_LEFT_LABEL")) left = i;
+            if (!_stricmp(g[i].key, "FATALITY_RIGHT_LABEL")) right = i;
+        }
+        if (left >= 0 && right >= 0) {
+            char kl[96], kr[96], l[96], r[96], msg[700];
+            if (!keys_for_button("[X]", kl, sizeof kl)) snprintf(kl, sizeof kl, "X button");
+            if (!keys_for_button("[A]", kr, sizeof kr)) snprintf(kr, sizeof kr, "A button");
+            tidy(g[left].val, l, sizeof l); tidy(g[right].val, r, sizeof r);
+            int fresh = now - tag_t < 5000 && tag[0];
+            snprintf(msg, sizeof msg, "%s%s%s: %s. %s: %s.", fresh ? tag : "", fresh ? " " : "", l, kl, r, kr);
+            int was = speech_force(1); say(msg, NULL); speech_force(was);   /* a fight is loaded behind the card */
+            return;
+        }
+    }
     /* In a challenge (not the tower menu): [TowerMission] texts are the challenge's own
      * announcements - the intro (title + objective, *_INITIAL_DETAILS), narrator lines
      * (<NAME> + line), the move to land in training ([TowerMission] move name +

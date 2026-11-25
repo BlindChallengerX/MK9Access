@@ -114,8 +114,9 @@ def main():
             sf.write(os.path.join(OUT, key + ".wav"), level(a, sr), sr, subtype="PCM_16")
         elif not os.path.exists(os.path.join(OUT, key + ".wav")):
             print("missing clip:", key)
-        # index: name <TAB> input in words <TAB> clip <TAB> character <TAB> raw input
-        index.append("%s\t%s\t%s.wav\t%s\t%s" % (name, words, key, ch, inp))
+        # index: name <TAB> input in words <TAB> clip <TAB> character <TAB> raw input <TAB> description (said by the
+        # screen reader instead of the clip when the player picks "Descriptions: screen reader", Alt+F12)
+        index.append("%s\t%s\t%s.wav\t%s\t%s\t%s" % (name, words, key, ch, inp, text.replace("\t", " ")))
     with open(os.path.join(OUT, "index.tsv"), "w", encoding="utf-8", newline="\n") as fh:
         fh.write("\n".join(index) + "\n")
     print("indexed" if INDEX_ONLY else "generated", len(index), "fatality clips in", OUT)

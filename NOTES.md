@@ -166,6 +166,61 @@ Cues (spatial-audio-kit rules; SC2 Access synth copied, plus tremolo and a clean
 - The title's attract demo is a fight (state 8, both fighters): cues play and speech is held during it, as the hum
   did before. "Press Start" came after it ended in the test.
 
+### Attack height sounds (2026-11-25, user request "like MK1"; deployed, not released)
+- Contact = the attacker's damage dealt (fighter object +0x3014, float) rises: at every hit and every blocked hit
+  (MK9 chips on block, even normals), never on a whiff. A new round starts it from 0 again.
+- Height = the touched fighter's +0x7D84 (u32), set at contact, projectiles included. It is kind*2 + a flag bit:
+  kind 0 high, 1 low, 2 overhead, 3 throw, 4 unblockable, 5 mid. The attacker's own copy (+0x794C, current-attack
+  block at +0x7920.. with the attack table pointer at +0x7934) misses projectiles, so the defender's is used.
+- Hit or blocked = the touched fighter's kind (+0x1D4 bits 8-15) a few ms after the damage rose: 0x0A standing block,
+  0x09 crouching block, 0x4F crouching block reaction = blocked; 0x46/0x47/0x42/0x62 = landed. A standing block shows
+  0x46 for an instant mid-frame, so fight.c reads it again 4 ms later (6 more if it changed).
+- Ground truth from Practice, Scorpion vs Sub-Zero, AI Options > Block Mode Always (accept with J; K backs out and
+  drops the change), Movement Mode Stand / Duck (tools/hitlevel.py, data in work/hitlevel): high 0/1 = 1, 2, d2, Spear,
+  Teleport (blocked standing, whiff over the ducking dummy); low 2/3 = d3, d4, b4 Sweep, f4 Shin Blast, Takedown
+  (through the standing block); overhead 5 = b2 Blade Overhead, jump punch (through the crouching block), 4 =
+  Takedown's slam after its grab; mid 0xB = 3, 4, d1, jump kick, string follow-ups; 6 = throw; 8 = Demon Fire, went
+  through both blocks. In MK9 a jab blocks crouching at point blank: the level is the move's label, not a promise.
+- Sounds data/sounds/height_<high|mid|low|over>_<hit|block>.wav from tools/gen_height_sounds.py: wooden mallet,
+  low D4 / mid A4 / high E5 (fifths), overhead a falling sweep D6->D5 in 60 ms; landed bright 0.22 s, blocked
+  low-passed 0.12 s and 5 dB softer; equal loudness across heights. My attacks pan to the opponent's side, theirs on
+  me sit in the middle. Rate limit 70 ms per attacker. No sound for throws, unblockables and unknown levels (logged
+  "fight: me/opponent <height> landed|blocked (level N, kind K)").
+- Keys: Alt+F8 volume 1-4 then off (x0.5/0.71/1/1.41, default 2; settings.txt height_sounds=N), plays a mid knock
+  at the new level after the words; Ctrl+Alt+F8 learn sequence (name, landed, blocked for each height).
+- Measured in a Ladder fight with audiorec at volume 2: knocks peak about -12 dBFS (-10.6 to -13), clicks -18 to
+  -19 at contact. Detection to sound: one 16 ms poll + 4 ms + the 60 ms output buffer at most.
+- Verified by bot on test saves: every probe above logged its right height and hit/block in Practice (stand,
+  duck, no block, strings), the CPU's attacks on me in a Medium Ladder fight (its low blocked by a crouch block,
+  overheads landing), keys. Not heard by the user yet.
+
+### Nightly report fixes + description options (2026-11-25; deployed, not released)
+From the nightly mod check of 2026-11-25 (Discord/forum, most reports were on 1.0.6 and already fixed in 1.0.8/1.0.9):
+- Fatality Tutorial replayed the description on a later press (Liam): the tutorial re-sends BOTH fatalityHUD displays
+  (command + yourMove) on every press (menudebug: SETTEXT command |[Towards][Down][Towards][BP]| each time), so once
+  the 8 s guard ran out a press re-matched the full input. It also played when the input was right but the distance
+  wrong (gap 253, no fatality). Now the tutorial uses the game's Fatality<N>CinemaPostLoadCallback like matches and
+  the tower (it fires in the tutorial ~1.4 s after the display completes, only when the fatality really starts);
+  fatality_input_settext only notes "tutorial on" (keeps the motion fallback out). Verified: far = silent, close =
+  name + clip once, 4 presses after = nothing.
+- "Fatality descriptions don't always trigger" (Liam): a fatality's own callback name is now kept in its own slot
+  (g_cb_fat), so another *CinemaPostLoadCallback looked up in the same 16 ms poll can't overwrite it. No miss was
+  reproduced; Johnny Cage's second fatality and Kratos have no rows (unchanged).
+- Fatality Tutorial intro card (practiceHUD.messageBox) is read: [TutorialMissions] <NAME> + <NAME>_MSG, then
+  FATALITY_LEFT_LABEL ([X]) / FATALITY_RIGHT_LABEL ([A]) -> "Scorpion. <tagline>. Start with Normal Timer: U, X
+  button. Start with Infinite Timer: J, A button." (keys from keys_for_button, so the PC layout says its keys).
+- Descriptions (user request + Liam "story dialogue much quieter than the descriptions"): Alt+F12 cycles recorded
+  voice / screen reader / off for story AND fatality descriptions; Alt+Shift+F12 = voice volume 1-5 (gains 0.25 0.35
+  0.5 0.71 1.0), default 3. Measured: clips about -18 LUFS, movie English tracks -23 to -28 LUFS, so the old full
+  level sat 5-10 dB over the dialogue; default is now -6 dB (fatality clips too). settings.txt descriptions=,
+  description_volume=. Screen reader mode queues the text (speak interrupt 0, forced past the fight silence) at the
+  cue time; skipping a movie stops it. Text comes from cues.tsv column 4 (gen_story.py --index-only) and index.tsv
+  column 6 (gen_fatalities.py --index-only). desc_play() in story.c; settings in fight.c. Verified in Story chapter 1
+  (mk001_002_003): screen reader cues at 3.2/21.6/26.1/30.6 s, off at 35.2, voice from 39.3; keys + settings saved.
+  Not heard by the user; the fatality screen-reader path was not run in game (same desc_play).
+- Not done (port/other): Krypt crash (port, #19), DarkLightning's "image not supported" (needs Komplete Edition EU),
+  an ISO how-to write-up (SightlessKombat), port 1.4.4 compatibility check (user folder still on 1.4.2).
+
 ## Saves in the game folder (Controlled Folder Access)
 Windows Security's Controlled Folder Access blocks mk9.exe writing to `OneDrive\Documents` (Defender event 1123);
 the port throws (E06D7363 on the save thread) and the game closes on its first save. The user chose (2026-11-16)

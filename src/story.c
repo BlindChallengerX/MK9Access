@@ -6,11 +6,13 @@
  *    (the same signal the port uses for its .bik pictures); NtCreateFile is watched for that path.
  *  - where in it: the codec's GetOutput (82D25390, the port's replacement; args table, buffer, capacity, &size,
  *    &flags, &time u64, &one) gives each picture's time in ms at *r8 (big-endian). Time 0 = the first picture.
- *  - what to say: MK9Access\story\cues.tsv, "movie<TAB>seconds<TAB>clip.wav", from data/story/<movie>.txt
+ *  - what to say: MK9Access\story\cues.tsv, "movie<TAB>seconds<TAB>clip.wav<TAB>text", from data/story/<movie>.txt
  *    (tools/story/gen_story.py; clips are Kokoro af_heart lines fitted into the silences between the game's own
  *    subtitle timings, MK9Story.eng).
  *  - stop: the codec's Close (82D25280), e.g. the movie skipped with START or A.
- * The guest hooks only store numbers; story_poll on the mod thread plays the clips. */
+ * The guest hooks only store numbers; story_poll on the mod thread plays the clips, or has the screen reader say the
+ * text when the player chose "Descriptions: screen reader" (Alt+F12; forum report 2026-11-24: the voice was much
+ * louder than the game's dialogue). */
 #include "access.h"
 #include <stdio.h>
 #include <string.h>
@@ -24,7 +26,7 @@
  * whole of mk001_002_003: every clip landed 0.18-0.22 s early) */
 #define LAG_MS 200
 
-typedef struct { char movie[40]; int ms; char clip[48]; } Cue;
+typedef struct { char movie[40]; int ms; char clip[48]; char *text; } Cue;
 static Cue *g_cues; static int g_ncues;
 
 static guest_fn o_getout, o_init, o_close;
@@ -97,13 +99,17 @@ static void load_cues(void) {
     swprintf(p, MAX_PATH, L"%lsstory\\cues.tsv", g_mod_dir);
     FILE *f = _wfopen(p, L"r");
     if (!f) { log_line("story: no cues.tsv"); return; }
-    char line[256]; int cap = 0;
+    char line[1024]; int cap = 0;
     while (fgets(line, sizeof line, f)) {
-        char mv[40], clip[48]; double sec;
-        if (line[0] == '#' || sscanf(line, "%39[^\t]\t%lf\t%47[^\t\r\n]", mv, &sec, clip) != 3) continue;
+        char mv[40], clip[48]; double sec; int used = 0;
+        if (line[0] == '#' || sscanf(line, "%39[^\t]\t%lf\t%47[^\t\r\n]%n", mv, &sec, clip, &used) != 3) continue;
         if (g_ncues == cap) { cap = cap ? cap * 2 : 256; g_cues = realloc(g_cues, cap * sizeof *g_cues); }
         Cue *c = &g_cues[g_ncues++];
         strcpy(c->movie, mv); strcpy(c->clip, clip); c->ms = (int)(sec * 1000 + 0.5);
+        const char *t = line + used;
+        if (*t == '\t') t++;
+        c->text = _strdup(t);
+        if (c->text) c->text[strcspn(c->text, "\r\n")] = 0;
     }
     fclose(f);
     log_line("story: %d described moments", g_ncues);
@@ -122,10 +128,22 @@ void story_init(void) {
 }
 
 /* mod thread */
+int desc_play(const wchar_t *clip, const char *text) {
+    int m = desc_mode();
+    if (m == DESC_OFF) return 0;
+    if (m == DESC_READER && text && text[0]) {
+        int was = speech_force(1); speak_utf8(text, 0); speech_force(was);   /* queued: never cuts a line off */
+        return 0;
+    }
+    clip_play(clip, desc_gain());
+    return 1;
+}
+
 static LONG s_gen = -1;      /* generation being described */
 static int s_first, s_last;  /* this movie's cues [s_first, s_last) */
 static int s_next;           /* next cue to play */
 static int s_clip_mine;      /* the clip playing is a story clip */
+static DWORD s_said_t;       /* the screen reader was given a story description (screen reader mode) */
 
 void story_poll(void) {
     if (!g_ncues) return;
@@ -144,6 +162,8 @@ void story_poll(void) {
     }
     if (g_closed_gen == gen) {           /* skipped or ended */
         if (s_clip_mine && clip_playing()) clip_stop();
+        if (s_said_t && GetTickCount() - s_said_t < 15000) speech_stop();   /* skipped: the rest of it is stale */
+        s_said_t = 0;
         s_clip_mine = 0; s_next = s_last;
         return;
     }
@@ -160,9 +180,10 @@ void story_poll(void) {
     if (now - c->ms > 4000) { s_next++; return; }   /* jumped past it */
     wchar_t p[MAX_PATH];
     swprintf(p, MAX_PATH, L"%lsstory\\%hs", g_mod_dir, c->clip);
-    clip_play(p, 1.0f);
-    s_clip_mine = 1;
-    log_line("story: %s at %d ms (cue %d ms): %s", c->movie, (int)now, c->ms, c->clip);
+    s_clip_mine = desc_play(p, c->text);
+    if (!s_clip_mine && desc_mode() == DESC_READER) s_said_t = GetTickCount();
+    log_line("story: %s at %d ms (cue %d ms): %s%s", c->movie, (int)now, c->ms, c->clip,
+             desc_mode() == DESC_READER ? " (screen reader)" : desc_mode() == DESC_OFF ? " (off)" : "");
     s_next++;
 }
 

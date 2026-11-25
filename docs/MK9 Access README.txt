@@ -11,9 +11,13 @@ MK9 by Lauta (a fan PC port of the Xbox 360 game, by Lauta / machinebreak).
   they are in the air. F8 swaps them for a soft hum or turns them off. The
   screen reader stays silent while you fight. Short tones tell you when either fighter
   drops below half and a quarter of their health.
+- Attack height sounds: a short wooden knock tells you how high each attack
+  was when it lands or is blocked: high, mid, low or overhead.
 - Every fatality is named and described, yours and the ones done to you.
 - Story Mode's cutscenes are described: a narrator speaks in the pauses
-  between the characters' lines. Skipping a cutscene stops her.
+  between the characters' lines. Skipping a cutscene stops her. Alt+F12
+  lets your screen reader read the descriptions instead, or turns them off;
+  Alt+Shift+F12 sets the narrator's volume.
 - In Practice, the port's frame data and its opponent recording are read.
 - Online play: the port's online window (rooms, quick match, chat, profile,
   replays) works from the keyboard and is read, and so is the connection.
@@ -145,12 +149,17 @@ Mod keys:
   Ctrl+F8     distance cue volume, 4 steps
   Shift+F8    health tones on or off
   Ctrl+Shift+F8  speech during fights on or off (off at first)
-              These four settings are kept for the next start.
+  Alt+F8      attack height sounds volume, 4 steps, then off
+  Ctrl+Alt+F8 hear the attack height sounds, each one named
+              These settings are kept for the next start.
   F10         Practice: the last attack's frame data
   Shift+F10   Practice: frame data read after every attack, on or off
   F4          Krypt: the other koffins in view
   Shift+F4    Krypt: koffin pings on or off
   F12         repeat the last thing said
+  Alt+F12     descriptions (Story Mode, fatalities): recorded voice, your
+              screen reader, or off
+  Alt+Shift+F12  recorded description voice volume, 5 steps (starts at 3)
   Shift+F12   keyboard: original PC keys or the port's keys
   Ctrl+F12    game language: English, Spanish, Portuguese, French, German,
               Italian (Ctrl+Shift+F12 goes the other way, so Spanish and
@@ -191,6 +200,19 @@ below a quarter of your health. Two rising notes, from the opponent's side,
 when they do. F6 tells you both health values in percent. Shift+F8 turns the
 tones off.
 
+Attack height sounds: every time an attack lands or is blocked, a short
+wooden knock tells you its height. Low is a low note, mid a middle note,
+high a high note, and an overhead is a quick sweep falling from above. A
+clear, bright knock means the attack landed; a dull, muffled one means it
+was blocked. Your attacks come from the opponent's side, theirs on you
+from the middle. Throws and unblockable attacks have no knock. Ctrl+Alt+F8
+plays all of them with their names; Alt+F8 sets the volume (4 steps) and
+then turns them off.
+
+Blocking by height, as the game does it: stand and block for highs, mids
+and overheads; crouch and block for lows and mids. A high attack passes
+over a crouching fighter.
+
 With speech during fights on (Ctrl+Shift+F8), the round winner is spoken,
 and so are the game's fight messages. Against
 the computer you hear the winning character ("Scorpion wins"). In a match
@@ -204,10 +226,14 @@ hit counts and damage are not spoken.
 Fatalities are named and described, yours and the ones done to you. When one
 starts you hear its name, or "Fighter: name" when the opponent does one to
 you. Then a recorded description tells what happens on screen. All 62 of
-them are described (two per fighter).
+them are described (two per fighter). Alt+F12 has your screen reader read
+the descriptions instead (or turns them off), here and in Story Mode, and
+Alt+Shift+F12 sets the recorded voice's volume.
 
-Training > Fatality Tutorial reads the fatality's name and input when it
-loads, and plays the description when you perform it.
+Training > Fatality Tutorial reads the fighter card when it opens (which key
+starts with the normal timer and which with the infinite one), then the
+fatality's name and input, and describes the fatality when you perform it
+at the right distance.
 
 The move lists in the pause menu also give the fatality inputs and how close
 you have to stand.

@@ -5,7 +5,10 @@ A description file holds one line per described moment, "SECONDS<TAB>text" (seco
 description: spoken at SPEED, re-spoken faster up to 1.45x when it would run over, reported when it still does.
 Voice: Kokoro af_heart (the house description voice, as the fatality clips). Level ~-13 dBFS while speaking,
 peaks under -1 dBFS, 5 ms fades, no compression.
-Usage: python -I gen_story.py [movie ...]      (no names: every data/story/*.txt; cues.tsv is always rewritten)"""
+cues.tsv rows: movie<TAB>seconds<TAB>clip<TAB>text (the text is spoken by the screen reader when the player picks
+"Descriptions: screen reader", Alt+F12).
+Usage: python -I gen_story.py [movie ...]      (no names: every data/story/*.txt; cues.tsv is always rewritten)
+       python -I gen_story.py --index-only     (rewrites cues.tsv only, keeps the clips)"""
 import os, re, sys, numpy as np, soundfile as sf
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from prep import story_sections
@@ -78,7 +81,9 @@ def read_cues(name):
 def main(names):
     global k
     allnames = sorted(f[:-4] for f in os.listdir(SRC) if f.endswith(".txt"))
-    todo = names or allnames
+    index_only = "--index-only" in names
+    names = [n for n in names if not n.startswith("--")]
+    todo = [] if index_only else names or allnames
     secs = story_sections()
     os.makedirs(OUT, exist_ok=True)
     if todo: k = Kokoro(os.path.join(KDIR, "kokoro-v1.0.onnx"), os.path.join(KDIR, "voices-v1.0.bin"))
@@ -103,9 +108,10 @@ def main(names):
             sf.write(os.path.join(OUT, f"{name}_{i}.wav"), level(a, sr), sr, subtype="PCM_16")
             total += 1
     with open(os.path.join(OUT, "cues.tsv"), "w", encoding="utf-8", newline="\n") as o:
-        o.write("# movie\tseconds\tclip  (tools/story/gen_story.py from data/story)\n")
+        o.write("# movie\tseconds\tclip\ttext  (tools/story/gen_story.py from data/story)\n")
         for name in allnames:
-            for i, (t, _) in enumerate(read_cues(name)): o.write(f"{name.lower()}\t{t:.2f}\t{name}_{i}.wav\n")
+            for i, (t, txt) in enumerate(read_cues(name)):
+                o.write(f"{name.lower()}\t{t:.2f}\t{name}_{i}.wav\t{txt.replace(chr(9), ' ')}\n")
     print(total, "clips recorded,", late, "still run over")
 
 if __name__ == "__main__":

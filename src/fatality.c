@@ -6,10 +6,12 @@
  * Decision") and the tutorial's fatalityHUD shows the required input. menu.c
  * routes every localized menu text through fatality_try(): on a known fatality
  * name we speak the name and its input through the screen reader (so the player
- * can learn it). The tutorial's fatalityHUD has two input displays: the required
- * command and the player's progress ("yourMove"); menu.c's SetText hook feeds
- * those bracket-input strings to fatality_input_settext(); when two displays
- * hold the same full input, the fatality was performed and we play its clip.
+ * can learn it). The description plays when the game starts the fatality's
+ * cinematic (the callback below), as in matches. Until 2026-11-25 it played when
+ * the tutorial's two input displays (command, "yourMove") held the same input;
+ * but the game re-sends both displays on every press, so the description came
+ * back on a later press (Liam, Discord 2026-11-24), and it also played when the
+ * input was right but the distance wrong and no fatality happened.
  *
  * Live matches, either side (the CPU's on the player too): the game looks up
  * "Fatality1/2CinemaPostLoadCallback" when the cinematic loads (h_lookup below);
@@ -17,7 +19,8 @@
  *
  * The description itself is a recorded Kokoro clip (the Tekken 3 AD voice).
  * Library: MK9Access\fatalities\index.tsv, one row per fatality:
- *     <name><TAB><input in words><TAB><clip><TAB><character><TAB><raw input>
+ *     <name><TAB><input in words><TAB><clip><TAB><character><TAB><raw input><TAB><description>
+ * (the description text is said by the screen reader instead of the clip with "Descriptions: screen reader").
  * built by tools/gen_fatalities.py from data/fatalities.tsv. Clips live beside it.
  */
 #include "access.h"
@@ -38,13 +41,13 @@ typedef struct {
     int  num;             /* 1 or 2: the game's Fatality1 / Fatality2 (order of the rows per character) */
     char mot[24];         /* motion: F B U D toward/away from the opponent, e.g. "FDF" */
     char btn;             /* final attack button '1'..'4', 'K' block, 0 unknown */
+    char desc[320];       /* the description as text */
 } Fat;
 static Fat g_fat[NFAT];
 static int g_nfat;
 
-static char g_cur_clip[128];          /* clip of the fatality now shown (tutorial) */
 static char g_said[96]; static DWORD g_said_t;        /* de-dup the spoken name */
-static DWORD g_play_t;                /* de-dup the played clip (tutorial and match) */
+static DWORD g_play_t;                /* a description was started (callback or motion match) */
 static DWORD g_tut_t;                 /* last tutorial input-display update: not a live match */
 
 /* The game names the fatality being run (found 2026-11-22 with `trace 82a10380`):
@@ -62,6 +65,8 @@ static guest_fn o_lookup;
 static char g_cb_name[64];
 static volatile LONG g_cb_seq;        /* bumped per new callback name */
 static LONG g_cb_seen;                /* last g_cb_seq handled by fatality_poll */
+static char g_cb_fat[64];             /* the last "Fatality<N>CinemaPostLoadCallback" */
+static volatile LONG g_cb_fat_seq; static LONG g_cb_fat_seen;
 static DWORD g_named_t;               /* a fatality was named from the callback */
 
 static void h_lookup(PPCContext *ctx, uint8_t *base) {
@@ -79,6 +84,7 @@ static void h_lookup(PPCContext *ctx, uint8_t *base) {
         static const char suf[] = "CinemaPostLoadCallback";
         size_t ls = sizeof suf - 1;
         if (k > ls && !strcmp(n + k - ls, suf)) {
+            if (!_strnicmp(n, "Fatality", 8)) { memcpy(g_cb_fat, n, k + 1); InterlockedIncrement(&g_cb_fat_seq); }
             memcpy(g_cb_name, n, k + 1);
             InterlockedIncrement(&g_cb_seq);
         }
@@ -144,8 +150,8 @@ void fatality_init(void) {
         char *t1 = strchr(line, '\t'); if (!t1) continue; *t1 = 0;
         char *t2 = strchr(t1 + 1, '\t'); if (!t2) continue; *t2 = 0;
         const char *name = line, *input = t1 + 1, *clip = t2 + 1;
-        char *t3 = strchr(t2 + 1, '\t'), *t4 = NULL;     /* optional: character, raw input */
-        if (t3) { *t3 = 0; t4 = strchr(t3 + 1, '\t'); if (t4) *t4 = 0; }
+        char *t3 = strchr(t2 + 1, '\t'), *t4 = NULL, *t5 = NULL;   /* optional: character, raw input, description */
+        if (t3) { *t3 = 0; t4 = strchr(t3 + 1, '\t'); if (t4) { *t4 = 0; t5 = strchr(t4 + 1, '\t'); if (t5) *t5 = 0; } }
         if (!_stricmp(name, "name") || !name[0] || !clip[0]) continue;
         Fat *F = &g_fat[g_nfat];
         memset(F, 0, sizeof *F);
@@ -160,6 +166,7 @@ void fatality_init(void) {
             F->num++;
         }
         if (t4) parse_input(t4 + 1, F->mot, sizeof F->mot, &F->btn);
+        if (t5) snprintf(F->desc, sizeof F->desc, "%s", t5 + 1);
         if (F->key[0]) g_nfat++;
     }
     fclose(f);
@@ -167,6 +174,11 @@ void fatality_init(void) {
     for (int i = 0; i < g_nfat; i++) if (g_fat[i].ch[0] && g_fat[i].mot[0]) withmot++;
     log_line("fatality: %d entries, %d with character + motion", g_nfat, withmot);
     guest_hook(G_SCRIPT_LOOKUP, (void *)h_lookup, (void **)&o_lookup);
+}
+
+static void fat_describe(const Fat *F) {
+    wchar_t cp[MAX_PATH]; swprintf(cp, MAX_PATH, L"%lsfatalities\\%hs", g_mod_dir, F->clip);
+    desc_play(cp, F->desc);
 }
 
 static int in_fatality(void) {
@@ -199,7 +211,7 @@ static int g_finish;                      /* in Finish Him (8 -> 11), cinematic 
 static int g_cine;                        /* the fatality cinematic has started */
 static int g_snap_n;                      /* polls in a row with both fighters at one position */
 static int g_faces_right[2] = { 1, 0 };   /* side each fighter faced while they could move */
-static char g_pend_clip[128]; static DWORD g_pend_t;   /* clip started just after the spoken name */
+static const Fat *g_pend; static DWORD g_pend_t;      /* description started just after the spoken name */
 
 static int vptr(uint32_t a) { return a >= 0x30000000u && a < 0xA0000000u; }
 static uint32_t pl_obj(int p) { uint32_t o = g32(GAMEINFO + (uint32_t)p * PSTRIDE + P_OBJ); return vptr(o) ? o : 0; }
@@ -268,7 +280,7 @@ static void match_fatality(void) {
              gname, shown[0] ? shown : "-", best_user, best ? best->clip : "none", best_sc);
     if (!best) return;                                 /* the CPU's, a stage fatality, or unknown */
     { int was = speech_force(1); speak_utf8(best->name, 1); speech_force(was); }   /* fatality names speak even mid-fight */
-    snprintf(g_pend_clip, sizeof g_pend_clip, "%s", best->clip);
+    g_pend = best;
     g_pend_t = GetTickCount() + 1100;                  /* let the name finish first */
     g_play_t = GetTickCount();
 }
@@ -291,7 +303,7 @@ static void named_fatality(const char *cb) {
     if (atk == 0) snprintf(msg, sizeof msg, "%s", F->name);
     else snprintf(msg, sizeof msg, "%s: %s", F->who, F->name);
     { int was = speech_force(1); speak_utf8(msg, 1); speech_force(was); }
-    snprintf(g_pend_clip, sizeof g_pend_clip, "%s", F->clip);
+    g_pend = F;
     g_pend_t = GetTickCount() + (atk == 0 ? 1100 : 1700);   /* let the name finish first */
     g_play_t = g_named_t = GetTickCount();
 }
@@ -304,20 +316,21 @@ void fatality_poll(void) {
     float x0 = a0 ? gf(a0 + A_X) : 0, x1 = a1 ? gf(a1 + A_X) : 0;
     if (s == 8) {
         g_finish = 0; g_cine = 0; g_snap_n = 0;
-        if (g_prev_state != 8) g_cur_clip[0] = 0;      /* a new fight: a Fatality Tutorial name from before is stale */
     }
     else if (s == 11 && g_prev_state == 8) {
         g_finish = 1; g_cine = 0; g_snap_n = 0;
         log_line("fatality: finish him");
     } else if (s != 11) { g_finish = 0; g_cine = 0; }
-    LONG seq = g_cb_seq;
+    LONG seq = g_cb_seq, fseq = g_cb_fat_seq;
     if (seq != g_cb_seen) {
         g_cb_seen = seq;
-        char cb[64]; memcpy(cb, g_cb_name, sizeof cb); cb[63] = 0;
-        /* The Fatality Tutorial plays its clip when its input display completes; the game's callback then names the
-         * same fatality, so skip it after a clip of the last 8 s. Not keyed on the input display itself: the Challenge
-         * Tower's fatality challenges show one too and were left silent (forum report 2026-11-24). */
-        if (s == GS_FATALITY && now - g_play_t > 8000) named_fatality(cb);
+        char cb[64];
+        if (fseq != g_cb_fat_seen) memcpy(cb, g_cb_fat, sizeof cb);   /* a fatality's callback wins over others */
+        else memcpy(cb, g_cb_name, sizeof cb);
+        g_cb_fat_seen = fseq;
+        cb[63] = 0;
+        /* Matches, the Challenge Tower and the Fatality Tutorial alike; one per fatality */
+        if (s == GS_FATALITY && now - g_play_t > 5000) named_fatality(cb);
         else log_line("fatality callback %s (state %d, not named)", cb, s);
     }
     if ((s == 8 || (s == 11 && g_finish && !g_cine)) && a0 && a1) {
@@ -331,10 +344,9 @@ void fatality_poll(void) {
             if (now - g_tut_t > 30000 && now - g_play_t > 8000 && now - g_named_t > 5000) match_fatality();
         }
     }
-    if (g_pend_clip[0] && (LONG)(now - g_pend_t) >= 0) {
-        wchar_t cp[MAX_PATH]; swprintf(cp, MAX_PATH, L"%lsfatalities\\%hs", g_mod_dir, g_pend_clip);
-        clip_play(cp, 1.0f);
-        g_pend_clip[0] = 0;
+    if (g_pend && (LONG)(now - g_pend_t) >= 0) {
+        fat_describe(g_pend);
+        g_pend = NULL;
     }
     g_prev_state = s;
 }
@@ -348,7 +360,6 @@ int fatality_try(const char *text) {
     if (!nk[0]) return 0;
     for (int i = 0; i < g_nfat; i++) {
         if (strcmp(g_fat[i].key, nk)) continue;
-        snprintf(g_cur_clip, sizeof g_cur_clip, "%s", g_fat[i].clip);
         if (!(!strcmp(nk, g_said) && GetTickCount() - g_said_t < 4000)) {   /* not just said */
             snprintf(g_said, sizeof g_said, "%s", nk); g_said_t = GetTickCount();
             char msg[320];
@@ -362,12 +373,8 @@ int fatality_try(const char *text) {
 }
 
 /* The tutorial's input displays (fatalityHUD command / yourMove): bracket strings
- * like "[Towards][Down][Towards][BP]". When two displays hold the same full input,
- * the player has completed the fatality -> play its description clip. */
-#define NIN 6
-static struct { uint32_t obj; char val[96]; } g_in[NIN];
-static int g_in_n;
-
+ * like "[Towards][Down][Towards][BP]". Only noted: a tutorial is on, so the motion
+ * fallback stays out of it (the game's callback describes the fatality). */
 static int bracket_tokens(const char *s) {       /* count of "[...]" tokens; 0 if not a bracket string */
     if (s[0] != '[') return 0;
     int toks = 0, depth = 0;
@@ -380,25 +387,6 @@ static int bracket_tokens(const char *s) {       /* count of "[...]" tokens; 0 i
 }
 
 void fatality_input_settext(uint32_t obj, const char *val) {
-    if (!val || !in_fatality() || bracket_tokens(val) < 2) return;   /* a real fatality input */
-    g_tut_t = GetTickCount();
-    int slot = -1;
-    for (int i = 0; i < g_in_n; i++) if (g_in[i].obj == obj) { slot = i; break; }
-    if (slot < 0) { slot = g_in_n < NIN ? g_in_n++ : 0; g_in[slot].obj = obj; }
-    snprintf(g_in[slot].val, sizeof g_in[0].val, "%s", val);
-    for (int i = 0; i < g_in_n; i++) {           /* another display already holds this full input */
-        if (i == slot || g_in[i].obj == obj) continue;
-        if (strcmp(g_in[i].val, val)) continue;
-        if (GetTickCount() - g_play_t < 8000) return;   /* already fired for this fatality (display or callback) */
-        /* only a clip played counts as described: the Challenge Tower's display completes too, with no name
-         * looked up before it (no clip), and the game's callback must still name it then */
-        if (g_cur_clip[0]) {
-            g_play_t = GetTickCount();
-            wchar_t cp[MAX_PATH];
-            swprintf(cp, MAX_PATH, L"%lsfatalities\\%hs", g_mod_dir, g_cur_clip);
-            clip_play(cp, 1.0f);
-            log_line("fatality: performed (%s)", g_cur_clip);
-        }
-        return;
-    }
+    (void)obj;
+    if (val && in_fatality() && bracket_tokens(val) >= 2) g_tut_t = GetTickCount();
 }

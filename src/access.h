@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include "rex_mod.h"
 
-#define MOD_VERSION "1.0.9"
+#define MOD_VERSION "1.0.10"
 
 extern wchar_t g_game_dir[MAX_PATH];   /* folder of mk9.exe, with trailing backslash */
 extern wchar_t g_mod_dir[MAX_PATH];    /* g_game_dir + "MK9Access\" */
@@ -175,6 +175,15 @@ void sysdialog_init(void);
 void sysdialog_shutdown(void);
 void sysdialog_poll(void);
 int sysdialog_recent(void);            /* a system dialog is up, or was shown in the last 2 s */
+
+/* Descriptions (story movies, fatalities): settings in fight.c, desc_play() in story.c */
+enum { DESC_VOICE, DESC_READER, DESC_OFF, DESC_N };
+int desc_mode(void);                     /* recorded voice, screen reader, or off */
+float desc_gain(void);                   /* the recorded voice's volume */
+void desc_key(int shift);                /* Alt+F12 mode, Alt+Shift+F12 volume */
+/* one description: its clip by the recorded voice, or its text by the screen reader (queued), or nothing;
+ * returns 1 when the clip plays */
+int desc_play(const wchar_t *clip, const char *text);
 
 /* story.c: Story Mode movies described (MK9Access\story) */
 void story_init(void);
