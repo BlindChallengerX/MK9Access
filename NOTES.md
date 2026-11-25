@@ -166,7 +166,7 @@ Cues (spatial-audio-kit rules; SC2 Access synth copied, plus tremolo and a clean
 - The title's attract demo is a fight (state 8, both fighters): cues play and speech is held during it, as the hum
   did before. "Press Start" came after it ended in the test.
 
-### Attack height sounds (2026-11-25, user request "like MK1"; deployed, not released)
+### Attack height sounds (2026-11-25, user request "like MK1"; released in 1.0.10)
 - Contact = the attacker's damage dealt (fighter object +0x3014, float) rises: at every hit and every blocked hit
   (MK9 chips on block, even normals), never on a whiff. A new round starts it from 0 again.
 - Height = the touched fighter's +0x7D84 (u32), set at contact, projectiles included. It is kind*2 + a flag bit:
@@ -194,7 +194,9 @@ Cues (spatial-audio-kit rules; SC2 Access synth copied, plus tremolo and a clean
   duck, no block, strings), the CPU's attacks on me in a Medium Ladder fight (its low blocked by a crouch block,
   overheads landing), keys. Not heard by the user yet.
 
-### Nightly report fixes + description options (2026-11-25; deployed, not released)
+### Nightly report fixes + description options (2026-11-25; released in 1.0.10)
+1.0.10 RELEASED 2026-11-25 (user: "push it"): commit 65be666, GitHub v1.0.10, zip Downloads\MK9Access-1.0.10.zip
+(807 files, Defender clean); a 1.0.9 scratch folder self-updated from GitHub (settings.txt + mk9.toml kept).
 From the nightly mod check of 2026-11-25 (Discord/forum, most reports were on 1.0.6 and already fixed in 1.0.8/1.0.9):
 - Fatality Tutorial replayed the description on a later press (Liam): the tutorial re-sends BOTH fatalityHUD displays
   (command + yourMove) on every press (menudebug: SETTEXT command |[Towards][Down][Towards][BP]| each time), so once
