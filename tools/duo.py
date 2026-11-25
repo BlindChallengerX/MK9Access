@@ -1,5 +1,6 @@
 """Two copies of the game on this PC for online room tests: the host = the user's game folder on the TEST saves, the
-guest = work\\fresh (a separate install made by install.ps1, its own saves and online name).
+guest = work\\fresh (a separate install made by install.ps1, its own saves and online name). work\\fresh was removed
+2026-11-25 (the user keeps only the game folder): recreate it with dist/install.ps1 before using this.
     import duo; h, g = duo.start(); h.key('f1'); g.said()
 Each Client focuses its own window before a key and reads its own MK9Access.log."""
 import os, sys, time, subprocess, ctypes, ctypes.wintypes as w
