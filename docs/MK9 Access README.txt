@@ -190,7 +190,8 @@ distance cue at all, then back to the clicks. Ctrl+F8 sets its volume. It
 stops while the game is paused or a port window is open.
 
 The screen reader is silent while you fight. The pause menu, the port's
-windows and the results speak as usual, and so do the mod keys you press
+windows, the round winner and the menu after a match (Rematch, Continue)
+speak as usual, and so do the mod keys you press
 yourself (F6 for health, F8 and the others). Challenge Tower objectives and
 the move a challenge asks for are still read, as are fatality names.
 Ctrl+Shift+F8 turns speech during fights back on.
@@ -240,8 +241,12 @@ The distance cue and F6 follow player 1.
 
 Fatalities are named and described, yours and the ones done to you. When one
 starts you hear its name, or "Fighter: name" when the opponent does one to
-you. Then a recorded description tells what happens on screen. All 62 of
-them are described (two per fighter). Alt+F12 has your screen reader read
+you. Then a recorded description tells what happens on screen. All of them
+are described: two per fighter, the Klassic Fatalities (Sub-Zero's Spine Rip,
+Scorpion's Toasty!, Reptile's Yummy!) and Kratos's two. Stage fatalities are
+named with their stage ("Stage Fatality, The Pit") and described too, on The
+Pit, The Dead Pool, The Living Forest, Subway, The Street and Hell.
+Babalities are named. Alt+F12 has your screen reader read
 the descriptions instead (or turns them off), here and in Story Mode, and
 Alt+Shift+F12 sets the recorded voice's volume.
 
@@ -252,8 +257,6 @@ at the right distance.
 
 The move lists in the pause menu also give the fatality inputs and how close
 you have to stand.
-
-Not named yet: Babalities, stage fatalities and other extra finishers.
 
 
 6. PRACTICE

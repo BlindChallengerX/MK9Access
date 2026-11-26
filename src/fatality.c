@@ -67,7 +67,6 @@ static volatile LONG g_cb_seq;        /* bumped per new callback name */
 static LONG g_cb_seen;                /* last g_cb_seq handled by fatality_poll */
 static char g_cb_fat[64];             /* the last "Fatality<N>CinemaPostLoadCallback" */
 static volatile LONG g_cb_fat_seq; static LONG g_cb_fat_seen;
-static DWORD g_named_t;               /* a fatality was named from the callback */
 
 static void h_lookup(PPCContext *ctx, uint8_t *base) {
     uint32_t a = (uint32_t)ctx->r4;
@@ -83,6 +82,8 @@ static void h_lookup(PPCContext *ctx, uint8_t *base) {
         n[k] = 0;
         static const char suf[] = "CinemaPostLoadCallback";
         size_t ls = sizeof suf - 1;
+        /* stage fatalities: "BgndFatality1CinemaPostLoadCallbackWithAttacker" (the suffix dropped here) */
+        if (k > 12 && !strcmp(n + k - 12, "WithAttacker")) { k -= 12; n[k] = 0; }
         if (k > ls && !strcmp(n + k - ls, suf)) {
             if (!_strnicmp(n, "Fatality", 8)) { memcpy(g_cb_fat, n, k + 1); InterlockedIncrement(&g_cb_fat_seq); }
             memcpy(g_cb_name, n, k + 1);
@@ -137,6 +138,9 @@ static void parse_input(const char *raw, char *mot, size_t cap, char *btn) {
     mot[k] = 0;
 }
 
+static void stages_init(void);
+static void pl_name(int p, char *out, size_t cap);
+
 void fatality_init(void) {
     g_nfat = 0;
     wchar_t path[MAX_PATH];
@@ -173,7 +177,63 @@ void fatality_init(void) {
     int withmot = 0;
     for (int i = 0; i < g_nfat; i++) if (g_fat[i].ch[0] && g_fat[i].mot[0]) withmot++;
     log_line("fatality: %d entries, %d with character + motion", g_nfat, withmot);
+    stages_init();
     guest_hook(G_SCRIPT_LOOKUP, (void *)h_lookup, (void **)&o_lookup);
+}
+
+/* Stage fatalities: the stage's own script looks up "BgndFatality1CinemaPostLoadCallback" (found 2026-11-25 in the
+ * unpacked BGND_*.xxx packages: Pit, PitDay, DeadPool, LivingForest, Subway, Street, Hell).
+ * The stage comes from story_stage() (the BGND_ package the port opened). Names here; the description clip and
+ * text from fatalities\stages.tsv: <stage key><TAB><clip><TAB><description> (tools/gen_fatalities.py). */
+static const char *k_stage_names[][2] = {
+    { "Pit", "The Pit" }, { "PitDay", "The Pit" }, { "DeadPool", "The Dead Pool" },   /* the game's Arena Select names */
+    { "LivingForest", "The Living Forest" }, { "Subway", "Subway" }, { "Street", "The Street" },
+    { "Hell", "Hell" },
+};
+static const Fat *g_pend; static DWORD g_pend_t;      /* description started just after the spoken name */
+static DWORD g_named_t;               /* a fatality was named from the callback */
+#define NSTAGE 16
+static Fat g_stagefat[NSTAGE]; static int g_nstagefat;
+
+static void stages_init(void) {
+    g_nstagefat = 0;
+    wchar_t path[MAX_PATH];
+    swprintf(path, MAX_PATH, L"%lsfatalities\\stages.tsv", g_mod_dir);
+    FILE *f = _wfopen(path, L"rb");
+    if (!f) { log_line("fatality: no stages.tsv"); return; }
+    char line[512];
+    while (g_nstagefat < NSTAGE && fgets(line, sizeof line, f)) {
+        line[strcspn(line, "\r\n")] = 0;
+        char *t1 = strchr(line, '\t'); if (!t1) continue; *t1 = 0;
+        char *t2 = strchr(t1 + 1, '\t'); if (t2) *t2 = 0;
+        Fat *F = &g_stagefat[g_nstagefat];
+        memset(F, 0, sizeof *F);
+        snprintf(F->ch, sizeof F->ch, "%.39s", line);                 /* the stage key */
+        snprintf(F->clip, sizeof F->clip, "%.127s", t1 + 1);
+        if (t2) snprintf(F->desc, sizeof F->desc, "%.319s", t2 + 1);
+        g_nstagefat++;
+    }
+    fclose(f);
+    log_line("fatality: %d stage fatality descriptions", g_nstagefat);
+}
+
+static void fat_describe(const Fat *F);
+static void stage_fatality(int atk) {
+    char st[32]; story_stage(st, sizeof st);
+    const char *nm = NULL;
+    for (unsigned i = 0; i < sizeof k_stage_names / sizeof k_stage_names[0]; i++)
+        if (!_stricmp(st, k_stage_names[i][0])) nm = k_stage_names[i][1];
+    const Fat *F = NULL;
+    for (int i = 0; i < g_nstagefat; i++) if (!_stricmp(g_stagefat[i].ch, st)) F = &g_stagefat[i];
+    char who[48] = "", gname[40], ch[40], msg[160];
+    pl_name(atk, gname, sizeof gname); game_char_key(gname, ch, sizeof ch);
+    for (int i = 0; i < g_nfat; i++) if (!strcmp(g_fat[i].ch, ch)) { snprintf(who, sizeof who, "%s", g_fat[i].who); break; }
+    snprintf(msg, sizeof msg, "%s%sStage Fatality%s%s", atk && who[0] ? who : "", atk && who[0] ? ": " : "",
+             nm ? ", " : "", nm ? nm : "");
+    log_line("fatality named: stage fatality on %s by %s (player %d) -> %s", st[0] ? st : "?", gname, atk + 1, F ? F->clip : "none");
+    { int was = speech_force(1); speak_utf8(msg, 1); speech_force(was); }
+    if (F && (F->clip[0] || F->desc[0])) { g_pend = F; g_pend_t = GetTickCount() + (atk ? 2200 : 1700); }
+    g_play_t = g_named_t = GetTickCount();
 }
 
 static void fat_describe(const Fat *F) {
@@ -211,7 +271,6 @@ static int g_finish;                      /* in Finish Him (8 -> 11), cinematic 
 static int g_cine;                        /* the fatality cinematic has started */
 static int g_snap_n;                      /* polls in a row with both fighters at one position */
 static int g_faces_right[2] = { 1, 0 };   /* side each fighter faced while they could move */
-static const Fat *g_pend; static DWORD g_pend_t;      /* description started just after the spoken name */
 
 static int vptr(uint32_t a) { return a >= 0x30000000u && a < 0xA0000000u; }
 static uint32_t pl_obj(int p) { uint32_t o = g32(GAMEINFO + (uint32_t)p * PSTRIDE + P_OBJ); return vptr(o) ? o : 0; }
@@ -295,10 +354,22 @@ static void named_fatality(const char *cb) {
     int atk = pl_hp(0) >= pl_hp(1) ? 0 : 1;            /* the winner performs it */
     char gname[40]; pl_name(atk, gname, sizeof gname);
     char ch[40]; game_char_key(gname, ch, sizeof ch);
+    if (!_stricmp(cb, "BgndFatality1CinemaPostLoadCallback")) { stage_fatality(atk); return; }
+    if (!_stricmp(cb, "BabalityCinemaPostLoadCallback")) {   /* name only, no clip */
+        char who[48] = "", msg[96];
+        for (int i = 0; i < g_nfat; i++) if (!strcmp(g_fat[i].ch, ch)) { snprintf(who, sizeof who, "%s", g_fat[i].who); break; }
+        if (atk == 0 || !who[0]) snprintf(msg, sizeof msg, "Babality");
+        else snprintf(msg, sizeof msg, "%s: Babality", who);
+        log_line("fatality named: %s by %s (player %d)", cb, gname, atk + 1);
+        { int was = speech_force(1); speak_utf8(msg, 1); speech_force(was); }
+        g_play_t = g_named_t = GetTickCount();
+        return;
+    }
+    /* Fatality3 = the Klassic Fatality (Spine Rip, Toasty!, Yummy!): the third row in index.tsv */
     const Fat *F = NULL;
     for (int i = 0; n && i < g_nfat; i++) if (g_fat[i].num == n && !strcmp(g_fat[i].ch, ch)) { F = &g_fat[i]; break; }
     log_line("fatality named: %s by %s (player %d) -> %s", cb, gname, atk + 1, F ? F->clip : "none");
-    if (!F) return;                                    /* babality, stage or klassic fatality: not in the library */
+    if (!F) return;                                    /* a stage fatality (callback name unknown) or a character not in the library */
     char msg[160];
     if (atk == 0) snprintf(msg, sizeof msg, "%s", F->name);
     else snprintf(msg, sizeof msg, "%s: %s", F->who, F->name);

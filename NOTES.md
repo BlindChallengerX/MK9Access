@@ -491,7 +491,38 @@ Verified in Ladder fights (opponent health poked low on the test saves, fatality
 Fatality1 -> "Split Decision" + clip, Fatality2 -> "Nether-Gate" + clip (7.8 s). A CPU fatality was NOT seen: 8
 Expert fights and 3 Medium ones, the CPU never chose one (it sweeps you or walks to the Victory cinema), so the
 player-2 wording is unheard; the callback is part of the cinematic, not of who triggered it. Babality / stage /
-klassic fatalities (Toasty!, Spine Rip, Yummy!): callback names unknown (log line "fatality named: <cb> ... -> none").
+klassic fatalities: the Klassic Fatality (Sub-Zero Spine Rip, Scorpion Toasty!, Reptile Yummy!) is
+`Fatality3CinemaPostLoadCallback` (strings in cache/costumes/Asset/CHAR_*.xxx list Fatality1-3 callbacks); added
+2026-11-25 as each character's third row in data/fatalities.tsv (rows are appended at the END of the file, so the
+per-character order 1/2/3 holds), with Kratos's two. Babality = `BabalityCinemaPostLoadCallback` (NPC_*_Baby.xxx),
+said as "Babality" / "<Character>: Babality", no clip. Stage fatality callback still unknown. Reported from a stream:
+an online Sub-Zero fatality went undescribed (the Spine Rip). Descriptions of the five new rows are from general
+knowledge (no source describes the scenes). VERIFIED 2026-11-25 in Ladder on test saves (opponent health poked):
+Sub-Zero Spine Rip x2 -> "Fatality3CinemaPostLoadCallback" -> "Spine Rip" + clip; Scorpion Toasty! -> "Toasty!" + clip
+(Up presses need hold 0.04 / gap 0.02 or Scorpion jumps); Sub-Zero Babality -> "Babality". Frames checked by
+frame-describer: Spine Rip matches; Toasty! ends with a burnt body on the floor (no skeleton) - description fixed.
+Yummy! and Kratos's two not seen. After a Babality the game shows no "WINS!" banner, so no winner line (expected).
+- STAGE FATALITIES (2026-11-25, user report): the stage's script looks up `BgndFatality1CinemaPostLoadCallbackWithAttacker`
+  (the hook drops "WithAttacker"; it only took names ending in CinemaPostLoadCallback before, so stage fatalities were
+  never seen). Stages with one (strings in the BGND_*.xxx packages, unpacked with tools/ue3unpack.exe): Pit, PitDay,
+  DeadPool, LivingForest, Subway, Street, Hell. The stage: story.c's NtCreateFile hook logs "stage: <X>" when the port
+  opens game_root\Asset\BGND_<X>.xxx (PitBottom ignored; a Rematch/Retry keeps the loaded stage, no new open).
+  Said "Stage Fatality, <game's arena name>" (The Pit, The Dead Pool, The Living Forest, Subway, The Street, Hell), then
+  the clip from data/stage_fatalities.tsv (stage_<key>.wav + stages.tsv via gen_fatalities.py). Descriptions written
+  from frame-describer reports of in-game frames. VERIFIED all six named (Sub-Zero, F D B BP close) + Street clip played.
+  Choosing a stage for tests: Versus with `--mnk_second_player=true` on the command line (mk9.toml untouched), main menu
+  Up = player header, Right = 2 players, Versus Mode > One VS One, P2 joins with numpad 0 (NumLock ON, else the numpad
+  sends arrows/Insert), P1 presses I = Arena Select (read), Left/Right (A/D) through arenas, J accept; P2 selects with
+  numpad 4. The Versus Continue menu answers player 2's keys (arrows, numpad 4), not J. Ladder stages are random per
+  fight (no stage list found in memory; renaming the 0x44534930 stage-name table did nothing).
+- ROUND END SPEECH (2026-11-25, user report "options aren't read such as rematch"): since 1.0.9 fight_quiet() held
+  back everything while both fighters were in the fight state, which includes the round end and the result menu after
+  the last round. menu.c's "<X> WINS!" now calls fight_round_over(): speech free until both are back at full health
+  (next round) or the fight state ends. VERIFIED: winner + Flawless Victory every round, Ladder "Continue? Retry",
+  Versus "Continue? Rematch / Select A New Fighter / Quit To The Main Menu". The koins tick between rounds stays quiet
+  (round 2 has started). Online result menu not seen (same path). Not read: Versus select's "Press Start" for P2 and
+  the "I Arena Select" hint.
+`gen_fatalities.py --missing` records only new clips.
 Driving tip: the main menu ignores injected pad input while the game is in the background (pause menu, Continue and
 fights take it); `trace 82a10380 600` around a fatality lists the callbacks.
 - Also 2026-11-22: [SocialMessages] templates ("%s just performed their first Fatality...", read after the first

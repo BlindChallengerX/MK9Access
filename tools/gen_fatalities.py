@@ -10,6 +10,7 @@ name matches what the Fatality Tutorial localizes; character + raw input let it 
 in a live match from the player's motion.
 Usage: python gen_fatalities.py [speed]     (records every clip)
        python gen_fatalities.py --index-only (rewrites index.tsv, keeps the clips)
+       python gen_fatalities.py --missing    (records only clips that don't exist yet, keeps the rest)
 """
 import os, re, sys, numpy as np, soundfile as sf
 from kokoro_onnx import Kokoro
@@ -20,6 +21,7 @@ SRC = os.path.join(HERE, "..", "data", "fatalities.tsv")
 OUT = os.path.join(HERE, "..", "out", "MK9Access", "fatalities")
 VOICE = "af_heart"
 INDEX_ONLY = "--index-only" in sys.argv
+MISSING = "--missing" in sys.argv
 _args = [a for a in sys.argv[1:] if not a.startswith("--")]
 SPEED = float(_args[0]) if _args else 1.12
 k = None if INDEX_ONLY else Kokoro(os.path.join(KDIR, "kokoro-v1.0.onnx"), os.path.join(KDIR, "voices-v1.0.bin"))
@@ -34,6 +36,7 @@ LEXICON = {
     "Nightwolf": "nˈaɪtwʊlf", "Stryker": "stɹˈaɪkɚ", "Kenshi": "kˈɛnʃiː",
     "Skarlet": "skˈɑːɹlɛt", "Raiden": "ɹˈeɪdən", "Reptile": "ɹˈɛptaɪl",
     "Cyber Sub-Zero": "sˈaɪbɚ sˈʌbzˈiəɹoʊ", "Kombat": "kˈɑːmbæt",
+    "Kratos": "kɹˈeɪtoʊs", "Medusa": "mədˈuːsə",
 }
 _NAME_RE = re.compile("(?<![A-Za-z])(" + "|".join(sorted(LEXICON, key=len, reverse=True)) + ")('s)?(?![A-Za-z])")
 
@@ -86,7 +89,7 @@ def norm(name):
 
 def main():
     os.makedirs(OUT, exist_ok=True)
-    if not INDEX_ONLY:
+    if not INDEX_ONLY and not MISSING:
         for f in os.listdir(OUT):
             if f.endswith(".wav"): os.remove(os.path.join(OUT, f))
     rows = []
@@ -109,7 +112,8 @@ def main():
         # the clip is the description only (the Kokoro voice, played when the fatality
         # is performed); the mod speaks the name and input through the screen reader.
         text = desc.rstrip(".") + "."
-        if not INDEX_ONLY:
+        if not INDEX_ONLY and not (MISSING and os.path.exists(os.path.join(OUT, key + ".wav"))):
+            if MISSING: print("recording", key)
             a, sr = speak(text, SPEED)
             sf.write(os.path.join(OUT, key + ".wav"), level(a, sr), sr, subtype="PCM_16")
         elif not os.path.exists(os.path.join(OUT, key + ".wav")):
@@ -120,6 +124,24 @@ def main():
     with open(os.path.join(OUT, "index.tsv"), "w", encoding="utf-8", newline="\n") as fh:
         fh.write("\n".join(index) + "\n")
     print("indexed" if INDEX_ONLY else "generated", len(index), "fatality clips in", OUT)
+    # stage fatalities: data/stage_fatalities.tsv (<stage key><TAB><description>) -> stage_<key>.wav + stages.tsv
+    # (<stage key><TAB><clip><TAB><description>); the stage key is the game's BGND_<key>.xxx package name.
+    ssrc = os.path.join(HERE, "..", "data", "stage_fatalities.tsv")
+    if not os.path.exists(ssrc): return
+    stages = []
+    for line in open(ssrc, encoding="utf-8"):
+        cols = line.rstrip("\n").split("\t")
+        if len(cols) < 2 or line.startswith("#") or cols[0] == "stage": continue
+        skey, desc = cols[0].strip(), cols[1].strip().rstrip(".") + "."
+        clip = "stage_" + skey.lower() + ".wav"
+        if not INDEX_ONLY and not (MISSING and os.path.exists(os.path.join(OUT, clip))):
+            if MISSING: print("recording", clip)
+            a, sr = speak(desc, SPEED)
+            sf.write(os.path.join(OUT, clip), level(a, sr), sr, subtype="PCM_16")
+        stages.append("%s\t%s\t%s" % (skey, clip, desc))
+    with open(os.path.join(OUT, "stages.tsv"), "w", encoding="utf-8", newline="\n") as fh:
+        fh.write("\n".join(stages) + "\n")
+    print(len(stages), "stage fatality clips")
 
 if __name__ == "__main__":
     main()

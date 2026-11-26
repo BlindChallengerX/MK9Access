@@ -1890,6 +1890,7 @@ static void on_group(LocCall *g, int n) {
         if (!fight_winner_name(who, sizeof who))
             for (int j = 0; j < n; j++) if (!_stricmp(g[j].sec, "PlayerSelect")) tidy(g[j].val, who, sizeof who);
         snprintf(m, sizeof m, "%s%swins", who, who[0] ? " " : "");
+        fight_round_over();
         say(m, NULL);
         return;
     }

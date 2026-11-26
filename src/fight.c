@@ -76,6 +76,7 @@ static int s_desc = DESC_VOICE, s_dvol = 3;
 static const float k_dgain[6] = { 0, 0.25f, 0.35f, 0.5f, 0.71f, 1.0f };
 static volatile int s_live;             /* both fighters in play (fight_live adds pause, port window, result menu) */
 static volatile int s_hold;             /* a challenge result menu is up (fight_hold) */
+static volatile int s_over;             /* the round was won ("WINS!" banner): speech is free until the next round */
 static int s_air;                       /* opponent airborne, with hysteresis */
 
 /* MK9Access\settings.txt: "distance_cue=clicks" etc. The updater overlays the zip, which has no settings file. */
@@ -135,7 +136,7 @@ void desc_key(int shift) {
 
 /* Read from any thread before speaking. The pause menu, the port overlay and a challenge result speak at once,
  * without waiting for the next poll. */
-int fight_live(void) { return s_live && !s_hold && !g32(PAUSED) && !im_menu_on(); }
+int fight_live(void) { return s_live && !s_hold && !s_over && !g32(PAUSED) && !im_menu_on(); }
 int fight_quiet(void) { return !s_fight_speech && fight_live(); }
 
 static void cues_off(void) { hum_set(0, 110, 0, 0, W_SOFT); hum_trem(0, 0); click_set(0, 0, 0, 700); }
@@ -337,6 +338,12 @@ static DWORD WINAPI height_learn_thread(LPVOID unused) {
 void fight_hold(void) { s_hold = 1; log_line("fight: cues held (challenge result)"); }
 void fight_resume(void) { if (s_hold) log_line("fight: cues resumed"); s_hold = 0; }
 
+/* The round is over (menu.c saw the game's "<Fighter> WINS!" banner). Both fighters stay in the fight state
+ * after the last round too, under the result menu (Rematch, Change Fighter, Continue? ...), so before this the
+ * winner, Flawless Victory, the koins and that menu were held back as live-fight speech (stream report
+ * 2026-11-25). Cleared when the next round starts (both back at full health) or the fight state ends. */
+void fight_round_over(void) { if (!s_over) log_line("fight: round over, speech on"); s_over = 1; }
+
 void fight_poll(void) {
     Fighter me, op;
     /* the hum carries on through Finish Him (state 11) until the fatality starts: range matters there */
@@ -352,8 +359,10 @@ void fight_poll(void) {
         s_inplay = 0;
         s_live = 0;
         s_hold = 0;
+        s_over = 0;
         return;
     }
+    if (s_over && me.hp >= 0.999f && op.hp >= 0.999f) { s_over = 0; log_line("fight: next round, speech quiet"); }
     if (s_hold && me.hp >= 0.999f && op.hp >= 0.999f) fight_resume();
     if (s_hold) {
         if (s_inplay) cues_off();

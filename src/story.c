@@ -42,11 +42,35 @@ typedef NTSTATUS (NTAPI *NtCreateFile_t)(PHANDLE, ACCESS_MASK, POBJECT_ATTRIBUTE
                                          ULONG, ULONG, ULONG, ULONG, PVOID, ULONG);
 static NtCreateFile_t o_ntcreate;
 
+/* The stage: the port opens game_root\Asset\BGND_<Stage>.xxx when a fight loads (BGND_PitBottom too, the floor
+ * of The Pit's stage fatality, read as Pit). fatality.c names the stage fatality from it. */
+static char g_stage[32];
+void story_stage(char *out, size_t cap) {
+    EnterCriticalSection(&g_cs);
+    snprintf(out, cap, "%s", g_stage);
+    LeaveCriticalSection(&g_cs);
+}
+
+static void note_stage(const wchar_t *p, int n) {
+    if (n < 10 || _wcsnicmp(p + n - 4, L".xxx", 4)) return;
+    int s = n - 4;
+    while (s > 0 && p[s - 1] != L'\\' && p[s - 1] != L'/') s--;
+    if (_wcsnicmp(p + s, L"BGND_", 5)) return;
+    char name[32]; int k = 0;
+    for (int i = s + 5; i < n - 4 && k < (int)sizeof name - 1; i++) name[k++] = p[i] < 128 ? (char)p[i] : '_';
+    name[k] = 0;
+    if (!_stricmp(name, "PitBottom")) return;
+    EnterCriticalSection(&g_cs);
+    if (strcmp(g_stage, name)) { snprintf(g_stage, sizeof g_stage, "%s", name); log_line("stage: %s", name); }
+    LeaveCriticalSection(&g_cs);
+}
+
 static void note_path(const UNICODE_STRING *u) {
     if (!u || !u->Buffer) return;
     int n = u->Length / 2;
     if (n < 12) return;
     const wchar_t *p = u->Buffer;
+    note_stage(p, n);
     if (_wcsnicmp(p + n - 4, L".wmv", 4)) return;
     int s = n - 4;
     while (s > 0 && p[s - 1] != L'\\' && p[s - 1] != L'/') s--;
