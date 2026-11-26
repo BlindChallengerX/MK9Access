@@ -10,6 +10,14 @@
  * belong to it (plain Text widgets add id 0); Render ends the frame and
  * publishes it. Mod thread (im_poll): speaks the focused item (NavId) when it
  * changes, and a new screen's plain text when the screen changes.
+ *
+ * Windows with tabs (F2 options: Graphics, Controls, ...; F1 online): the tab row is the first row of items under
+ * the title, and the open tab is the last tab drawn before its content (ImGui draws the tabs in order and the open
+ * tab's content right after its own tab). Ctrl+Tab / Ctrl+Shift+Tab change tabs (keys.c drops them before ImGui,
+ * which would switch windows); a focused tab says "<name> tab, k of n". A setting's help is the text right under it
+ * (F2 draws it in grey under each option); checkboxes say checked / not checked (ImGui::Checkbox hooked).
+ * Forum report 2026-11-25: "navigation on the F2 menu is very tricky" - the help heard was the one above (lines that
+ * scrolled into view were read as new), the whole window was read at once, and the tabs could not be found.
  */
 #include "access.h"
 #include <stdio.h>
@@ -25,9 +33,17 @@ typedef void (__cdecl *addtext_fn)(void *self, void *font, float size, const ImV
 typedef char (__cdecl *itemadd_fn)(const void *bb, uint32_t id, const void *nav_bb, int flags);
 typedef void (__cdecl *render_fn)(void);
 typedef void *(__cdecl *ctx_fn)(void);
+typedef char (__cdecl *checkbox_fn)(const char *label, char *v);
+typedef char (__cdecl *tabitem_fn)(const char *label, char *p_open, int flags);
 
 static addtext_fn o_addtext, o_addtext_rt;
 static itemadd_fn o_itemadd;
+static checkbox_fn o_checkbox;
+static void *t_checkbox;
+static int g_cb_state;                  /* render thread: inside ImGui::Checkbox, 1 off / 2 on */
+static tabitem_fn o_tabitem;
+static void *t_tabitem;
+static uint32_t g_off_curwin = 0x1470, g_off_drawlist = 0x2c8;   /* ImGuiContext.CurrentWindow, ImGuiWindow.DrawList */
 static render_fn o_render;
 static ctx_fn p_ctx;
 static void *t_addtext, *t_addtext_rt, *t_itemadd, *t_render;
@@ -38,11 +54,12 @@ static int g_ready;
 
 #define IMT_MAX 256
 #define IMT_LEN 240
-typedef struct { char s[IMT_LEN]; uint32_t id; float x, y; uint32_t col; } ImT;
+typedef struct { char s[IMT_LEN]; uint32_t id; float x, y; uint32_t col; int ord; const void *dl; } ImT;   /* ord: draw order; dl: its window's draw list */
 static ImT g_build[IMT_MAX], g_done[IMT_MAX];
 static int g_nbuild, g_ndone;
 /* every item's box (a text box has no text of its own: its row is found by the box) */
-typedef struct { uint32_t id; float x0, y0, x1, y1; } ImItem;
+/* check: 0, 1 off, 2 on; tab: 0, 1 a tab, 2 the open tab (ImGui::BeginTabItem); dl: its window's draw list */
+typedef struct { uint32_t id; float x0, y0, x1, y1; int check, tab; const void *dl; char lab[48]; } ImItem;
 #define IMI_MAX 512
 static ImItem g_ibuild[IMI_MAX], g_idone[IMI_MAX];
 static int g_nibuild, g_nidone;
@@ -102,6 +119,41 @@ static void *find_in_exe(HMODULE rt, const char *name) {
     return NULL;
 }
 
+/* A function whose first bytes match several others (Checkbox: a long register-saving prologue, 5 hits) is found by a
+ * string only it uses: the LEA [rip+string] in mk9.exe's code, then back to the start that matches the DLL's copy. */
+static void *find_by_string(HMODULE rt, const char *name, const char *needle) {
+    const uint8_t *tpl = (const uint8_t *)GetProcAddress(rt, name);
+    if (!tpl || !g_text_lo) return NULL;
+    uint8_t mask[24];
+    make_mask(tpl, 24, mask);
+    uint8_t *exe = (uint8_t *)GetModuleHandleW(NULL);
+    IMAGE_NT_HEADERS *nt = (IMAGE_NT_HEADERS *)(exe + ((IMAGE_DOS_HEADER *)exe)->e_lfanew);
+    IMAGE_SECTION_HEADER *sec = IMAGE_FIRST_SECTION(nt);
+    size_t nl = strlen(needle) + 1;              /* with its NUL */
+    for (int si = 0; si < nt->FileHeader.NumberOfSections; si++, sec++) {
+        if (!memcmp(sec->Name, ".text", 5) || !(sec->Characteristics & IMAGE_SCN_MEM_READ)) continue;
+        uint8_t *lo = exe + sec->VirtualAddress, *hi = lo + sec->Misc.VirtualSize;
+        for (uint8_t *str = lo; str + nl <= hi; str++) {
+            if (*str != (uint8_t)needle[0] || memcmp(str, needle, nl)) continue;
+            for (uint8_t *q = g_text_lo; q + 7 <= g_text_hi; q++) {
+                if ((q[0] != 0x48 && q[0] != 0x4C) || q[1] != 0x8D || (q[2] & 0xC7) != 0x05) continue;
+                int32_t disp; memcpy(&disp, q + 3, 4);
+                if (q + 7 + disp != str) continue;
+                for (uint8_t *f = (uint8_t *)((uintptr_t)q & ~(uintptr_t)15); f > q - 0x4000 && f > g_text_lo; f -= 16) {
+                    int ok = 1;
+                    for (int i = 0; i < 24 && ok; i++) if (mask[i] && f[i] != tpl[i]) ok = 0;
+                    if (ok) {
+                        log_line("imgui: %s at exe+%llx (by \"%s\")", name, (unsigned long long)(f - exe), needle);
+                        return f;
+                    }
+                }
+            }
+        }
+    }
+    log_line("imgui: %s not found by \"%s\"", name, needle);
+    return NULL;
+}
+
 /* IsItemFocused: mov rax,[rip+G]; mov ecx,[rax+NavId] (8B 88 disp32) */
 static void read_offsets(HMODULE rt) {
     const uint8_t *f = (const uint8_t *)GetProcAddress(rt, "?IsItemFocused@ImGui@@YA_NXZ");
@@ -121,10 +173,19 @@ static void read_offsets(HMODULE rt) {
             if (f[i] == 0x48 && f[i + 1] == 0x05) { memcpy(&g_off_io, f + i + 2, 4); break; }
         }
     log_line("imgui: IO at +%x", g_off_io);
+    /* GetWindowDrawList: mov rax,[rip+G]; mov rcx,[rax+CurrentWindow] (48 8B 88); ...; mov rax,[rax+DrawList] (48 8B 80) */
+    f = (const uint8_t *)GetProcAddress(rt, "?GetWindowDrawList@ImGui@@YAPEAUImDrawList@@XZ");
+    if (f)
+        for (int i = 0; i < 32; i++) {
+            if (f[i] == 0x48 && f[i + 1] == 0x8B && f[i + 2] == 0x88) memcpy(&g_off_curwin, f + i + 3, 4);
+            if (f[i] == 0x48 && f[i + 1] == 0x8B && f[i + 2] == 0x80) memcpy(&g_off_drawlist, f + i + 3, 4);
+            if (f[i] == 0xC3) break;
+        }
+    log_line("imgui: CurrentWindow at +%x, DrawList at +%x", g_off_curwin, g_off_drawlist);
 }
 
 /* ---------- render thread ---------- */
-static void add_text(const char *b, const char *e, const ImVec2 *pos, uint32_t col) {
+static void add_text(const void *dl, const char *b, const char *e, const ImVec2 *pos, uint32_t col) {
     if (!b) return;
     size_t n = e ? (size_t)(e - b) : strlen(b);
     while (n && (b[n - 1] == ' ' || b[n - 1] == '\n')) n--;
@@ -156,7 +217,7 @@ static void add_text(const char *b, const char *e, const ImVec2 *pos, uint32_t c
     if (g_nbuild >= IMT_MAX) return;
     ImT *t = &g_build[g_nbuild++];
     memcpy(t->s, pre, np); memcpy(t->s + np, b, n); t->s[np + n] = 0;
-    t->id = g_cur_item; t->x = x; t->y = y; t->col = col;
+    t->id = g_cur_item; t->x = x; t->y = y; t->col = col; t->dl = dl;
 }
 
 static void __cdecl h_addtext(void *self, void *font, float size, const ImVec2 *pos, uint32_t col,
@@ -169,7 +230,7 @@ static void __cdecl h_addtext(void *self, void *font, float size, const ImVec2 *
     int visible = !cr || !pos || (mid >= cr[1] && mid <= cr[3]);
     /* a player without a photo gets a letter in a circle (alpha 0xEB): "B", "?" - not text to read */
     int avatar_letter = b && (col >> 24) == 0xEB && (e ? e - b : (long long)strlen(b)) == 1;
-    if ((col >> 24) > 0x40 && visible && !avatar_letter) add_text(b, e, pos, col);
+    if ((col >> 24) > 0x40 && visible && !avatar_letter) add_text(self, b, e, pos, col);
     o_addtext(self, font, size, pos, col, b, e, wrap, clip);
     InterlockedDecrement(&g_inflight);
 }
@@ -190,8 +251,39 @@ static char __cdecl h_itemadd(const void *bb, uint32_t id, const void *nav_bb, i
         const float *r4 = (const float *)bb;
         ImItem *it = &g_ibuild[g_nibuild++];
         it->id = id; it->x0 = r4[0]; it->y0 = r4[1]; it->x1 = r4[2]; it->y1 = r4[3];
+        it->check = g_cb_state; g_cb_state = 0;
+        it->tab = 0; it->lab[0] = 0; it->dl = NULL;
+        uint8_t *c = p_ctx ? (uint8_t *)p_ctx() : NULL;
+        uint8_t *win = c ? *(uint8_t **)(c + g_off_curwin) : NULL;
+        if (win) it->dl = *(void **)(win + g_off_drawlist);
     }
     char r = o_itemadd(bb, id, nav_bb, flags);
+    InterlockedDecrement(&g_inflight);
+    return r;
+}
+
+/* ImGui::Checkbox(label, bool *v): its ItemAdd is the box; *v says whether it is ticked */
+static char __cdecl h_checkbox(const char *label, char *v) {
+    InterlockedIncrement(&g_inflight);
+    g_cb_state = v ? (*v ? 2 : 1) : 0;
+    char r = o_checkbox(label, v);
+    g_cb_state = 0;
+    InterlockedDecrement(&g_inflight);
+    return r;
+}
+
+/* ImGui::BeginTabItem(label, p_open, flags): its ItemAdd is the tab; true = the open tab */
+static char __cdecl h_tabitem(const char *label, char *p_open, int flags) {
+    InterlockedIncrement(&g_inflight);
+    int before = g_nibuild;
+    char r = o_tabitem(label, p_open, flags);
+    if (before < g_nibuild) {
+        ImItem *it = &g_ibuild[before];
+        it->tab = r ? 2 : 1;
+        size_t k = 0;                                /* the label up to "##" (its id part) */
+        for (; label && label[k] && k < sizeof it->lab - 1 && !(label[k] == '#' && label[k + 1] == '#'); k++) it->lab[k] = label[k];
+        it->lab[k] = 0;
+    }
     InterlockedDecrement(&g_inflight);
     return r;
 }
@@ -208,6 +300,9 @@ static void __cdecl h_render(void) {
     if (g_dump > 0 && g_nbuild) {
         for (int i = 0; i < g_nbuild; i++)
             log_line("IM [%08x] %s @%.0f,%.0f col %08x", g_build[i].id, g_build[i].s, g_build[i].x, g_build[i].y, g_build[i].col);
+        for (int i = 0; i < g_nibuild; i++)
+            log_line("IMI [%08x] %.0f,%.0f - %.0f,%.0f check %d", g_ibuild[i].id, g_ibuild[i].x0, g_ibuild[i].y0, g_ibuild[i].x1,
+                     g_ibuild[i].y1, g_ibuild[i].check);
         g_dump = 0;
     }
     g_nbuild = 0; g_nibuild = 0; g_cur_item = 0;
@@ -234,6 +329,11 @@ void im_init(void) {
     if (!t_addtext || !t_itemadd || !t_render || !p_ctx) { log_line("imgui: port screens will not be read"); return; }
     if (!hook(t_addtext, (void *)h_addtext, (void **)&o_addtext) || !hook(t_itemadd, (void *)h_itemadd, (void **)&o_itemadd) ||
         !hook(t_render, (void *)h_render, (void **)&o_render)) { log_line("imgui: hooking failed"); return; }
+    t_checkbox = find_in_exe(rt, "?Checkbox@ImGui@@YA_NPEBDPEA_N@Z");
+    if (!t_checkbox) t_checkbox = find_by_string(rt, "?Checkbox@ImGui@@YA_NPEBDPEA_N@Z", "[~]");
+    t_tabitem = find_in_exe(rt, "?BeginTabItem@ImGui@@YA_NPEBDPEA_NH@Z");
+    if (t_tabitem && !hook(t_tabitem, (void *)h_tabitem, (void **)&o_tabitem)) t_tabitem = NULL;
+    if (t_checkbox && !hook(t_checkbox, (void *)h_checkbox, (void **)&o_checkbox)) t_checkbox = NULL;
     t_addtext_rt = (void *)GetProcAddress(rt, "?AddText@ImDrawList@@QEAAXPEAUImFont@@MAEBUImVec2@@IPEBD2MPEBUImVec4@@@Z");
     if (!hook(t_addtext_rt, (void *)h_addtext_rt, (void **)&o_addtext_rt)) t_addtext_rt = NULL;
     g_ready = 1;
@@ -241,8 +341,8 @@ void im_init(void) {
 }
 
 void im_shutdown(void) {
-    void *ts[] = { t_addtext, t_itemadd, t_render, t_addtext_rt };
-    for (int i = 0; i < 4; i++) if (ts[i]) { MH_DisableHook(ts[i]); MH_RemoveHook(ts[i]); }
+    void *ts[] = { t_addtext, t_itemadd, t_render, t_addtext_rt, t_checkbox, t_tabitem };
+    for (int i = 0; i < 6; i++) if (ts[i]) { MH_DisableHook(ts[i]); MH_RemoveHook(ts[i]); }
     g_ready = 0;
 }
 
@@ -310,12 +410,101 @@ static volatile DWORD g_menu_text_t;    /* last frame with port-screen text (the
 int im_menu_on(void) { return g_ready && GetTickCount() - g_menu_text_t < 300; }
 static uint32_t g_said_nav;
 static char g_said_item[1024];
+static int g_said_tab = -1;             /* the open tab last said */
+static DWORD g_head_t;                  /* when the open tab was last named */
+static char g_said_title[160];          /* the tabbed window last said */
 static char g_screen_sig[2048];
 
 static int by_pos(const void *a, const void *b) {
     const ImT *x = a, *y = b;
     if (fabsf(x->y - y->y) > 6) return x->y < y->y ? -1 : 1;
     return x->x < y->x ? -1 : x->x > y->x;
+}
+
+/* ---------- windows with tabs ---------- */
+#define NTAB 10
+static struct { uint32_t id; char s[64]; } g_tab[NTAB];
+static int g_ntab, g_tab_sel = -1;      /* the tabs of the window g_tab_title, kept while it is hidden */
+static int g_tabs_live;                 /* that window is on screen now */
+#define TABS_LIVE() (g_tabs_live && g_ntab >= 2)
+static char g_tab_title[160];           /* the window whose tabs these are */
+static volatile LONG g_tab_req;         /* Ctrl+Tab +1 / Ctrl+Shift+Tab -1, from keys.c's message hook */
+
+/* tab names ImGui cut short for lack of room ("Display and langu"): the port's full ones */
+static void tab_full_name(const char *s, char *out, size_t cap) {
+    static const char *const full[] = { "Display and language", "Pantalla e idioma", "Tela e idioma", "Affichage et langue",
+                                        "Anzeige und Sprache", "Schermo e lingua" };
+    size_t n = strlen(s);
+    for (size_t i = 0; n >= 6 && i < sizeof full / sizeof full[0]; i++)
+        if (!strncmp(full[i], s, n)) { snprintf(out, cap, "%s", full[i]); return; }
+    snprintf(out, cap, "%.63s", s);
+}
+
+/* The window's tab row: the first row of items under its title (3 or more texts with ids on one line), seen either
+ * around the open tab's content (the tabs after the open one are drawn after it) or as a row known from before. The
+ * open tab: the last of that row drawn before the first text off the row. Kept while the tabs are scrolled away. */
+/* The tabs (marked by the BeginTabItem hook) of the window with the keyboard focus; with the focus elsewhere (a
+ * dropdown list, nothing), of the tabbed window already in use, else of the first one. The title: the first text drawn
+ * in that window (its title bar). A tab scrolled out of view keeps its name from before. */
+static const void *g_tab_dl;
+static void tabs_scan(void) {
+    uint32_t nav = nav_id();
+    const void *want = NULL;
+    for (int i = 0; i < g_niview && !want; i++) if (nav && g_iview[i].id == nav) want = g_iview[i].dl;
+    int has = 0;
+    for (int i = 0; i < g_niview && !has; i++) has = g_iview[i].tab && g_iview[i].dl == want;
+    if (!has) {
+        want = NULL;
+        for (int i = 0; i < g_niview && !want; i++) if (g_iview[i].tab && g_iview[i].dl == g_tab_dl) want = g_tab_dl;
+        for (int i = 0; i < g_niview && !want; i++) if (g_iview[i].tab) want = g_iview[i].dl;
+    }
+    g_tabs_live = 0;
+    if (!want) return;
+    int idx[NTAB], n = 0;
+    for (int i = 0; i < g_niview && n < NTAB; i++) if (g_iview[i].tab && g_iview[i].dl == want) idx[n++] = i;
+    for (int x = 0; x < n; x++) for (int y = x + 1; y < n; y++)   /* left to right */
+        if (g_iview[idx[y]].x0 < g_iview[idx[x]].x0) { int t = idx[x]; idx[x] = idx[y]; idx[y] = t; }
+    char title[160] = "";
+    for (int i = 0; i < g_nview && !title[0]; i++) if (g_view[i].dl == want) snprintf(title, sizeof title, "%.159s", g_view[i].s);
+    int same = want == g_tab_dl && !strcmp(title, g_tab_title);
+    static struct { uint32_t id; char s[64]; } old[NTAB];
+    int nold = g_ntab;
+    memcpy(old, g_tab, sizeof old);
+    g_tab_sel = -1;
+    for (int k = 0; k < n; k++) {
+        const ImItem *it = &g_iview[idx[k]];
+        g_tab[k].id = it->id;
+        g_tab[k].s[0] = 0;
+        for (int i = 0; i < g_nview && !g_tab[k].s[0]; i++)
+            if (g_view[i].id == it->id) tab_full_name(g_view[i].s, g_tab[k].s, sizeof g_tab[k].s);
+        for (int j = 0; j < nold && !g_tab[k].s[0] && same; j++)
+            if (old[j].id == it->id) snprintf(g_tab[k].s, sizeof g_tab[k].s, "%s", old[j].s);
+        if (!g_tab[k].s[0]) tab_full_name(it->lab, g_tab[k].s, sizeof g_tab[k].s);
+        if (it->tab == 2) g_tab_sel = k;
+    }
+    g_ntab = n;
+    g_tab_dl = want;
+    snprintf(g_tab_title, sizeof g_tab_title, "%s", title);
+    g_tabs_live = n >= 2;
+}
+
+static int tab_index(uint32_t id) {
+    for (int k = 0; k < g_ntab; k++) if (g_tab[k].id == id) return k;
+    return -1;
+}
+
+int im_tabs_on(void) { return im_menu_on() && TABS_LIVE(); }
+void im_tab_step(int dir) { InterlockedExchange(&g_tab_req, dir); }
+
+static void send_key(WORD vk) {
+    INPUT in[2];
+    memset(in, 0, sizeof in);
+    in[0].type = in[1].type = INPUT_KEYBOARD;
+    in[0].ki.wVk = in[1].ki.wVk = vk;
+    in[1].ki.dwFlags = KEYEVENTF_KEYUP;
+    SendInput(1, &in[0], sizeof(INPUT));
+    Sleep(40);
+    SendInput(1, &in[1], sizeof(INPUT));
 }
 
 /* Between two pieces of text: ", " on the same row, ". " on a new one, a space after a label's colon. */
@@ -333,11 +522,14 @@ static int join_item(uint32_t id, char *out, size_t cap) {
     out[0] = 0;
     const ImItem *box = NULL;
     for (int i = 0; i < g_niview; i++) if (g_iview[i].id == id) { box = &g_iview[i]; break; }
+    const void *own_dl = NULL;
+    for (int i = 0; i < g_nview && !own_dl; i++) if (g_view[i].id == id) own_dl = g_view[i].dl;
     if (box) {
         static ImT row[24];
         int n = 0;
         for (int i = 0; i < g_nview && n < 24; i++)
-            if (!g_view[i].id && g_view[i].y >= box->y0 - 6 && g_view[i].y <= box->y1 && g_view[i].x < box->x0)
+            if (!g_view[i].id && g_view[i].y >= box->y0 - 6 && g_view[i].y <= box->y1 && g_view[i].x < box->x0 &&
+                (!own_dl || g_view[i].dl == own_dl))
                 row[n++] = g_view[i];
         qsort(row, n, sizeof(ImT), by_pos);
         /* from the last label ("You: BlindChallengerX, Change", not the connection status before it) */
@@ -357,6 +549,30 @@ static int join_item(uint32_t id, char *out, size_t cap) {
         if (own0 < 0) own0 = i;
         if (out[0]) strncat(out, out[strlen(out) - 1] == ':' ? " " : ", ", cap - strlen(out) - 1);
         strncat(out, g_view[i].s, cap - strlen(out) - 1);
+    }
+    if (own0 >= 0 && box && box->check)
+        strncat(out, box->check == 2 ? ", checkbox, checked" : ", checkbox, not checked", cap - strlen(out) - 1);
+    /* its help: the plain lines right under it, before the next row of items (F2 draws each option's help there) */
+    if (own0 >= 0 && box && tab_index(id) < 0) {
+        float next = 1e9f, left = box->x0;
+        for (int i = 0; i < g_niview; i++) {
+            const ImItem *it = &g_iview[i];
+            if (it->id != id && it->y0 > box->y1 - 1 && it->y0 < next && it->x1 > box->x0 - 900 && it->x0 < box->x1 + 900)
+                next = it->y0;                   /* the next row of items in this window, whatever its column */
+        }
+        for (int i = 0; i < g_nview; i++)        /* the row's label starts the column */
+            if (!g_view[i].id && g_view[i].y >= box->y0 - 6 && g_view[i].y <= box->y1 && g_view[i].x < left) left = g_view[i].x;
+        int lines = 0;
+        uint32_t own_col = g_view[own0].col;
+        for (int i = 0; i < g_nview && lines < 4; i++) {
+            const ImT *t = &g_view[i];
+            if (t->id || t->y < box->y1 - 2 || t->y >= next - 2 || t->x < left - 4 || t->x > box->x1) continue;
+            if (t->col == own_col || (own_dl && t->dl != own_dl)) continue;   /* a heading of what follows, another window */
+            if (strstr(out, t->s)) continue;
+            strncat(out, ". ", cap - strlen(out) - 1);
+            strncat(out, t->s, cap - strlen(out) - 1);
+            lines++;
+        }
     }
     if (own0 < 0 && box) {
         /* unlabelled: a scrolling list or chat (a child window: text inside its box; Enter goes in), a text box
@@ -499,17 +715,92 @@ static void read_rec(const ImT *rec, int n) {
         if ((starts(s, "Recording: ") || starts(s, "Grabaci")) && (c = strchr(s, ' ')) != NULL)
             snprintf(v.len, sizeof v.len, "%.1f seconds", atof(c + 1));
     }
-    say_rec_change(&v);
+    /* the player's own F5 / F6 / F7: past the fight silence (1.0.9 kept these quiet in Practice by mistake) */
+    { int was = speech_force(1); say_rec_change(&v); speech_force(was); }
     g_rec = v;
     g_rec_panel_t = GetTickCount();
 }
 
-/* "Startup 7. On block minus 3. Total 25." from label / value rows (a value is drawn after its label, same line). */
+/* "Startup 7. On block minus 3. Recovery 15." from label / value rows (a value is drawn after its label, same line). */
+/* Recovery (user request 2026-11-25: "read recovery frames instead of the total"). The port's panel shows startup,
+ * the advantage and the total; recovery is measured here with the same rules as the port (mk9_frame_data.cpp), once a
+ * game frame on the game thread (fd_frame, from the pad read): an attack starts at a new move id while held (frame 1),
+ * its active part at the first frame its phase (+0x2F74) leaves 1, its recovery at the first frame the phase is 3 (a
+ * contact puts it there at once), and it ends at the first frame the fighter is free (action kind without 0x40).
+ * startup = active frame, total = free frame, recovery = free - recovery start. The panel's line is read with the
+ * recovery only when this measure has the panel's own startup and total (the same attack); else with the total.
+ * The pad is read about twice a game frame, so a pass counts only when a fighter's animation frame (+0x2D4) moved. */
+typedef struct { uint32_t move; int on, n, a, e; } FdRun;
+typedef struct { int startup, total, rec; } FdDone;
+static FdRun g_fdr[2];
+static FdDone g_fdd[2];
+
+void fd_frame(void) {
+    if (GetTickCount() - g_fd_panel_t > 3000) return;      /* Practice's panel not up */
+    static uint32_t last_anim[2], prev_move[2] = { 0xFFFFFFFFu, 0xFFFFFFFFu }, prev_ph[2];
+    uint32_t obj[2], anim[2];
+    int moved = 0;
+    for (int p = 0; p < 2; p++) {
+        obj[p] = g32(0x833C6C54u + (uint32_t)p * 0xC8Cu + 0xDF4u);
+        if (obj[p] < 0x30000000u || obj[p] >= 0xA0000000u) { obj[p] = 0; continue; }
+        anim[p] = g32(obj[p] + 0x2D4u);
+        if (anim[p] != last_anim[p]) moved = 1;
+        last_anim[p] = anim[p];
+    }
+    if (!moved) return;                                     /* the same game frame again, or paused */
+    for (int p = 0; p < 2; p++) {
+        FdRun *m = &g_fdr[p];
+        if (!obj[p]) { m->on = 0; continue; }
+        uint32_t move = g32(obj[p] + 0x188u), act = g32(obj[p] + 0x1D4u), ph = g32(obj[p] + 0x2F74u);
+        uint32_t kind = (act >> 8) & 0xFF;
+        int held = (kind & 0x40) != 0, hit = (kind & 0x50) == 0x40;
+        /* a new attack: a move id it did not have, held, not hit. An attack in parts (Scorpion's 4: a step, then the
+         * kick) changes its id before it reaches its recovery: the same attack still (as the port) */
+        if (move != 0xFFFFFFFFu && move != prev_move[p] && held && !hit) {
+            if (m->on && !m->e) m->move = move;
+            else { m->on = 1; m->move = move; m->n = 0; m->a = m->e = 0; }
+        }
+        prev_move[p] = move;
+        if (m->on) m->n++;
+        if (m->on && hit) m->on = 0;                        /* hit while attacking: no measure (as the port) */
+        if (m->on) {
+            if (!m->a && move == m->move && (ph & 2) && !(prev_ph[p] & 2)) m->a = m->n;
+            if (!m->e && ph == 3) { m->e = m->n; if (!m->a) m->a = m->n; }   /* a string's next hit: its contact */
+            if (!held) {
+                if (m->a && m->e) {
+                    g_fdd[p].startup = m->a; g_fdd[p].total = m->n; g_fdd[p].rec = m->n - m->e;
+                    log_line("framedata: p%d startup %d recovery-start %d free %d", p + 1, m->a, m->e, m->n);
+                }
+                m->on = 0;
+            }
+        }
+        prev_ph[p] = ph;
+    }
+}
+
 static void read_fd(const ImT *fd, int n) {
     char out[256] = "";
-    int flash = 0;
+    int flash = 0, rival = 0, startup = -1, total = -1, last_num = -1;
+    for (int i = 0; i < n; i++)
+        if (starts(fd[i].s, "FRAME DATA") && (strstr(fd[i].s, "OPPONENT") || strstr(fd[i].s, "RIVAL"))) rival = 1;
+    {   /* rows are "label number": the first row's number is the startup, the last row's the total */
+        int nums[4], nn = 0;
+        for (int i = 0; i < n && nn < 4; i++) if (is_number(fd[i].s)) nums[nn++] = i;
+        if (nn >= 2) { startup = atoi(fd[nums[0]].s); total = atoi(fd[nums[nn - 1]].s); last_num = nums[nn - 1]; }
+    }
+    const FdDone *d = &g_fdd[rival];
+    int rec = d->startup == startup && d->total == total && total > 0 ? d->rec : -1;
     for (int i = 0; i < n; i++) {
         const char *s = fd[i].s;
+        if (rec >= 0 && i == last_num - 1) {                /* "Total" and its number -> "Recovery N" */
+            if (out[0] && out[strlen(out) - 1] != ' ') strncat(out, ". ", sizeof out - strlen(out) - 1);
+            char r[48]; snprintf(r, sizeof r, "Recovery %d", rec);
+            strncat(out, r, sizeof out - strlen(out) - 1);
+            uint32_t c = fd[last_num].col;
+            if ((c & 0xFF) >= 0xFC && ((c >> 8) & 0xFF) >= 0xFC && ((c >> 16) & 0xFF) >= 0xFC) flash = 1;
+            i = last_num;
+            continue;
+        }
         if (starts(s, "FRAME DATA")) {
             if (strstr(s, "OPPONENT") || strstr(s, "RIVAL")) strncat(out, "Opponent. ", sizeof out - strlen(out) - 1);
             continue;
@@ -519,9 +810,9 @@ static void read_fd(const ImT *fd, int n) {
             if ((c & 0xFF) >= 0xFC && ((c >> 8) & 0xFF) >= 0xFC && ((c >> 16) & 0xFF) >= 0xFC) flash = 1;
             char v[48];
             if (!strcmp(s + (s[0] == '+' || s[0] == '-'), "0")) snprintf(v, sizeof v, " 0");
-            else if (s[0] == '-' && s[1]) snprintf(v, sizeof v, " minus %s", s + 1);
-            else if (s[0] == '+') snprintf(v, sizeof v, " plus %s", s + 1);
-            else snprintf(v, sizeof v, " %s", s);
+            else if (s[0] == '-' && s[1]) snprintf(v, sizeof v, " minus %.40s", s + 1);
+            else if (s[0] == '+') snprintf(v, sizeof v, " plus %.40s", s + 1);
+            else snprintf(v, sizeof v, " %.40s", s);
             strncat(out, v, sizeof out - strlen(out) - 1);
             continue;
         }
@@ -529,7 +820,9 @@ static void read_fd(const ImT *fd, int n) {
         strncat(out, s, sizeof out - strlen(out) - 1);
     }
     strcpy(g_fd_text, out);
-    if (flash && !g_fd_flash && g_fd_auto) speak_utf8(out, 1);
+    if (flash && !g_fd_flash && g_fd_auto) {           /* asked for with Shift+F10: past the fight silence */
+        int was = speech_force(1); speak_utf8(out, 1); speech_force(was);
+    }
     g_fd_flash = flash;
     g_fd_panel_t = GetTickCount();
 }
@@ -673,11 +966,12 @@ static int g_nprev;
 #define SETTLE_MS 150
 static char g_pend[4096], g_pend_item[1024];
 static DWORD g_pend_t;
-static int g_pend_on, g_pend_hint;
+static int g_pend_on, g_pend_hint, g_pend_sig;   /* g_pend_sig: g_pend is the whole screen */
 
 static void pending_flush(void) {
     if (!g_pend_on || GetTickCount() - g_pend_t < SETTLE_MS) return;
     g_pend_on = 0;
+    if (g_pend_sig && TABS_LIVE()) return;           /* tabbed after all: im_poll says its name and tab instead */
     if (g_pend[0]) speak_utf8(g_pend, 1);
     if (g_pend_item[0]) speak_utf8(g_pend_item, !g_pend[0]);
     if (g_pend_hint) speak(k_name_hint, 0);
@@ -721,6 +1015,7 @@ void im_poll(void) {
     g_niview = g_nidone;
     memcpy(g_iview, g_idone, sizeof(ImItem) * g_niview);
     LeaveCriticalSection(&g_lock);
+    for (int i = 0; i < g_nview; i++) g_view[i].ord = i;
     practice_panels();
     split_badge();
     badge_poll();
@@ -736,8 +1031,30 @@ void im_poll(void) {
         if (GetTickCount() - window_t > 300 && (g_screen_sig[0] || g_nprev)) {
             if (g_loaded_said && im_name_prompt_open()) speak(L"Online window hidden. F1 shows it again.", 1);
             g_said_nav = 0; g_said_item[0] = 0; g_screen_sig[0] = 0; g_nprev = 0; g_pend_on = 0;
+            g_said_tab = -1; g_said_title[0] = 0;   /* the tabs stay known: the same window reopens tabbed */
         }
         return;
+    }
+    tabs_scan();
+    pending_flush();
+    /* Ctrl+Tab: the next tab is focused and chosen (Enter), as a mouse click on it would */
+    LONG req = InterlockedExchange(&g_tab_req, 0);
+    if (req && TABS_LIVE()) {
+        int cur = g_tab_sel >= 0 ? g_tab_sel : 0, t = (cur + (int)req + g_ntab) % g_ntab;
+        uint8_t *c = p_ctx ? (uint8_t *)p_ctx() : NULL;
+        if (c) {
+            *(volatile uint32_t *)(c + g_off_nav) = g_tab[t].id;
+            Sleep(20);
+            send_key(VK_RETURN);
+            g_tab_sel = t; g_said_tab = t; g_head_t = GetTickCount();
+            speakf(1, "%s tab, %d of %d", g_tab[t].s, t + 1, g_ntab);
+            g_said_nav = g_tab[t].id;
+            char said[200];
+            snprintf(said, sizeof said, "%s tab, %d of %d, open", g_tab[t].s, t + 1, g_ntab);
+            fold_digits(said, g_said_item, sizeof g_said_item);
+            log_line("imgui: Ctrl+Tab %+ld -> tab %d %s", (long)req, t + 1, g_tab[t].s);
+            return;
+        }
     }
     /* the plain lines in reading order */
     static ImT cur[IMT_MAX];
@@ -801,15 +1118,41 @@ void im_poll(void) {
         }
     }
     char item[1024] = "";
-    if (nav) join_item(nav, item, sizeof item);
+    int ti = nav ? tab_index(nav) : -1;
+    if (ti >= 0)
+        snprintf(item, sizeof item, "%s tab, %d of %d%s", g_tab[ti].s, ti + 1, g_ntab,
+                 ti == g_tab_sel ? ", open" : ". Enter opens it");
+    else if (nav) join_item(nav, item, sizeof item);
+    /* a window with tabs is not read all at once (F2's Graphics tab is a page of help texts): its name and the open
+     * tab, then the focused item with its help; F5 reads all of it */
+    char head[400] = "";
+    int tabbed = TABS_LIVE();
+    if (tabbed) {
+        if (strcmp(g_tab_title, g_said_title)) {
+            snprintf(head, sizeof head, "%s. %s tab, %d of %d. Control Tab changes tabs, F5 reads the tab.", g_tab_title,
+                     g_tab_sel >= 0 ? g_tab[g_tab_sel].s : g_tab[0].s, (g_tab_sel >= 0 ? g_tab_sel : 0) + 1, g_ntab);
+            snprintf(g_said_title, sizeof g_said_title, "%s", g_tab_title);
+            g_said_tab = g_tab_sel;
+        } else if (g_tab_sel >= 0 && g_tab_sel != g_said_tab) {
+            snprintf(head, sizeof head, "%s tab, %d of %d", g_tab[g_tab_sel].s, g_tab_sel + 1, g_ntab);
+            g_said_tab = g_tab_sel;
+        }
+    } else g_said_title[0] = 0;
+    if (head[0]) g_head_t = GetTickCount();
+    int skip_item = ti >= 0 && ti == g_tab_sel && GetTickCount() - g_head_t < 2000;   /* the open tab: just named */
     int had = g_nprev > 0 || g_screen_sig[0];
     for (int i = 0; i < n; i++) strcpy(g_prev[i], folded[i]);
     g_nprev = n;
     snprintf(g_screen_sig, sizeof g_screen_sig, "%s", sig);
     if (!had || (fresh && kept * 2 < n)) {
-        /* a new screen: all of it, then the focused item (once it settles) */
-        snprintf(g_pend, sizeof g_pend, "%s", sig);
-        snprintf(g_pend_item, sizeof g_pend_item, "%s", item);
+        /* a new screen: all of it (a tabbed window: its name and tab), then the focused item (once it settles) */
+        snprintf(g_pend, sizeof g_pend, "%s", tabbed ? head : sig);
+        g_pend_sig = !tabbed;
+        {
+            char f2[1024]; fold_digits(item, f2, sizeof f2);
+            if (tabbed && nav == g_said_nav && !strcmp(f2, g_said_item)) skip_item = 1;   /* said with Ctrl+Tab */
+        }
+        snprintf(g_pend_item, sizeof g_pend_item, "%s", skip_item ? "" : item);
         g_pend_hint = g_loaded_said && im_name_prompt_open();   /* before that, dllmain says it */
         g_pend_t = GetTickCount(); g_pend_on = 1;
         g_said_nav = nav; fold_digits(item, g_said_item, sizeof g_said_item);
@@ -819,15 +1162,23 @@ void im_poll(void) {
     char fitem[1024];
     fold_digits(item, fitem, sizeof fitem);
     if (g_pend_on) {                                   /* the screen is still settling: it will say all of it */
-        snprintf(g_pend, sizeof g_pend, "%s", sig);
-        snprintf(g_pend_item, sizeof g_pend_item, "%s", item);
+        if (!tabbed) { snprintf(g_pend, sizeof g_pend, "%s", sig); g_pend_sig = 1; }
+        else if (head[0]) { snprintf(g_pend, sizeof g_pend, "%s", head); g_pend_sig = 0; }
+        snprintf(g_pend_item, sizeof g_pend_item, "%s", skip_item ? "" : item);
         g_said_nav = nav; strcpy(g_said_item, fitem);
         return;
     }
-    if (nav != g_said_nav || strcmp(fitem, g_said_item)) {
-        if (item[0]) speak_utf8(item, 1);
+    int moved = nav != g_said_nav;
+    if (head[0]) speak_utf8(head, 1);                  /* another tab opened (by Enter on it, or the controller's LB/RB) */
+    if (moved || strcmp(fitem, g_said_item)) {
+        if (item[0] && !skip_item) speak_utf8(item, !head[0]);
         g_said_nav = nav; strcpy(g_said_item, fitem);
     }
+    /* lines that appear as the focus moves are the window scrolling to it, not news; a tooltip (drawn after
+     * every item, in its own window) still is */
+    const void *nav_dl = NULL;
+    for (int i = 0; i < g_nview && !nav_dl; i++) if (nav && g_view[i].id == nav) nav_dl = g_view[i].dl;
+    #define OVERLAY(t) (nav_dl && (t)->dl != nav_dl)
     if (fresh) {
         /* the same screen with new lines (a chat message, someone entering the room, a room in the list, a status
          * line, the focused button's tooltip): only those, each with the rest of its row ("Room of X, X, about
@@ -837,9 +1188,17 @@ void im_poll(void) {
         memset(done, 0, sizeof done);
         for (int i = 0; i < n; i++) {
             if (!is_new[i] || done[i]) continue;
+            if (OVERLAY(&cur[i])) {                    /* a tooltip: on its own, not with the row it lies over */
+                done[i] = 1;
+                if (strstr(item, cur[i].s)) continue;
+                if (add[0]) strncat(add, ". ", sizeof add - strlen(add) - 1);
+                strncat(add, cur[i].s, sizeof add - strlen(add) - 1);
+                continue;
+            }
+            if (moved) { done[i] = 1; continue; }
             const ImT *prev = NULL;
             for (int j = 0; j < n; j++) {
-                if (fabsf(cur[j].y - cur[i].y) > 6) continue;
+                if (fabsf(cur[j].y - cur[i].y) > 6 || cur[j].dl != cur[i].dl) continue;
                 done[j] = 1;
                 if (strstr(item, cur[j].s)) continue;      /* already said with the focused item */
                 if (add[0]) strncat(add, prev ? ", " : ". ", sizeof add - strlen(add) - 1);

@@ -1366,8 +1366,19 @@ static void preset_poll(void) {
     say(m, NULL);
 }
 
+/* Main menu with 2 players or more: without a device for player 2 the game greys out Versus Mode, Team Ladder and
+ * Online (navTextN.navTextBase gotoAndStop "disable") and the cursor skips them, so only Extras and Options seemed
+ * left (forum 2026-11-25). Say why, once the switch has settled. */
+static DWORD g_np_t;                    /* the player count just changed */
+static int g_np_count;
+static DWORD g_dis_t; static int g_dis_n;  /* the last burst of greyed-out items (they come before the count's lookup) */
+
 static void on_focus_event(FocusEv *e) {
     if (g_debug) log_line("FOCUS %08x %s %s%s", e->holder, e->target, e->arg, e->stop ? " (stop)" : "");
+    if (e->stop && !strcmp(e->target, "navTextBase") && !_stricmp(e->arg, "disable")) {
+        if (GetTickCount() - g_dis_t > 400) g_dis_n = 0;
+        g_dis_n++; g_dis_t = GetTickCount();
+    }
     size_t tl0 = strlen(e->target);
     if (e->stop == 2) { ml_highlight(atoi(e->arg), e->t); return; }   /* said once the move's events are in */
     if (preset_event(e)) return;
@@ -1675,6 +1686,7 @@ static void on_group(LocCall *g, int n) {
         if (np >= 0) {
             char d = g[np].key[10];
             if (d == '1') snprintf(players, sizeof players, "1 player"); else snprintf(players, sizeof players, "%c players", d);
+            g_np_t = now; g_np_count = d - '0';
         }
         if (np >= 0 && desc >= 0) { say(players, NULL); return; }
         if (np < 0 && desc >= 0 && n <= 2) { say(players, "Change the number of players with Left and Right."); return; }
@@ -1968,6 +1980,14 @@ Are you sure ..."): the text field got the whole sentence just before */
 void menu_poll(void) {
     static LocCall grp[LQ];
     watch_input();
+    if (g_np_t && GetTickCount() - g_np_t > 500) {
+        int disabled = (LONG)(g_dis_t - g_np_t) > -1000 && (LONG)(g_dis_t - g_np_t) < 1000 ? g_dis_n : 0;
+        if (g_np_count >= 2 && disabled)
+            speak(L"Versus Mode, Team Ladder and Online wait for a second player. Connect a second controller, or open F2, "
+                  L"Controls tab, and tick Two players on the same keyboard: player 2 then uses the arrows and the numpad.", 0);
+        log_line("menu: %d players, %d menu items greyed out", g_np_count, disabled);
+        g_np_t = 0;
+    }
     for (;;) {                               /* Flash focus events first: they come before the lookups of the same move */
         FocusEv e;
         EnterCriticalSection(&g_clock);

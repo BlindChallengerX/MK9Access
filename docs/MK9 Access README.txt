@@ -173,7 +173,7 @@ Mod keys:
 
 Port keys:
   F1    online (rooms, quick match, chat)
-  F2    options
+  F2    options (in F1 and F2, Ctrl+Tab changes tabs: see section 8)
   F5, F6, F7   in Practice: record the opponent, play it back, loop it
   Don't press F9: it switches the port's rendering mode, and the game has
   crashed after it.
@@ -221,6 +221,21 @@ between players you hear the player: the online username of whoever won, or
 hit counts and damage are not spoken.
 
 
+Two players on one PC:
+In the main menu, go up to "1 player" and press Right for 2 players. Versus
+Mode, Team Ladder and Online then need a second player connected; until there
+is one, the game skips them and the mod tells you so. Three ways:
+- Two controllers: controller 1 is player 1, controller 2 is player 2.
+- One controller and the keyboard: F2, Controls tab, "The keyboard controls":
+  choose Player 2. The controller is player 1.
+- Both on the keyboard: F2, Controls tab, tick "Two players on the same
+  keyboard". Player 1 keeps W A S D and the letters; player 2 uses the arrows
+  and the numpad (7 and 8 punches, 4 and 5 kicks, 6 block, 9 throw, plus
+  flip stance, minus tag, 0 start, star back). The keys of both are listed
+  right under the checkbox. Untick it and player 1 gets the arrow keys back.
+The distance cue and F6 follow player 1.
+
+
 5. FATALITIES
 
 Fatalities are named and described, yours and the ones done to you. When one
@@ -247,9 +262,12 @@ Training > Practice. The pause menu has the AI Options and Practice Options;
 each row is read with its value, and the new value when you change it.
 
 Frame data: after each attack the port measures it (startup, advantage on hit
-or on block, total frames). F10 reads the last one, for example "Startup 12.
-On block minus 3. Total 25." Shift+F10 makes the mod read it after every
-attack.
+or on block), and the mod adds its recovery: the frames from the end of the
+attack's active part (or from the moment it touched) until you can act again.
+F10 reads the last one, for example "Startup 12. On block minus 3. Recovery
+13." A whiff says "Whiffed" at the end. Shift+F10 makes the mod read it after
+every attack, also during the fight. (If the mod could not measure an attack
+the same way as the port, you hear the port's total frames instead.)
 
 Recording the opponent (port feature): F5 starts recording. While it records,
 your controls move the opponent and your own fighter stands still. F5 again
@@ -296,9 +314,16 @@ rounds and matches you lost.
 F1 opens and closes the port's online window (the main menu's "Online (F1)"
 does too). In it, and in the options window (F2):
   Tab, Shift+Tab   every button in order
+  Ctrl+Tab         the next tab (Ctrl+Shift+Tab the one before)
   Arrows           move around the window
   Enter or Space   choose
   Escape           come back out of a list or a text box
+  F5               read the whole tab
+When the window opens you hear its name and the open tab, for example
+"Options. Graphics tab, 1 of 6", then the item in focus. Each setting is read
+with its value and the help text written under it, and checkboxes say
+checked or not checked. A dropdown (a setting with a value) opens with Enter
+or Space; the arrows pick a value and Enter keeps it.
 On a text box (your username, a room code, a chat line): reached with Tab,
 you are already typing in it ("text box, typing"): type and press Enter.
 Reached with the arrows, press Enter first, type, and press Enter again. If

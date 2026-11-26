@@ -223,6 +223,55 @@ From the nightly mod check of 2026-11-25 (Discord/forum, most reports were on 1.
 - Not done (port/other): Krypt crash (port, #19), DarkLightning's "image not supported" (needs Komplete Edition EU),
   an ISO how-to write-up (SightlessKombat), port 1.4.4 compatibility check (user folder still on 1.4.2).
 
+### F2 options reading, tabs, two players on one PC (2026-11-25 evening; deployed, not released)
+Forum: "Can I play with someone in the same room without online? Changing the player number removes everything but
+extras and options" and "navigation on the F2 options menu is very tricky".
+- 2 players: the game greys out Versus Mode, Team Ladder and Online (F1) when there is no device for player 2
+  (navTextN.navTextBase gotoAndStop "disable"; the cursor skips them). The port already has local play: a second
+  controller, mk9_keyboard_player = 2 with one pad, or mnk_second_player ("Two players on the same keyboard", F2 >
+  Controls; P2 = arrows + numpad 7 8 4 5 6 9, plus/minus, 0 start, star back). With it ticked the three come back
+  (verified). menu.c: the disable events (they arrive before the NumPlayers lookup, so they are counted by burst time)
+  -> 500 ms after a switch to 2+ players: "Versus Mode, Team Ladder and Online wait for a second player..." (verified).
+- Port bug (1.4.4): ticking the second keyboard player removes the arrows from player 1's lstick binds and unticking
+  does not give them back (P1 = W A S D only; the bot's arrow presses stopped moving menus). keys.c
+  second_player_watch: mnk_second_player true -> false adds Up/Down/Left/Right back (live SetFlagByName on the game
+  thread + mk9.toml), "Player 1 has the arrow keys back." (verified). Issue for Lauta drafted, not posted.
+- F2 / F1 reading (imgui.c):
+  - Tabs: ImGui::BeginTabItem hooked (find_in_exe, unique) -> ItemAdd inside = a tab, return true = the open tab.
+    Each item records its window's draw list (ctx+CurrentWindow 0x1470 -> +DrawList 0x2c8, read from the DLL's
+    GetWindowDrawList); the tabs used are those of the window with NavId (else the one in use, else the first). Two
+    guesses failed before this: "first row under the title" (F1 has "You: name, Change" above its tabs; the main
+    menu's Discord/WhatsApp bar is ImGui too) and "tabs on both sides of the content" (fails when the last tab is open).
+  - Ctrl+Tab / Ctrl+Shift+Tab: keys.c's message hook drops the Tab keydown (ImGui would switch windows) and im_poll
+    writes NavId = target tab + sends Enter; "<Tab> tab, k of n". A focused tab: "<name> tab, k of n, open" or
+    ". Enter opens it". ImGui's own nav: arrows on the tab row only move focus, Enter opens.
+  - A tabbed window opening says "<title>. <tab> tab, k of n. Control Tab changes tabs, F5 reads the tab." instead of
+    every line (the Graphics tab was a page of help texts); a pending dump is dropped once the window turns out tabbed.
+  - Help: the plain lines under an item before the next row of items, in another colour than the item's text (F2's
+    help is grey ffb3a6a6; a white line there is the next heading), same draw list. The old reading said the help
+    ABOVE (lines scrolled into view were read as new): now new lines in the poll where the focus moved are skipped,
+    except text from another draw list (a tooltip: the Quality presets' help), which is said alone.
+  - Checkboxes: ImGui::Checkbox hooked, *v at entry -> ", checkbox, checked / not checked". Its first 64 bytes match 5
+    other functions, so find_by_string: the LEA of "[~]" (only Checkbox uses it), back to the start matching the DLL.
+  - Truncated tab names ("Display and langu") are completed from a list of the port's names.
+  Verified by bot on the test saves: F2 open/reopen, Ctrl+Tab both ways, every Graphics row with its own help, preset
+  tooltips, Controls checkboxes ticked/unticked by Space, Display/Online tabs; F1 tabs (Replays open first). Not heard
+  by the user. Open: the keys table's header cells ("Action", "Controller", "Keys") are Tab stops; an unlabelled
+  "text box" in that table; a dropdown's option list is only read item by item.
+
+### Frame data: recovery instead of total (2026-11-25 night, user request; deployed, not released)
+The port's panel has startup, advantage, total only. imgui.c fd_frame (called from pad.c's player-1 pad read, game
+thread, ~120 reads/s: a pass counts only when a fighter's +0x2D4 animation frame moved) measures each attack with the
+port's rules (mk9_frame_data.cpp Step): new attack = new +0x188 id, held, not hit; an id change before the recovery is
+the same attack (Scorpion's 4: step then kick - my first version restarted there and missed 3 of 8); active = first
+frame (+0x2F74 & 2) newly set; recovery start = first frame phase 3 (contact puts it there); free = kind without 0x40;
+hit while attacking drops it. startup = active, total = free, recovery = free - recovery start. read_fd swaps the
+panel's "Total N" for "Recovery R" only when the mod's startup and total equal the panel's (else it keeps Total).
+Verified: 9 of 9 attacks matched (1, 2, 3, 4, d1, d4, b2, f2, f4; hits and whiffs), e.g. jab whiff "Startup 12.
+Recovery 10. Whiffed", on hit "Startup 12. On hit 0. Recovery 13". Log line "framedata: p1 startup S recovery-start E
+free F". Also fixed from 1.0.9: Shift+F10's automatic reading and the F5/F6/F7 recording messages were silenced by
+the fight silence (QUIET (fight)); both now force speech.
+
 ## Saves in the game folder (Controlled Folder Access)
 Windows Security's Controlled Folder Access blocks mk9.exe writing to `OneDrive\Documents` (Defender event 1123);
 the port throws (E06D7363 on the save thread) and the game closes on its first save. The user chose (2026-11-16)

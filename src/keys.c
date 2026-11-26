@@ -401,7 +401,11 @@ static int pc_drop(const MSG *m) {
 static LRESULT CALLBACK getmsg_proc(int code, WPARAM wp, LPARAM lp) {
     if (code == HC_ACTION && lp) {
         MSG *m = (MSG *)lp;
-        if (pc_drop(m)) {
+        /* Ctrl+Tab in a port window with tabs (F2, F1): the mod changes the tab; ImGui would switch windows */
+        if (m->message == WM_KEYDOWN && m->wParam == VK_TAB && GetKeyState(VK_CONTROL) < 0 && im_tabs_on()) {
+            if (!(m->lParam & (1 << 30))) im_tab_step(GetKeyState(VK_SHIFT) < 0 ? -1 : 1);   /* not auto-repeat */
+            m->message = WM_NULL;
+        } else if (pc_drop(m)) {
             static DWORD last;
             if (GetTickCount() - last > 1000) { last = GetTickCount(); log_line("keys: PC layout, key %u dropped", (unsigned)m->wParam); }
             m->message = WM_NULL;
@@ -422,9 +426,55 @@ static BOOL CALLBACK find_game_win(HWND h, LPARAM l) {
     return TRUE;
 }
 
+/* F2 > Controls "Two players on the same keyboard" (mnk_second_player) gives player 2 the arrows and the numpad and
+ * takes the arrows from player 1's binds; unticking it does not give them back (port 1.4.4, seen 2026-11-25: W A S D
+ * only, and the bot's arrow presses no longer moved the menus). When it goes off, the arrows go back to player 1. */
+static int has_token(const char *bind, const char *tok) {
+    size_t n = strlen(tok);
+    for (const char *p = bind; *p; ) {
+        const char *e = strchr(p, ',');
+        size_t l = e ? (size_t)(e - p) : strlen(p);
+        if (l == n && !_strnicmp(p, tok, n)) return 1;
+        if (!e) break;
+        p = e + 1;
+    }
+    return 0;
+}
+
+static void second_player_watch(void) {
+    static DWORD last;
+    static int was = -1;
+    if (!p_getflag || !p_setflag || GetTickCount() - last < 500) return;
+    last = GetTickCount();
+    char v[16];
+    flag_str("mnk_second_player", v, sizeof v);
+    int on = !strcmp(v, "true");
+    if (was == 1 && !on) {
+        static const char *const arrow[4] = { "Up", "Down", "Left", "Right" };
+        char b[NB][320];
+        for (int i = 0; i < NB; i++) flag_str(k_cvar[i], b[i], sizeof b[i]);
+        int changed = 0;
+        for (int i = 0; i < 4; i++) {
+            if (has_token(b[i], arrow[i])) continue;
+            size_t l = strlen(b[i]);
+            snprintf(b[i] + l, sizeof b[i] - l, "%s%s", l ? "," : "", arrow[i]);
+            changed = 1;
+        }
+        if (changed) {
+            memcpy(g_apply, b, sizeof g_apply);
+            InterlockedExchange(&g_apply_pending, 1);
+            write_binds(b);
+            speak(L"Player 1 has the arrow keys back.", 0);
+            log_line("keys: second keyboard player off, arrows back to player 1");
+        }
+    }
+    was = on;
+}
+
 /* Every second until the game window exists: hook its thread's message queue. */
 void keys_poll(void) {
     static DWORD last;
+    second_player_watch();
     if (g_msg_hook || GetTickCount() - last < 1000) return;
     last = GetTickCount();
     keys_pc_on();

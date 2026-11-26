@@ -67,6 +67,7 @@ static void h_get_state(PPCContext *c, uint8_t *b) {
     if (g_pin_addr && GetTickCount() < g_pin_until) w32(g_pin_addr, g_pin_val);
     uint32_t user = (uint32_t)c->r3, st = (uint32_t)c->r5;
     if (user == 0) keys_game_thread();      /* a keyboard layout switch: binds set before the SDK reads them */
+    if (user == 0) fd_frame();              /* Practice frame data: recovery, counted per game frame */
     CALL_ORIG(o_get_state, c, b);
     if (user != 0 && user < 4 && (uint32_t)c->r3 == 0 && st)
         mot_record(user, g16(st + 4), (int16_t)g16(st + 8), (int16_t)g16(st + 10));

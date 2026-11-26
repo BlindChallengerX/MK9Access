@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include "rex_mod.h"
 
-#define MOD_VERSION "1.0.10"
+#define MOD_VERSION "1.0.11"
 
 extern wchar_t g_game_dir[MAX_PATH];   /* folder of mk9.exe, with trailing backslash */
 extern wchar_t g_mod_dir[MAX_PATH];    /* g_game_dir + "MK9Access\" */
@@ -101,10 +101,13 @@ extern const wchar_t k_name_hint[];
 extern volatile int g_loaded_said;     /* "MK9 Access loaded" has been said */
 int im_name_prompt_open(void);         /* the port's Online username window is showing */
 int im_read_screen(void);
+int im_tabs_on(void);                  /* a port window with tabs is open (F2 options, F1 online) */
+void im_tab_step(int dir);             /* Ctrl+Tab (+1) / Ctrl+Shift+Tab (-1): the next / previous tab */
 const char *im_rival_name(void);       /* online session: the rival's username ("" before the corner showed it) */
 int im_practice_record_on(void);       /* Practice: the port's opponent-recording panel (F5/F6/F7 are the port's) */
 int im_practice_nothing_recorded(void);
-void im_frame_data_key(int shift);      /* F10: the Practice frame data panel */
+void im_frame_data_key(int shift);
+void fd_frame(void);                   /* game thread, at each pad read: measures attacks for the recovery */      /* F10: the Practice frame data panel */
 
 /* movelist.c */
 void ml_spoken(const char *in, char *out, size_t cap);
