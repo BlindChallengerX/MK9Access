@@ -803,3 +803,8 @@ they choose Join with a code." ("Copy diagnostics" -> "Diagnostics copied."). F2
   at mk9.exe+0x263AFB4 sub_8280F3D8+0x11E4; writes 0x78780080/0x78780000 at +0x2F99091 sub_8294B270+0xD51), mod loaded
   0 of 4. crash_*.dmp were 0 bytes (the script kills the game 30 s after Select). Comment for #19 drafted in
   work\drafts\lauta-issue19-comment.md (posted 2026-11-24). Installer Tab bug filed as machinebreak/mk9-lauta#24.
+
+## 1.0.12 released 2026-11-25
+Stage fatalities (6 stages) + Klassic Fatalities + Kratos + Babality named/described; round winner and result menu
+read again. GitHub v1.0.12, commit 8776e96, zip 820 files, Defender clean; a 1.0.11 scratch folder self-updated from
+GitHub (settings.txt + mk9.toml kept). Zip recycled from Downloads after upload.
