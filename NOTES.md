@@ -223,7 +223,9 @@ From the nightly mod check of 2026-11-25 (Discord/forum, most reports were on 1.
 - Not done (port/other): Krypt crash (port, #19), DarkLightning's "image not supported" (needs Komplete Edition EU),
   an ISO how-to write-up (SightlessKombat), port 1.4.4 compatibility check (user folder still on 1.4.2).
 
-### F2 options reading, tabs, two players on one PC (2026-11-25 evening; deployed, not released)
+### F2 options reading, tabs, two players on one PC (2026-11-25 evening; released in 1.0.11)
+1.0.11 RELEASED 2026-11-25 (user: "Release 1.0.11"): commit 9832b2a, GitHub v1.0.11 (807 files, Defender clean); a 1.0.10
+folder self-updated from GitHub (settings.txt + mk9.toml kept). The zip was recycled from Downloads after upload.
 Forum: "Can I play with someone in the same room without online? Changing the player number removes everything but
 extras and options" and "navigation on the F2 options menu is very tricky".
 - 2 players: the game greys out Versus Mode, Team Ladder and Online (F1) when there is no device for player 2
@@ -259,7 +261,7 @@ extras and options" and "navigation on the F2 options menu is very tricky".
   by the user. Open: the keys table's header cells ("Action", "Controller", "Keys") are Tab stops; an unlabelled
   "text box" in that table; a dropdown's option list is only read item by item.
 
-### Frame data: recovery instead of total (2026-11-25 night, user request; deployed, not released)
+### Frame data: recovery instead of total (2026-11-25 night, user request; released in 1.0.11)
 The port's panel has startup, advantage, total only. imgui.c fd_frame (called from pad.c's player-1 pad read, game
 thread, ~120 reads/s: a pass counts only when a fighter's +0x2D4 animation frame moved) measures each attack with the
 port's rules (mk9_frame_data.cpp Step): new attack = new +0x188 id, held, not hit; an id change before the recovery is
