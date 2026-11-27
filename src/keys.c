@@ -194,7 +194,7 @@ int keys_for_button(const char *token, char *out, size_t cap) {
     static const struct { const char *t; int i; const char *pad; } map[] = {
         { "[X]", 8, "X" }, { "[Y]", 9, "Y" }, { "[A]", 10, "A" }, { "[B]", 11, "B" },
         { "[RSH]", 12, "right bumper" }, { "[RTRIG]", 13, "right trigger" }, { "[LTRIG]", 14, "left trigger" },
-        { "[LSH]", 15, "left bumper" }, { "[Start]", 16, "Start" }, { "[Select]", 17, "Back" }, { "[BACK]", 17, "Back" },
+        { "[LSH]", 15, "left bumper" }, { "[Start]", 16, "Start" }, { "[Select]", 17, "View button" }, { "[BACK]", 17, "View button" },
     };
     for (size_t i = 0; i < sizeof map / sizeof map[0]; i++) {
         if (_stricmp(token, map[i].t)) continue;
@@ -526,7 +526,7 @@ static void online_return_poll(void) {
     }
     if (now - t0 < 2500) return;            /* let the lobby window's own reading start first */
     speak(L"Online session over. The online window is open, and the game ignores the controller until it closes: "
-          L"press F1, or Back and Y on the controller.", 0);
+          L"press F1, or the View button and Y on the controller.", 0);
     log_line("online: back in the lobby, %s", fg == w.best ? "window in front" : "window NOT in front");
     state = 2;
 }

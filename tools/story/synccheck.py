@@ -2,17 +2,22 @@
 English track in the recording (cross-correlation) and each description clip, and print each clip's time in movie
 seconds next to the cue time from cues.tsv, plus overlaps with the subtitle lines.
 Usage: python -I synccheck.py rec.wav movie [seconds]       record (starts when called; start before the movie)
-       python -I synccheck.py --analyze rec.wav movie"""
+       python -I synccheck.py --analyze rec.wav movie
+       add --es for the Spanish set: the Spanish track, story_es clips, overlaps with the Spanish voice
+       (es_sheets.speech_spans) instead of the English subtitle rows."""
 import os, sys, numpy as np, soundfile as sf
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import av
 from prep import story_sections
 GAME = r"C:\Users\michm\Downloads\MK9 Access\game"
 SR = 16000
+ES = "--es" in sys.argv
+if ES: sys.argv.remove("--es")
+LANG, SDIR = ("spa", "story_es") if ES else ("eng", "story")
 
 def movie_track(name):
     c = av.open(os.path.join(GAME, "game_root", "Movies", name + ".wmv"))
-    st = [s for s in c.streams.audio if s.language == "eng"][0]
+    st = [s for s in c.streams.audio if s.language == LANG][0]
     res = av.AudioResampler(format="flt", layout="mono", rate=SR); buf = []
     for fr in c.decode(st):
         for r in res.resample(fr): buf.append(r.to_ndarray().ravel())
@@ -37,14 +42,17 @@ def analyze(path, name):
     i, q = xcorr_at(rec, piece); start = (i - a0) / SR
     print(f"movie {name} starts at {start:.2f} s of the recording (match {q:.2f})")
     rows = story_sections().get(name.lower(), [])
-    cues = [l.rstrip("\n").split("\t") for l in open(os.path.join(GAME, "MK9Access", "story", "cues.tsv"), encoding="utf-8")
+    if ES:
+        from es_sheets import sections, speech_spans
+        rows = [(a, b, "Spanish voice %.1f-%.1f" % (a, b)) for a, b in speech_spans(name, sections("spa").get(name.lower(), []))]
+    cues = [l.rstrip("\n").split("\t") for l in open(os.path.join(GAME, "MK9Access", SDIR, "cues.tsv"), encoding="utf-8")
             if not l.startswith("#") and l.split("\t")[0] == name.lower()]
     # remove the movie from the recording to leave the clips
     s0 = int(start * SR); resid = rec.copy()
     seg = resid[max(0, s0):max(0, s0) + len(mv)]
     m = mv[:len(seg)]; g = float(np.dot(seg, m) / (np.dot(m, m) + 1e-9)); seg -= g * m
-    for mvn, t, clip in cues:
-        c = load(os.path.join(GAME, "MK9Access", "story", clip))
+    for mvn, t, clip in (c[:3] for c in cues):
+        c = load(os.path.join(GAME, "MK9Access", SDIR, clip))
         lo = int((start + float(t) - 2) * SR); hi = int((start + float(t) + 4) * SR) + len(c)
         if lo < 0 or hi > len(resid): print(f"{float(t):7.2f}  outside the recording"); continue
         j, qq = xcorr_at(resid[lo:hi], c); at = (lo + j) / SR - start

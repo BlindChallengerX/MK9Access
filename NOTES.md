@@ -907,3 +907,77 @@ Note for update tests: a scratch folder without mk9.exe takes the first-install 
 Settings menu (F4 / Back + A), combo readout, 75 % health tone, Krypt keys Shift+F4 / Ctrl+F4, Practice F8 left to the
 port, Practice refill bug fixed. Commit a73bf09, GitHub v1.0.14 (820 files, Defender clean); a 1.0.13 scratch folder
 self-updated from GitHub (settings.txt + mk9.toml kept). Zip recycled from Downloads after upload.
+
+## Controller button: "View", not "Back" (2026-11-27, user)
+"Hold Back and press A" read like holding back (away from the opponent). Everything the player hears or reads calls the
+button the View button (README explains it once: Back on a 360 pad, Share / Create on PlayStation): the online-return
+message, the button-config name ([Select] / [BACK] tokens), and the port's own Practice panel text ("BACK +" swapped to
+"View +" in imgui.c add_text, same length). Release notes of 1.0.13 and 1.0.14 edited. Deployed, not committed or
+released (the 1.0.14 zip's README and online message still say Back). Not done (user chose rename only): ignoring
+View + A during live fights.
+
+## Spanish audio descriptions (2026-11-27, promised on Discord after a Spanish forum request; deployed, not committed or released)
+In a Spanish game (user_language 5) the mod loads `MK9Access\story_es\` and `MK9Access\fatalities_es\` instead of
+`story\` and `fatalities\` (story.c g_sdir, fatality.c g_fdir; falls back to English when the folder is missing). Screen
+reader mode (Alt+F12) says the Spanish text from the same files. Fatality names stay English (the Spanish game shows
+its move list in English, and the tutorial match compares them); the inputs are said in the game's Spanish words
+("Adelante, Abajo, Adelante, Puñetazo posterior, corto alcance"), stage fatalities as "Fatality de escenario, El Foso"
+with the game's Spanish arena names. Babality and the mod's other phrases are unchanged.
+- Voice: Kokoro ef_dora, espeak "es" (Castilian, like the game's own Spanish text and dub: the text uses vosotros;
+  movie tracks are ger/spa/ita/fre/eng). tools/es_voice.py holds the voice, a name lexicon (Johnny Cage = "Yoni
+  Keich", Sub-Zero = "Sab Ziro", Raiden = "Réiden" after the user's RAY-den, Liu Kang = espeak's "Li-ú Kang"; espeak
+  alone says "Xoni Caje", "Sub-cero") and the Spanish input words. Spanish is never sped past 1.3x (at 1.45x Whisper
+  heard "Liu Kang le da la espalda" as "No, no, no") and keeps 40 ms before the first sound (soft K/T were trimmed).
+  LANG = "es-419" there switches to Latin American pronunciation.
+- Fatalities: data/fatalities_es.tsv + data/stage_fatalities_es.tsv (translated 2026-11-27) ->
+  `python -I tools/gen_fatalities.py --es` -> out/MK9Access/fatalities_es (index.tsv keeps the English raw input in
+  column 5 for motion matching).
+- Story: the Spanish dub has its own timing (869 of 946 subtitle rows differ from English, mostly by tenths of a second,
+  some by seconds). tools/story/voice_track.py finds where a dub's voice speaks from the movie itself: every movie
+  carries five dubs over the same music and effects, so the quietest of (Spanish minus each other dub) is loud only
+  while the Spanish voice speaks (-18 to -30 dBFS vs -50 to -120 in silence; matches MK9Story.spa rows). Cached in
+  work/story_spa/voice/. tools/story/es_sheets.py keeps that voice only inside Spanish subtitle rows (+-0.6 s; voice
+  outside rows is fight grunts, which the English cues also talk over), re-fits each cue (keeps the English time unless
+  it falls in Spanish speech, then moves up to 3 s to whichever side has more room) and writes worksheets with room and
+  a word budget (3 words/s) to work/story_spa/sheets/. Translated by four subagents with work/story_spa/BRIEF_ES.md
+  (game's own Spanish terms: la Tierra, el Mundo Exterior, el Infierno, los Dioses Antiguos...) into data/story_es/
+  (631 cues; 6 English cues sat inside Spanish speech and 1 more had no room: 5 folded into a neighbour, 2 dropped,
+  marked with comments). `python -I tools/story/gen_story.py --es` records out/MK9Access/story_es (+ cues.tsv), fitting
+  each clip before the next Spanish spoken line; 7 short lines that still ran over were moved into the silence just
+  before them (mk001 322.5, mk004 31.0, mk010 0.05, mk040 267.7, mk117 177.05, mk122 66.1, mk126 8.4). mk021 107.6
+  runs 0.2 s onto a breath.
+- Check: `python -I tools/whisper_check_es.py fatalities|story` (faster-whisper base, Spanish, scored letter by letter
+  after folding sound-alike spellings: base glues short words, "Jade Lopatea"). Fatalities 74 clips mean 0.98, none
+  under 0.75; story 631 clips mean 0.96, 5 under 0.75, all names Whisper turns into Spanish words ("Quan Chi y Noob
+  Saibot" -> "cuando sí, no se ha ido").
+- VERIFIED 2026-11-27 in game on the test saves with `--user_language=5`: log "story: 631 described moments
+  (story_es)", "fatality: 67 entries (fatalities_es)"; Story chapter 1 movie mk001_002_003 recorded by loopback
+  (`synccheck.py --es`, fixed for cues.tsv's text column): all 38 Spanish clips heard within 0.03 s of their cue,
+  none over the Spanish voice. Fatality Tutorial (Scorpion): "Split Decision. Adelante, Abajo, Adelante, Puñetazo
+  posterior, corto alcance."; performed -> "Split Decision" + the Spanish clip (189391 frames); screen reader mode said
+  the Spanish text; descriptions setting put back to voice. Not heard by anyone: voice quality, name pronunciation,
+  the stage-fatality phrase.
+
+## X-ray sounds, Nekropolis, fighter looks (2026-11-27; deployed, not committed or released)
+- Super meter: float 0-1 at GAMEINFO + p * 0xC8C + 0xE1C (mk9-lauta's "info +0xC14"; the info block is our player
+  block +0x208, name at info +2404). Bars at 1/3, 2/3, 1 (0.333 = one bar, 1.0 = X-ray icon lit). A write does not
+  stick (the game keeps its own copy). fight.c xray_poll: three rising notes when it reaches 1.0 (mine 784 Hz in the
+  middle, the opponent's an octave lower from their side); full when first seen = no sound. Verified with Practice >
+  Super Meter: Full (Accept with J; Back throws the change away). F6 adds "1 bar" / "X-ray ready". Menu item X-ray
+  ready sounds (settings xray_sounds=).
+- Combo readout damage now rounded down (the game's counter said 7 % where lroundf said 8).
+- Extras > Nekropolis: statue row (Left / Right, names read), Select = menu (View Stats / View Character Bio / View
+  Alt Character Bio: optionN gotoAndPlay "Focus", now a focus verb), stats page = SetVariable
+  charViewer.stats.Stat_Group.statsN.title / .masterInfo + iconN NoMastery, read as one page (menu.c stats_say; "-alities"
+  -> "finishing moves", HH:MM:SS -> hours and minutes). Bios were cut at 511 bytes (LocCall.val[512]): now 1024 (bios up
+  to 736). clip_title skipped "stat_group" (the stats rows were taken as the statue row's title: "Victories - 0.
+  Raiden"). Gallery (I): Character Art / Environment Art / Music / Design, items read by name; "1/2" counts not read.
+  Kredits stay quiet (ending_section).
+- Fighter looks (data/fighter_descriptions.tsv -> MK9Access, packaged): 31 characters photographed in the Nekropolis
+  viewer (zoom out = W/S held, camera down = right stick: `pad rsdown`, rotate = `pad rsright 1200`; shots in
+  work\charshots), described by frame-describer agents, Kratos from his select portrait (his lower body from his
+  usual look, not seen). Default costumes only. Said after resting 2.5 s on a fighter (not on the pick line) and on F6
+  at character select (game state 7); menu item "Fighter looks at character select" (F6 only / also after resting).
+  Verified in Practice's select: Sheeva after resting, a quick pass skipped, F6 repeats.
+- Spanish audio descriptions: a separate session works on them in this folder at the same time (story.c, fatality.c,
+  tools/story, data/*_es); its changes are uncommitted too.

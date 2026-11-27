@@ -1,0 +1,7 @@
+0.10	Jax está de pie ante Baraka, que yace vencido y sangrando.
+15.90	Reptile susurra al oído de Shang Tsung.
+28.60	Shang Tsung sale de la sala del trono con Reptile.
+33.80	Kitana y Jade cruzan una mirada. Kitana se da la vuelta y se escabulle.
+# dropped 42.40: Raiden ve a Sonya encadenada; dentro del diálogo, y el propio Raiden dice que van a ejecutarla
+62.60	Una enorme forja, iluminada por lava fundida.
+97.60	Johnny sonríe. Jax lo mira con rabia.

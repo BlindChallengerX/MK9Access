@@ -70,6 +70,15 @@ static int s_cue = CUE_CLICKS, s_hp_tones = 1, s_vol = 2, s_fight_speech = 0;   
  * (default: speech only as a learning aid), 2 in every fight. Overall volume of the mod's sounds 0-100 (0 off). */
 enum { COMBO_OFF, COMBO_PRACTICE, COMBO_ALL, COMBO_N };
 static int s_combo = COMBO_PRACTICE, s_master = 100;
+/* X-ray ready (user request 2026-11-27, as in MKX Access): the super meter is a float 0-1 at the player's info block
+ * +0xC14 (mk9-lauta engine-map; the info block is our player block +0x208, where the name sits at info +2404), so
+ * GAMEINFO + p * PSTRIDE + 0xE1C; bars at 1/3, 2/3 and 1 (seen 2026-11-27: 0.333 with one bar, 1.0 with the X-ray
+ * icon lit). A sound when it fills: mine bright in the middle, the opponent's lower from their side. */
+#define P_METER 0xE1Cu
+static int s_xray_snd = 1;
+/* character select: a fighter's look is read on F6, and (1, default) also after resting on them (menu.c) */
+static int s_fdesc = 1;
+static int s_xr_ready[2] = { -1, -1 };     /* by side: 0 me, 1 the opponent; -1 not known yet (no sound) */
 static int s_hvol = 2;                  /* attack height sounds: 0 off, 1-4 */
 static const float k_hgain[5] = { 0, 0.5f, 0.71f, 1.0f, 1.41f };
 static const float k_vol[4] = { 0.5f, 0.71f, 1.0f, 1.41f };    /* about -6, -3, 0, +3 dB */
@@ -92,8 +101,9 @@ static void settings_save(void) {
     if (!f) { log_line("fight: settings not saved"); return; }
     static const char *desc[DESC_N] = { "voice", "screen_reader", "off" };
     fprintf(f, "distance_cue=%s\ndistance_volume=%d\nhealth_tones=%d\nfight_speech=%d\nheight_sounds=%d\n"
-            "descriptions=%s\ndescription_volume=%d\ncombo_readout=%d\nvolume=%d\nframe_data_auto=%d\n", cue[s_cue],
-            s_vol + 1, s_hp_tones, s_fight_speech, s_hvol, desc[s_desc], s_dvol, s_combo, s_master, im_fd_auto());
+            "descriptions=%s\ndescription_volume=%d\ncombo_readout=%d\nvolume=%d\nframe_data_auto=%d\nxray_sounds=%d\n"
+            "fighter_descriptions=%d\n", cue[s_cue], s_vol + 1, s_hp_tones, s_fight_speech, s_hvol, desc[s_desc], s_dvol,
+            s_combo, s_master, im_fd_auto(), s_xray_snd, s_fdesc);
     fclose(f);
 }
 static void master_apply(void) { g_master = 1.2f * (float)s_master / 100.0f; }
@@ -113,6 +123,8 @@ static void settings_load(void) {
         else if (sscanf(line, "combo_readout=%d", &n) == 1 && n >= 0 && n < COMBO_N) s_combo = n;
         else if (sscanf(line, "volume=%d", &n) == 1 && n >= 0 && n <= 100) s_master = n / 10 * 10;
         else if (sscanf(line, "frame_data_auto=%d", &n) == 1) im_fd_auto_set(n != 0);
+        else if (sscanf(line, "xray_sounds=%d", &n) == 1) s_xray_snd = n != 0;
+        else if (sscanf(line, "fighter_descriptions=%d", &n) == 1) s_fdesc = n != 0;
         else if (sscanf(line, "fight_speech=%d", &n) == 1) s_fight_speech = n != 0;
         else if (sscanf(line, "height_sounds=%d", &n) == 1 && n >= 0 && n <= 4) s_hvol = n;
         else if (sscanf(line, "descriptions=%63s", v) == 1)
@@ -359,7 +371,7 @@ static void combo_poll(const uint32_t obj[2], const float hp[2]) {
         if (reeling(kind_of(obj[1 - a]))) { c->free_polls = 0; continue; }
         /* free for two polls in a row (~30 ms), and not in the instant of the hit itself: over */
         if (++c->free_polls < 2 || GetTickCount() - c->hit_t < 150) continue;
-        int pct = (int)lroundf((c->hp0 - hp[1 - a]) * 100.0f);
+        int pct = (int)floorf((c->hp0 - hp[1 - a]) * 100.0f + 0.001f);   /* rounded down, as the game's counter */
         char msg[96];
         if (c->n >= 2) snprintf(msg, sizeof msg, a ? "Took %d hits, %d percent" : "%d hits, %d percent", c->n, pct);
         else snprintf(msg, sizeof msg, a ? "Took %d percent" : "%d percent", pct);
@@ -411,6 +423,39 @@ void fight_ending(const char *sec) {
     s_end = 1;
 }
 
+static float meter_of(int slot) { return gf(GAMEINFO + (uint32_t)slot * PSTRIDE + P_METER); }
+
+/* X-ray ready: three quick rising notes. Mine bright, in the middle; the opponent's an octave lower, from their side. */
+static void xray_sound_at(float d, int side, float pan) {
+    float f = side ? 392 : 784, p = side ? pan : 0;
+    tone_at(d + 0.00f, f, f, 0.07f, 0.12f, p, W_SOFT);
+    tone_at(d + 0.07f, f * 1.5f, f * 1.5f, 0.07f, 0.12f, p, W_SOFT);
+    tone_at(d + 0.14f, f * 2.0f, f * 2.0f, 0.26f, 0.12f, p, W_SOFT);
+}
+static void xray_sound(int side, float pan) { xray_sound_at(0, side, pan); }
+
+static void xray_poll(int ms, float pan) {
+    for (int p = 0; p < 2; p++) {
+        float m = meter_of(p ? 1 - ms : ms);
+        if (!isfinite(m) || m < -0.01f || m > 1.5f) continue;
+        int ready = m >= 0.999f;
+        if (s_xr_ready[p] < 0) s_xr_ready[p] = ready;            /* full when first seen (Practice): no sound */
+        else if (ready && !s_xr_ready[p]) {
+            s_xr_ready[p] = 1;
+            if (s_xray_snd) xray_sound(p, pan);
+            log_line("fight: %s X-ray ready", p ? "opponent's" : "my");
+        } else if (!ready && m < 0.98f) s_xr_ready[p] = 0;          /* used (or spent on a breaker): tell again */
+    }
+}
+
+/* "1 bar", "X-ray ready" for F6 */
+static void meter_words(int slot, char *out, size_t cap) {
+    float m = meter_of(slot);
+    if (!isfinite(m) || m < 0) { out[0] = 0; return; }
+    int bars = (int)floorf(m * 3.0f + 0.01f);
+    if (bars >= 3) snprintf(out, cap, ", X-ray ready");
+    else snprintf(out, cap, ", %d %s", bars, bars == 1 ? "bar" : "bars");
+}
 void fight_poll(void) {
     Fighter me, op;
     /* the hum carries on through Finish Him (state 11) until the fatality starts: range matters there */
@@ -430,6 +475,7 @@ void fight_poll(void) {
         s_hold = 0;
         s_over = 0;
         s_cb[0].n = s_cb[1].n = 0;
+        s_xr_ready[0] = s_xr_ready[1] = -1;
         if (s_end) log_line("fight: ending over");
         s_end = 0;
         return;
@@ -480,6 +526,7 @@ void fight_poll(void) {
     }
     float hp[2] = { me.hp, op.hp };
     combo_poll(obj, hp);
+    xray_poll(ms, pan);
     for (int p = 0; p < 2; p++) {
         /* a new round refills health: start counting again without tones */
         if (s_hp[p] >= 0 && hp[p] < s_hp[p]) hp_tones(p, s_hp[p], hp[p], pan);
@@ -497,8 +544,9 @@ void fight_key(int vk, int shift, int ctrl) {
     case VK_F6:                                   /* health: mine first */
         if (!ok) { speak(L"Not in a fight", 1); return; }
         fighter_name(ms, a, sizeof a); fighter_name(1 - ms, b, sizeof b);
-        speakf(1, "%s %d percent. %s %d percent.", a, (int)lroundf(clampf(me.hp, 0, 1) * 100),
-               b, (int)lroundf(clampf(op.hp, 0, 1) * 100));
+        { char ma[32], mb[32]; meter_words(ms, ma, sizeof ma); meter_words(1 - ms, mb, sizeof mb);
+          speakf(1, "%s %d percent%s. %s %d percent%s.", a, (int)lroundf(clampf(me.hp, 0, 1) * 100), ma,
+                 b, (int)lroundf(clampf(op.hp, 0, 1) * 100), mb); }
         break;
     /* No spoken opponent-position key: in a fight there's no time to listen to it;
      * the distance hum carries side, distance and airborne. */
@@ -550,6 +598,8 @@ void fset_value(int id, char *out, size_t cap) {
     case FS_CUE: snprintf(out, cap, "%s", cue[s_cue]); break;
     case FS_CUE_VOL: snprintf(out, cap, "%d of 4", s_vol + 1); break;
     case FS_HEALTH: snprintf(out, cap, "%s", hp[s_hp_tones]); break;
+    case FS_XRAY: snprintf(out, cap, "%s", s_xray_snd ? "on" : "off"); break;
+    case FS_FDESC: snprintf(out, cap, "%s", s_fdesc ? "on F6 and after resting on a fighter" : "on F6 only"); break;
     case FS_HEIGHT: if (s_hvol) snprintf(out, cap, "%d of 4", s_hvol); else snprintf(out, cap, "off"); break;
     case FS_COMBO: snprintf(out, cap, "%s", combo[s_combo]); break;
     case FS_SPEECH: snprintf(out, cap, "%s", s_fight_speech ? "on" : "off"); break;
@@ -575,6 +625,8 @@ int fset_step(int id, int d) {
     case FS_CUE: s_cue = (s_cue + CUE_N + d) % CUE_N; break;
     case FS_CUE_VOL: ok = clamp_step(&s_vol, d, 0, 3); break;
     case FS_HEALTH: s_hp_tones = (s_hp_tones + 3 + d) % 3; break;
+    case FS_XRAY: s_xray_snd = !s_xray_snd; break;
+    case FS_FDESC: s_fdesc = !s_fdesc; break;
     case FS_HEIGHT: ok = clamp_step(&s_hvol, d, 0, 4); break;
     case FS_COMBO: s_combo = (s_combo + COMBO_N + d) % COMBO_N; break;
     case FS_SPEECH: s_fight_speech = !s_fight_speech; break;
@@ -614,6 +666,9 @@ void fset_preview(int id) {
         tone_at(0, 392, 392, 0.12f, 0.16f, 0, W_SOFT);
         tone_at(0.15f, 294, 294, 0.16f, 0.16f, 0, W_SOFT);
         break;
+    case FS_XRAY:                         /* mine, then the opponent's from the right */
+        if (s_xray_snd) { xray_sound_at(0, 0, 0); xray_sound_at(0.6f, 1, 0.8f); }
+        break;
     case FS_HEIGHT:
         if (s_hvol) height_play(H_MID, 0, 0, 0, k_hgain[s_hvol]);
         break;
@@ -641,3 +696,6 @@ void fset_height_learn(void) {
 }
 
 void fset_save(void) { settings_load(); settings_save(); }
+
+int fighter_desc_auto(void) { settings_load(); return s_fdesc; }
+int fight_game_state(void) { return game_state(); }

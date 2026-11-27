@@ -14,7 +14,10 @@ cp out/MK9Access/MK9Access.dll out/MK9Access/prism.dll "$G/MK9Access/"; cp -r ou
 [ -d out/MK9Access/fatalities ] && cp -r out/MK9Access/fatalities "$G/MK9Access/"
 # Story Mode description clips + cues.tsv (built by tools/story/gen_story.py from data/story).
 [ -d out/MK9Access/story ] && cp -r out/MK9Access/story "$G/MK9Access/"
-GA=$(cd "$G" && pwd); [ -d data ] && (cd data && for x in *; do [ "$x" = story ] || cp -r "$x" "$GA/MK9Access/"; done) 2>/dev/null || true
+# Spanish sets (picked when the game runs in Spanish): gen_fatalities.py --es, gen_story.py --es.
+[ -d out/MK9Access/fatalities_es ] && cp -r out/MK9Access/fatalities_es "$G/MK9Access/"
+[ -d out/MK9Access/story_es ] && cp -r out/MK9Access/story_es "$G/MK9Access/"
+GA=$(cd "$G" && pwd); [ -d data ] && (cd data && for x in *; do [ "$x" = story ] || [ "$x" = story_es ] || cp -r "$x" "$GA/MK9Access/"; done) 2>/dev/null || true
 # Bread-and-butter combo reference (open in a browser with a screen reader).
 [ -f "docs/MK9 BnB Combos.html" ] && cp "docs/MK9 BnB Combos.html" "$G/MK9 BnB Combos.html"
 # Port updater: the mod starts it hidden at every game start (src/update.c); it downloads a newer

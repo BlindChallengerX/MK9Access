@@ -19,6 +19,7 @@ void game_key(int vk, int shift, int ctrl) {
         else a11y_menu_toggle();
         break;
     case VK_F6:
+        if (fight_game_state() == 7) { menu_fighter_describe(); break; }   /* character select: the fighter's look */
         if (im_practice_nothing_recorded()) speak(L"Nothing recorded yet. F5 records the opponent.", 1);
         else if (!im_practice_record_on()) fight_key(vk, shift, ctrl);
         break;

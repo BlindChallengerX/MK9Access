@@ -1,0 +1,7 @@
+21.95	Liu Kang le tiende la mano a Kitana. Ella no la acepta, y él se marcha.
+33.20	Él se va. Kitana lo mira marchar y luego baja la mirada.
+41.30	De noche, Liu Kang, Kung Lao y Raiden salen al patio de la arena.
+48.30	Shang Tsung espera en su trono, con Kitana a su lado.
+52.20	Los monjes llenan las gradas. Jax y Sonya miran desde el público.
+77.50	Scorpion surge de las llamas en la arena, puños en alto.
+# dropped 87.90: inside Spanish speech and no room nearby; the announcer names Quan Chi as he arrives

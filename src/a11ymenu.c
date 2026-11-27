@@ -1,7 +1,8 @@
 /*
  * The accessibility menu: every MK9 Access setting in one list (user request 2026-11-27, after TBlaze's MKX Access).
- * F4 opens and closes it (Insert was the first choice, but NVDA and JAWS take Insert); on a controller hold Back and press A (the port uses Back + Y for F1, Back + Start for
- * F2, Back + LB / RB / X and Back + left / right in Practice). Up and Down choose, Left and Right change (saved at
+ * F4 opens and closes it (Insert was the first choice, but NVDA and JAWS take Insert); on a controller hold the View button (Back on a 360 pad) and press A (the port uses View + Y
+ * for F1, View + Start for F2, View + LB / RB / X and View + left / right in Practice). Called "View", not "Back", in
+ * everything the player hears or reads: "hold Back" sounds like walking away from the opponent (user, 2026-11-27). Up and Down choose, Left and Right change (saved at
  * once, and the setting plays its sound at the new value), Enter or A plays the sound or chooses, Escape, B or
  * Back + A closes. While it is open the game gets no keys (keys.c message hook) and an idle controller (pad.c), and
  * the fight cues are hushed except for a preview (fight.c). The F8 / F12 chords still work as shortcuts.
@@ -10,19 +11,20 @@
 #include <stdio.h>
 #include <string.h>
 
-enum { MI_CUE, MI_CUE_VOL, MI_HEALTH, MI_HEIGHT, MI_COMBO, MI_SPEECH, MI_DESC, MI_DESC_VOL, MI_FRAMES, MI_LAYOUT,
+enum { MI_CUE, MI_CUE_VOL, MI_HEALTH, MI_XRAY, MI_HEIGHT, MI_COMBO, MI_SPEECH, MI_DESC, MI_DESC_VOL, MI_FDESC, MI_FRAMES, MI_LAYOUT,
        MI_LANG, MI_VOLUME, MI_CLOSE, MI_N };
 static const char *k_label[MI_N] = {
-    "Distance cue", "Distance cue volume", "Health tones", "Attack height sounds", "Combo readout",
-    "Speech during fights", "Descriptions", "Description voice volume", "Frame data in Practice", "Keyboard layout",
+    "Distance cue", "Distance cue volume", "Health tones", "X-ray ready sounds", "Attack height sounds", "Combo readout",
+    "Speech during fights", "Descriptions", "Description voice volume", "Fighter looks at character select",
+    "Frame data in Practice", "Keyboard layout",
     "Game language", "Overall volume", "Close menu",
 };
 /* the fight.c setting behind an item, or -1 */
 static int fs_of(int i) {
     switch (i) {
-    case MI_CUE: return FS_CUE;       case MI_CUE_VOL: return FS_CUE_VOL; case MI_HEALTH: return FS_HEALTH;
+    case MI_CUE: return FS_CUE;       case MI_CUE_VOL: return FS_CUE_VOL; case MI_HEALTH: return FS_HEALTH;   case MI_XRAY: return FS_XRAY;
     case MI_HEIGHT: return FS_HEIGHT; case MI_COMBO: return FS_COMBO;     case MI_SPEECH: return FS_SPEECH;
-    case MI_DESC: return FS_DESC;     case MI_DESC_VOL: return FS_DESC_VOL; case MI_VOLUME: return FS_VOLUME;
+    case MI_DESC: return FS_DESC;     case MI_DESC_VOL: return FS_DESC_VOL; case MI_FDESC: return FS_FDESC; case MI_VOLUME: return FS_VOLUME;
     default: return -1;
     }
 }

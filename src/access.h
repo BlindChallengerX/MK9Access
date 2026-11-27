@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include "rex_mod.h"
 
-#define MOD_VERSION "1.0.14"
+#define MOD_VERSION "1.0.15"
 
 extern wchar_t g_game_dir[MAX_PATH];   /* folder of mk9.exe, with trailing backslash */
 extern wchar_t g_mod_dir[MAX_PATH];    /* g_game_dir + "MK9Access\" */
@@ -145,7 +145,10 @@ extern volatile float g_master;
 void fight_poll(void);
 void fight_round_over(void);             /* "<Fighter> WINS!": speech free until the next round */
 /* fight.c: the settings the accessibility menu shows */
-enum { FS_CUE, FS_CUE_VOL, FS_HEALTH, FS_HEIGHT, FS_COMBO, FS_SPEECH, FS_DESC, FS_DESC_VOL, FS_VOLUME };
+enum { FS_CUE, FS_CUE_VOL, FS_HEALTH, FS_XRAY, FS_HEIGHT, FS_COMBO, FS_SPEECH, FS_DESC, FS_DESC_VOL, FS_FDESC, FS_VOLUME };
+int fighter_desc_auto(void);              /* character select: a fighter's look after resting on them */
+int fight_game_state(void);              /* 7 character select, 8 fighting, ... */
+void menu_fighter_describe(void);        /* F6 at character select */
 void fset_value(int id, char *out, size_t cap);
 int fset_step(int id, int d);            /* 0 at the end of a range */
 void fset_preview(int id);

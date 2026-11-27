@@ -1,0 +1,18 @@
+0.10	Kitana ha abatido a un guardia.
+6.00	Kitana se aleja de un salto hacia la oscuridad.
+13.00	Kitana baja sigilosa por una larga escalera de piedra hacia la oscuridad.
+19.00	Al llegar abajo, mira a su alrededor con cautela.
+27.30	Los Fosos de Carne. Cuelgan restos de carne cruda de ganchos sobre charcos de sangre.
+33.50	Tanques de líquido verde guardan cuerpos pálidos y deformes.
+37.20	En uno flota una mujer pálida llena de cicatrices.
+41.50	Kitana camina entre los tanques, junto a una mesa de carne ensangrentada iluminada con velas.
+48.40	Pasa junto a un tanque con una mujer envuelta en tiras blancas.
+52.60	Dentro, la mujer sonríe con una boca de enormes colmillos amarillos.
+58.60	Kitana abre mucho los ojos.
+61.50	Sigue hasta una losa entre velas, donde yace inmóvil otra mujer.
+66.50	Es Mileena. Delgada y descalza, de largo pelo negro, cubierta solo con tiras de tela blanca.
+72.50	Kitana se inclina sobre ella. Tiene los ojos cerrados. Su boca es una masa de colmillos amarillos y desiguales.
+82.60	Kitana la mira desde arriba.
+86.60	Mileena abre de golpe sus ojos ámbar.
+92.50	Mileena se incorpora en la losa ensangrentada y se pone en pie. Kitana retrocede.
+104.00	Mileena camina en círculo alrededor de Kitana.

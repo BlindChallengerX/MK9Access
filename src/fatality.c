@@ -141,11 +141,20 @@ static void parse_input(const char *raw, char *mot, size_t cap, char *btn) {
 static void stages_init(void);
 static void pl_name(int p, char *out, size_t cap);
 
+/* The description set: fatalities_es\ (Spanish clips and words) when the game runs in Spanish and that folder is
+ * there, else fatalities\ (English). The names stay English in both: the Spanish game shows its move list in English. */
+static const wchar_t *g_fdir = L"fatalities";
+static int fat_es(void) { return g_fdir[10] == L'_'; }
+
 void fatality_init(void) {
     g_nfat = 0;
     wchar_t path[MAX_PATH];
-    swprintf(path, MAX_PATH, L"%lsfatalities\\index.tsv", g_mod_dir);
-    FILE *f = _wfopen(path, L"rb");
+    FILE *f = NULL;
+    if (lang_code() == 5) {
+        swprintf(path, MAX_PATH, L"%lsfatalities_es\\index.tsv", g_mod_dir);
+        if ((f = _wfopen(path, L"rb"))) g_fdir = L"fatalities_es";
+    }
+    if (!f) { swprintf(path, MAX_PATH, L"%lsfatalities\\index.tsv", g_mod_dir); f = _wfopen(path, L"rb"); }
     if (!f) { log_line("fatality: no index.tsv"); return; }
     char line[512];
     while (g_nfat < NFAT && fgets(line, sizeof line, f)) {
@@ -176,7 +185,7 @@ void fatality_init(void) {
     fclose(f);
     int withmot = 0;
     for (int i = 0; i < g_nfat; i++) if (g_fat[i].ch[0] && g_fat[i].mot[0]) withmot++;
-    log_line("fatality: %d entries, %d with character + motion", g_nfat, withmot);
+    log_line("fatality: %d entries, %d with character + motion (%ls)", g_nfat, withmot, g_fdir);
     stages_init();
     guest_hook(G_SCRIPT_LOOKUP, (void *)h_lookup, (void **)&o_lookup);
 }
@@ -185,10 +194,10 @@ void fatality_init(void) {
  * unpacked BGND_*.xxx packages: Pit, PitDay, DeadPool, LivingForest, Subway, Street, Hell).
  * The stage comes from story_stage() (the BGND_ package the port opened). Names here; the description clip and
  * text from fatalities\stages.tsv: <stage key><TAB><clip><TAB><description> (tools/gen_fatalities.py). */
-static const char *k_stage_names[][2] = {
-    { "Pit", "The Pit" }, { "PitDay", "The Pit" }, { "DeadPool", "The Dead Pool" },   /* the game's Arena Select names */
-    { "LivingForest", "The Living Forest" }, { "Subway", "Subway" }, { "Street", "The Street" },
-    { "Hell", "Hell" },
+static const char *k_stage_names[][3] = {   /* the game's Arena Select names, English and Spanish ([PlayerSelect]) */
+    { "Pit", "The Pit", "El Foso" }, { "PitDay", "The Pit", "El Foso" }, { "DeadPool", "The Dead Pool", "La Charca de los Muertos" },
+    { "LivingForest", "The Living Forest", "El Bosque Viviente" }, { "Subway", "Subway", "Paso subterráneo" },
+    { "Street", "The Street", "La Calle" }, { "Hell", "Hell", "Infierno" },
 };
 static const Fat *g_pend; static DWORD g_pend_t;      /* description started just after the spoken name */
 static DWORD g_named_t;               /* a fatality was named from the callback */
@@ -198,7 +207,7 @@ static Fat g_stagefat[NSTAGE]; static int g_nstagefat;
 static void stages_init(void) {
     g_nstagefat = 0;
     wchar_t path[MAX_PATH];
-    swprintf(path, MAX_PATH, L"%lsfatalities\\stages.tsv", g_mod_dir);
+    swprintf(path, MAX_PATH, L"%ls%ls\\stages.tsv", g_mod_dir, g_fdir);
     FILE *f = _wfopen(path, L"rb");
     if (!f) { log_line("fatality: no stages.tsv"); return; }
     char line[512];
@@ -222,14 +231,14 @@ static void stage_fatality(int atk) {
     char st[32]; story_stage(st, sizeof st);
     const char *nm = NULL;
     for (unsigned i = 0; i < sizeof k_stage_names / sizeof k_stage_names[0]; i++)
-        if (!_stricmp(st, k_stage_names[i][0])) nm = k_stage_names[i][1];
+        if (!_stricmp(st, k_stage_names[i][0])) nm = k_stage_names[i][fat_es() ? 2 : 1];
     const Fat *F = NULL;
     for (int i = 0; i < g_nstagefat; i++) if (!_stricmp(g_stagefat[i].ch, st)) F = &g_stagefat[i];
     char who[48] = "", gname[40], ch[40], msg[160];
     pl_name(atk, gname, sizeof gname); game_char_key(gname, ch, sizeof ch);
     for (int i = 0; i < g_nfat; i++) if (!strcmp(g_fat[i].ch, ch)) { snprintf(who, sizeof who, "%s", g_fat[i].who); break; }
-    snprintf(msg, sizeof msg, "%s%sStage Fatality%s%s", atk && who[0] ? who : "", atk && who[0] ? ": " : "",
-             nm ? ", " : "", nm ? nm : "");
+    snprintf(msg, sizeof msg, "%s%s%s%s%s", atk && who[0] ? who : "", atk && who[0] ? ": " : "",
+             fat_es() ? "Fatality de escenario" : "Stage Fatality", nm ? ", " : "", nm ? nm : "");
     log_line("fatality named: stage fatality on %s by %s (player %d) -> %s", st[0] ? st : "?", gname, atk + 1, F ? F->clip : "none");
     { int was = speech_force(1); speak_utf8(msg, 1); speech_force(was); }
     if (F && (F->clip[0] || F->desc[0])) { g_pend = F; g_pend_t = GetTickCount() + (atk ? 2200 : 1700); }
@@ -237,7 +246,7 @@ static void stage_fatality(int atk) {
 }
 
 static void fat_describe(const Fat *F) {
-    wchar_t cp[MAX_PATH]; swprintf(cp, MAX_PATH, L"%lsfatalities\\%hs", g_mod_dir, F->clip);
+    wchar_t cp[MAX_PATH]; swprintf(cp, MAX_PATH, L"%ls%ls\\%hs", g_mod_dir, g_fdir, F->clip);
     desc_play(cp, F->desc);
 }
 

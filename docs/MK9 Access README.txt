@@ -125,7 +125,7 @@ the keys you had before. It works at once and is kept for the next start.
   Left Shift          flip stance (Shift + Space is the X-Ray)
   Tab                 tag
   1 or Escape         pause
-  4                   the controller's Back button
+  4                   the controller's View button
 As in the PC release, Right Ctrl and Right Shift do nothing, and Enter and
 Backspace only accept and go back in menus (and the pause menu): in a fight
 they don't kick.
@@ -141,11 +141,16 @@ configuration: each action is read with its key and button. Select starts
 editing; on each action press the key you want for it. The action that had
 that key takes the old one, and both are read.
 
+The controller's View button is the small button left of the middle (called Back on
+an Xbox 360 pad, Share or Create on a PlayStation pad). This README calls it View,
+so it isn't confused with holding back, away from the opponent.
+
 Mod keys:
-  F4          the settings menu (on a controller: hold Back and press A)
+  F4          the settings menu (on a controller: hold View and press A)
   F5          read the port's window that is open (F1 online, F2 options);
               in an online session with no window open: the connection
-  F6          health of both fighters, in percent
+  F6          health and super meter of both fighters ("Scorpion 72 percent, 1 bar");
+              at character select: what the fighter under the cursor looks like
   F8          distance cue: clicks, hum, or off
   Ctrl+F8     distance cue volume, 4 steps
   Shift+F8    health tones: at 50 and 25 percent, also at 75, or off
@@ -183,7 +188,7 @@ Port keys:
   crashed after it.
 
 
-The settings menu (F4, or hold Back and press A on a controller) has every
+The settings menu (F4, or on a controller hold the View button and press A) has every
 setting of the mod in one list: distance cue and its volume, health tones,
 attack height sounds, combo readout, speech during fights, descriptions and
 their voice volume, frame data in Practice, keyboard layout, game language and
@@ -193,6 +198,11 @@ plays the sound again (on Attack height sounds: each height, named), Home and
 End jump to the first and last item, Escape or B closes it. While it is open
 the game gets none of your keys or buttons.
 
+
+Character select: each fighter is read with their row and column. Rest on a
+fighter for about two seconds and you hear what they look like: build, face,
+clothes from top to bottom, footwear and weapons, in their default costume.
+F6 reads it again any time. The settings menu can limit it to F6 only.
 
 4. FIGHTS
 
@@ -215,6 +225,10 @@ Health tones: two falling notes, in the middle, when you drop below half and
 below a quarter of your health. Two rising notes, from the opponent's side,
 when they do. F6 tells you both health values in percent. Shift+F8 (or the
 settings menu) adds a warning at 75 percent, or turns the tones off.
+
+X-ray ready: when a super meter fills all three bars, three quick rising notes play:
+yours bright, in the middle; the opponent's lower, from their side. F6 says
+how many bars each fighter has. The settings menu turns the sounds off.
 
 Combo readout: when a combo ends, the mod says how many hits and how much
 damage, "3 hits, 14 percent", or just the damage for a single hit. A combo on
@@ -309,6 +323,13 @@ type and reward. The Details button reads the objective and the skip cost.
 In a challenge, the objective, the narrator's lines and the move to land are
 read.
 
+Nekropolis (Extras > Nekropolis): Left and Right go through the characters'
+statues, each read by name. Select opens a small menu: View Stats reads the
+character's stats page (victories, finishing moves, X-rays, blood spilled,
+time played, each with its milestone); View Character Bio opens the character
+viewer, where Select reads the full bio (some characters also have an
+alternate bio). The Gallery's items (art, music) are read by name.
+
 Krypt (Extras > Krypt): moving between koffins plays footsteps, and a bump
 when you can't go that way. Each koffin is read with its zone, number and
 price, and your koin balance on entry. Shift+F4 lists the other koffins in view
@@ -359,7 +380,7 @@ focus back on the first item. A list (the open rooms, the chats, replays) is ent
 with Enter; then the arrows move through its rows and Escape leaves it. Each
 row is read whole, for example "Sala de Strato, Strato, about 228 ms, playing,
 10 min, Watch". New chat messages, rooms that open and people who come in are
-read as they appear. A controller works too: Back + Y opens the window, the
+read as they appear. A controller works too: View + Y opens the window, the
 d-pad moves, A chooses, B closes.
 
 The Rooms tab:
@@ -388,7 +409,7 @@ delay. After the match the loser chooses Rematch, another fighter or the menu.
 To leave: F1, Room tab, "End the session and go back to the lobby".
 When a session ends (left, or the connection dropped) the game starts again with
 the online window open, and the game ignores the controller until it closes:
-you hear "Online session over"; press F1, or Back and Y on the controller.
+you hear "Online session over"; press F1, or View and Y on the controller.
 
 Both players need the same version of MK9 by Lauta; the mod keeps yours up to
 date (section 9).

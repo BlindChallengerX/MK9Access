@@ -6,7 +6,7 @@
  *    (the same signal the port uses for its .bik pictures); NtCreateFile is watched for that path.
  *  - where in it: the codec's GetOutput (82D25390, the port's replacement; args table, buffer, capacity, &size,
  *    &flags, &time u64, &one) gives each picture's time in ms at *r8 (big-endian). Time 0 = the first picture.
- *  - what to say: MK9Access\story\cues.tsv, "movie<TAB>seconds<TAB>clip.wav<TAB>text", from data/story/<movie>.txt
+ *  - what to say: MK9Access\story\cues.tsv (story_es\ in a Spanish game),"movie<TAB>seconds<TAB>clip.wav<TAB>text", from data/story/<movie>.txt
  *    (tools/story/gen_story.py; clips are Kokoro af_heart lines fitted into the silences between the game's own
  *    subtitle timings, MK9Story.eng).
  *  - stop: the codec's Close (82D25280), e.g. the movie skipped with START or A.
@@ -118,10 +118,18 @@ static void h_getout(PPCContext *ctx, uint8_t *base) {
     g_now_ms = (LONG)(t - g_first_ms);
 }
 
+/* The description set: story_es\ (Spanish clips, times fitted to the Spanish dub) when the game runs in Spanish and
+ * that folder is there, else story\ (English). */
+static const wchar_t *g_sdir = L"story";
+
 static void load_cues(void) {
     wchar_t p[MAX_PATH];
-    swprintf(p, MAX_PATH, L"%lsstory\\cues.tsv", g_mod_dir);
-    FILE *f = _wfopen(p, L"r");
+    FILE *f = NULL;
+    if (lang_code() == 5) {
+        swprintf(p, MAX_PATH, L"%lsstory_es\\cues.tsv", g_mod_dir);
+        if ((f = _wfopen(p, L"r"))) g_sdir = L"story_es";
+    }
+    if (!f) { swprintf(p, MAX_PATH, L"%lsstory\\cues.tsv", g_mod_dir); f = _wfopen(p, L"r"); }
     if (!f) { log_line("story: no cues.tsv"); return; }
     char line[1024]; int cap = 0;
     while (fgets(line, sizeof line, f)) {
@@ -136,7 +144,7 @@ static void load_cues(void) {
         if (c->text) c->text[strcspn(c->text, "\r\n")] = 0;
     }
     fclose(f);
-    log_line("story: %d described moments", g_ncues);
+    log_line("story: %d described moments (%ls)", g_ncues, g_sdir);
 }
 
 void story_init(void) {
@@ -203,7 +211,7 @@ void story_poll(void) {
     }
     if (now - c->ms > 4000) { s_next++; return; }   /* jumped past it */
     wchar_t p[MAX_PATH];
-    swprintf(p, MAX_PATH, L"%lsstory\\%hs", g_mod_dir, c->clip);
+    swprintf(p, MAX_PATH, L"%ls%ls\\%hs", g_mod_dir, g_sdir, c->clip);
     s_clip_mine = desc_play(p, c->text);
     if (!s_clip_mine && desc_mode() == DESC_READER) s_said_t = GetTickCount();
     log_line("story: %s at %d ms (cue %d ms): %s%s", c->movie, (int)now, c->ms, c->clip,

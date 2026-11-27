@@ -17,12 +17,14 @@ files = [
     ('dist/install.ps1', 'MK9Access/install.ps1'),
     ('dist/mk9update.ps1', 'MK9Access/mk9update.ps1'),
     ('data/fatalities.tsv', 'MK9Access/fatalities.tsv'),
+    ('data/fighter_descriptions.tsv', 'MK9Access/fighter_descriptions.tsv'),
     ('third_party/prism/LICENSE', 'licenses/Prism-MPL-2.0.txt'),
     ('third_party/minhook/LICENSE.txt', 'licenses/MinHook-BSD-2-Clause.txt'),
     ('data/sounds/Kenney-License.txt', 'licenses/Kenney-CC0.txt'),
 ]
 for d, dest in (('out/MK9Access/fatalities', 'MK9Access/fatalities'), ('data/movelists', 'MK9Access/movelists'),
-                ('data/sounds', 'MK9Access/sounds'), ('out/MK9Access/story', 'MK9Access/story')):
+                ('data/sounds', 'MK9Access/sounds'), ('out/MK9Access/story', 'MK9Access/story'),
+                ('out/MK9Access/fatalities_es', 'MK9Access/fatalities_es'), ('out/MK9Access/story_es', 'MK9Access/story_es')):
     for name in sorted(os.listdir(os.path.join(SRC, d))):
         files.append((d + '/' + name, dest + '/' + name))
 

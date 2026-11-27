@@ -1,0 +1,31 @@
+0.30	En la catedral, Smoke intercambia golpes con un ciborg Lin Kuei negro.
+4.80	Kitana raja una cabeza de ciborg con su abanico.
+8.20	Kabal y Cyber Sub-Zero están de pie ante otro ciborg caído.
+13.00	Ciborgs destrozados cubren el suelo de la catedral.
+16.00	Kitana se acerca a Nightwolf.
+19.90	Kitana se detiene y se gira, con los ojos muy abiertos.
+26.80	Sindel lanza un grito estridente. Anillos de fuerza morada derriban a Stryker y a otros.
+33.20	Sub-Zero levanta un muro de hielo. Jade, Johnny Cage y Jax resisten la onda con esfuerzo.
+39.20	Nightwolf se prepara. Sindel avanza entre las velas.
+48.00	Sonya, Stryker, Jade, Kitana, Johnny Cage, Smoke y Jax alzan los puños.
+# dropped 56.30: inside Spanish speech; folded into 59.20
+59.20	Sindel aparta a Nightwolf de una patada y hace retroceder a Johnny Cage a golpes.
+64.50	Sindel derriba a Kabal de una patada y lo pisotea.
+69.50	Agarra a Stryker por la cabeza y lo obliga a arrodillarse.
+73.60	Golpea a Cyber Sub-Zero y lo arroja lejos.
+76.90	Golpea a Jax en la garganta. Sangra. Una patada lo tumba.
+81.00	Smoke ataca. Sindel lo baja de un tirón contra su rodilla.
+85.60	Cuerpos tendidos por el suelo. Jade se adelanta para luchar.
+89.50	Kitana se une, pero Sindel contiene a ambas.
+92.60	Sindel agarra a Jade, le hunde la mano en el pecho y arranca su corazón.
+98.00	Jade cae muerta. Kitana ataca sola a su madre.
+103.00	Sindel estrella a Kitana contra el suelo.
+106.30	Kitana se levanta y sigue luchando.
+110.20	Sindel bloquea sus golpes y contraataca.
+115.50	Una patada lanza a Kitana por los aires. Cae con fuerza de espaldas, la cara ensangrentada.
+121.50	Kitana se da la vuelta y se incorpora, alzando la vista hacia su madre.
+155.00	Sindel enciende una bola de energía morada en la palma.
+158.60	Hilos morados fluyen del rostro de Kitana a la mano de Sindel. Sonríe, con rayos morados sobre el pecho.
+165.40	Kitana brilla y se debilita mientras Sindel se alimenta de ella.
+171.40	Sindel da la espalda a Kitana, arrodillada.
+177.05	Kitana se desploma.

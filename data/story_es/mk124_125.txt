@@ -1,0 +1,9 @@
+31.30	Los resucitados avanzan.
+36.35	Raiden desaparece en un rayo cuando los resucitados se abalanzan.
+40.80	Un rayo deja a Raiden en una azotea, entre ruinas.
+44.60	Un portal oscuro gira junto a un trono vacío flanqueado por cráneos.
+48.80	Liu Kang espera, brazos cruzados.
+77.60	Liu Kang levanta una mano para hacer callar a Raiden.
+81.90	En el portal aparece Shao Kahn, envuelto en rayos y luz morada.
+88.30	Liu Kang se dirige al portal.
+98.10	Liu Kang le da la espalda.

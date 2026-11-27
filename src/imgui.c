@@ -259,6 +259,9 @@ static void add_text(const void *dl, const char *b, const char *e, const ImVec2 
     if (g_nbuild >= IMT_MAX) return;
     ImT *t = &g_build[g_nbuild++];
     memcpy(t->s, pre, np); memcpy(t->s + np, b, n); t->s[np + n] = 0;
+    /* the port's "F5 (BACK + LB)", "BACK + left or right": the controller's View button. "Back" reads as holding
+     * back, away from the opponent (user, 2026-11-27); the same length, so it is swapped in place */
+    for (char *q = strstr(t->s, "BACK +"); q; q = strstr(q + 4, "BACK +")) memcpy(q, "View", 4);
     t->id = g_cur_item; t->x = x; t->y = y; t->col = col; t->dl = dl;
 }
 

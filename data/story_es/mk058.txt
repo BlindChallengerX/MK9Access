@@ -1,0 +1,12 @@
+0.10	Cyrax se teletransporta lejos.
+4.70	Sub-Zero los encara.
+20.00	Sonya y Jax cruzan una mirada.
+# dropped 29.30: dentro del diálogo; las almas verdes pasan a la línea de 37.60, la boca de piedra se pierde
+37.60	Almas verdes se funden en una figura enmascarada.
+43.00	Jax agarra a Ermac.
+44.50	La palma de Ermac brilla en verde y hace retroceder a Jax.
+50.30	El poder de Ermac abre los brazos de Jax de par en par y lo sujeta así.
+57.30	Los ojos de Ermac brillan en verde.
+59.80	Ermac arranca los dos brazos a Jax.
+62.60	Jax cae ensangrentado.
+65.40	Sonya le cierra las heridas.

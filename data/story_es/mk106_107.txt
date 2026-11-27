@@ -1,0 +1,13 @@
+0.50	Cyber Sub-Zero avanza por un almacén en penumbra junto a Sektor, el cíborg rojo del Lin Kuei, que yace vencido. Sub-Zero se arrodilla a su lado.
+10.10	En el visor de Sub-Zero corre código rojo: función cognitiva primaria interrumpida, autenticación aprobada.
+16.30	Órdenes sobre un mapa: escoltar prisioneros militares de la Universidad Vogel al cementerio de Saint Dominic. Los rebeldes son prescindibles.
+27.20	Dentro de una torre del reloj, rechinan engranajes gigantes.
+32.50	Abajo, soldados encadenados están de rodillas, vigilados por Kano y por Goro y Kintaro, los Shokan de cuatro brazos.
+41.90	Cyber Sub-Zero entra.
+62.53	Sub-Zero congela a Goro, Kintaro y Kano.
+# 64.00 folded into 62.53 (Kano frozen too): no room for both
+70.00	Sub-Zero recorre la fila de prisioneros, con escarcha en las manos.
+74.50	El hielo se extiende por sus cadenas.
+79.00	Las cadenas congeladas se hacen añicos, y los soldados miran sus manos libres.
+89.60	Detrás de ellos, Goro rompe el hielo y luego Kintaro se libera.
+94.40	Sub-Zero se vuelve hacia ellos.

@@ -167,7 +167,7 @@ static void load_coalesced(void) {
 
 /* ---------- game thread: Localize hook ---------- */
 #define LQ 256
-typedef struct { char sec[64], key[96]; uint32_t keyaddr; char val[512]; DWORD t; } LocCall;
+typedef struct { char sec[64], key[96]; uint32_t keyaddr; char val[1024]; DWORD t; } LocCall;   /* a bio is up to 736 */
 static LocCall g_lq[LQ];
 static volatile LONG g_lq_w;          /* calls written (index = w % LQ) */
 static LONG g_lq_r;
@@ -681,7 +681,9 @@ static int clip_title(uint32_t holder, char *out, size_t cap) {
         char low[96]; size_t i = 0;
         for (; g_clip[c].path[i] && i < sizeof low - 1; i++) low[i] = (char)tolower((unsigned char)g_clip[c].path[i]);
         low[i] = 0;
-        if (strstr(low, "title")) { snprintf(out, cap, "%s", g_clip[c].text); found = 1; }
+        /* not the Nekropolis stats rows (charViewer.stats.Stat_Group.stats0.title: "Victories - 0"), which share the
+         * holder with the statue names */
+        if (strstr(low, "title") && !strstr(low, "stat_group")) { snprintf(out, cap, "%s", g_clip[c].text); found = 1; }
     }
     LeaveCriticalSection(&g_clock);
     return found;
@@ -1051,7 +1053,8 @@ static DWORD g_focus_said_t;          /* when an option row / Button Configurati
 
 static int focus_arg(const char *a) {
     return !_stricmp(a, "BuildOn") || !_stricmp(a, "HighlightOn") || !_stricmp(a, "Highlight") ||
-           !_stricmp(a, "FocusOn") || !_stricmp(a, "On") || !_stricmp(a, "Selected_On");
+           !_stricmp(a, "FocusOn") || !_stricmp(a, "On") || !_stricmp(a, "Selected_On") ||
+           !_stricmp(a, "Focus");   /* the Nekropolis character menu (View Stats / View Character Bio): optionN Focus */
 }
 
 /* ---------- the in-game move list (pause > Move List) ----------
@@ -1382,6 +1385,84 @@ static DWORD g_np_t;                    /* the player count just changed */
 static int g_np_count;
 static DWORD g_dis_t; static int g_dis_n;  /* the last burst of greyed-out items (they come before the count's lookup) */
 
+/* ---------- Nekropolis > a character > View Stats (2026-11-27) ----------
+ * charViewer.stats BuildOn, then SetVariable charViewer.stats.Stat_Group.stats<N>.title.varText ("Victories - 0",
+ * "BloodSpilled - 0 Pints", "Devotion - Time: 00:00:00") and .masterInfo.varText ("Milestone - 100 Victories"), and
+ * icon<N> gotoAndPlay NoMastery (or not, when that milestone is mastered). Said as one page once it is in. */
+static uint32_t g_stats_holder; static DWORD g_stats_due; static int g_stats_master[5];
+static void stat_tidy(const char *in, char *out, size_t cap) {
+    char a[300]; snprintf(a, sizeof a, "%s", in);
+    static const char *rep[][2] = { { " - ", " " }, { "BloodSpilled", "Blood spilled" }, { " -alities", " finishing moves" },
+                                    { "Time: ", "" } };
+    for (unsigned r = 0; r < sizeof rep / sizeof rep[0]; r++) {
+        char *q;
+        while ((q = strstr(a, rep[r][0]))) {
+            char b[300]; size_t pre = (size_t)(q - a);
+            snprintf(b, sizeof b, "%.*s%s%s", (int)pre, a, rep[r][1], q + strlen(rep[r][0]));
+            snprintf(a, sizeof a, "%s", b);
+        }
+    }
+    /* "00:12:05" (hours:minutes:seconds) -> "12 minutes" */
+    int h, m, s; char *c = strchr(a, ':');
+    if (c && c - a >= 2 && sscanf(c - 2, "%d:%d:%d", &h, &m, &s) == 3) {
+        char b[300]; size_t pre = (size_t)(c - 2 - a);
+        snprintf(b, sizeof b, "%.*s%d %s, %d %s%s", (int)pre, a, h, h == 1 ? "hour" : "hours", m, m == 1 ? "minute" : "minutes", c + 6);
+        snprintf(a, sizeof a, "%s", b);
+    }
+    tidy(a, out, cap);
+}
+static void stats_say(void) {
+    char msg[1400] = "Stats.";
+    for (int n = 0; n < 5; n++) {
+        char p1[96], p2[96], t1[200] = "", t2[200] = "", a[220], b[220];
+        snprintf(p1, sizeof p1, "charViewer.stats.Stat_Group.stats%d.title.varText", n);
+        snprintf(p2, sizeof p2, "charViewer.stats.Stat_Group.stats%d.masterInfo.varText", n);
+        if (!clip_exact(g_stats_holder, p1, t1, sizeof t1) || !t1[0]) continue;
+        clip_exact(g_stats_holder, p2, t2, sizeof t2);
+        stat_tidy(t1, a, sizeof a); stat_tidy(t2, b, sizeof b);
+        size_t L = strlen(msg);
+        snprintf(msg + L, sizeof msg - L, " %s%s%s%s.", a, b[0] ? ", " : "", b, g_stats_master[n] ? ", mastered" : "");
+    }
+    say(msg, NULL);
+}
+/* ---------- character select: what each fighter looks like (user request 2026-11-27) ----------
+ * MK9Access\fighter_descriptions.tsv: <name as the game says it><TAB><description>, written from the Nekropolis
+ * character viewer (front, feet, back) for the default costumes. */
+static char g_fd_name[64]; static DWORD g_fd_due;
+typedef struct { char name[40]; char *text; } FDesc;
+static FDesc *g_fdesc; static int g_nfdesc, g_fdesc_loaded;
+static const char *fdesc_get(const char *name) {
+    if (!g_fdesc_loaded) {
+        g_fdesc_loaded = 1;
+        wchar_t p[MAX_PATH]; swprintf(p, MAX_PATH, L"%lsfighter_descriptions.tsv", g_mod_dir);
+        FILE *f = _wfopen(p, L"rb");
+        if (f) {
+            char line[2048]; int cap = 0;
+            while (fgets(line, sizeof line, f)) {
+                line[strcspn(line, "\r\n")] = 0;
+                char *tab = strchr(line, '\t');
+                if (!tab || line[0] == '#') continue;
+                *tab = 0;
+                if (g_nfdesc == cap) { cap = cap ? cap * 2 : 64; g_fdesc = realloc(g_fdesc, cap * sizeof *g_fdesc); }
+                snprintf(g_fdesc[g_nfdesc].name, sizeof g_fdesc[0].name, "%.39s", line);
+                g_fdesc[g_nfdesc].text = _strdup(tab + 1);
+                g_nfdesc++;
+            }
+            fclose(f);
+        }
+        log_line("menu: %d fighter descriptions", g_nfdesc);
+    }
+    for (int i = 0; i < g_nfdesc; i++) if (!_stricmp(g_fdesc[i].name, name)) return g_fdesc[i].text;
+    return NULL;
+}
+/* F6 at character select (game.c): the fighter under the cursor */
+void menu_fighter_describe(void) {
+    const char *d = g_fd_name[0] ? fdesc_get(g_fd_name) : NULL;
+    g_fd_due = 0;
+    if (!g_fd_name[0]) { speak(L"No fighter in focus", 1); return; }
+    if (!d) { char m[120]; snprintf(m, sizeof m, "No description for %s", g_fd_name); speak_utf8(m, 1); return; }
+    speak_utf8(d, 1);
+}
 static void on_focus_event(FocusEv *e) {
     if (g_debug) log_line("FOCUS %08x %s %s%s", e->holder, e->target, e->arg, e->stop ? " (stop)" : "");
     if (e->stop && !strcmp(e->target, "navTextBase") && !_stricmp(e->arg, "disable")) {
@@ -1391,6 +1472,15 @@ static void on_focus_event(FocusEv *e) {
     size_t tl0 = strlen(e->target);
     if (e->stop == 2) { ml_highlight(atoi(e->arg), e->t); return; }   /* said once the move's events are in */
     if (preset_event(e)) return;
+    if (!strcmp(e->target, "charViewer.stats") && !_stricmp(e->arg, "BuildOn")) {
+        g_stats_holder = e->holder; g_stats_due = GetTickCount() + 150; memset(g_stats_master, 0, sizeof g_stats_master);
+        return;
+    }
+    if (!strncmp(e->target, "charViewer.stats.Stat_Group.icon", 32)) {
+        int k = atoi(e->target + 32);
+        if (k >= 0 && k < 5) g_stats_master[k] = _stricmp(e->arg, "NoMastery") != 0;
+        return;
+    }
     if (e->stop == 5) {                       /* an option row's new value (Options > Gameplay), after Left/Right */
         /* not the value set while the screen opens: the row's own announcement has it */
         if (e->holder == g_focus_h && !strcmp(e->target, g_focus_target) && GetTickCount() - g_input_t < 1000 &&
@@ -1962,12 +2052,12 @@ Are you sure ..."): the text field got the whole sentence just before */
     }
     if (now - g_input_t > 1500 && now > g_allow_until) return;
     g_allow_until = 0;
-    char text[1024] = "";
+    char text[2400] = "";
     int fighter = 0;
     for (int i = 0; i < n; i++) {
         /* descriptions are said with their item only */
         if (quiet_key(g[i].sec, g[i].key) || !g[i].val[0] || ends_with(g[i].key, "Desc")) continue;
-        char t[512]; tidy(g[i].val, t, sizeof t);
+        char t[1100]; tidy(g[i].val, t, sizeof t);
         if (!t[0] || strstr(text, t)) continue;
         if (text[0]) strncat(text, ". ", sizeof text - strlen(text) - 1);
         strncat(text, t, sizeof text - strlen(text) - 1);
@@ -1994,6 +2084,10 @@ Are you sure ..."): the text field got the whole sentence just before */
     }
     if (fighter) { snprintf(g_fighter_said, sizeof g_fighter_said, "%s", text); g_fighter_said_t = now; }
     say(text, pos);
+    /* the fighter the cursor rests on: their look after 2.5 s (fighter_desc_auto), or on F6. Not a pick ("Freddy
+     * Krueger. Sub-Zero": both fighters named, the opponent chosen) */
+    if (fighter && !strstr(text, ". ")) { snprintf(g_fd_name, sizeof g_fd_name, "%s", text); g_fd_due = now + 2500; }
+    else if (fighter) g_fd_due = 0;
     snprintf(g_focus_label, sizeof g_focus_label, "%s", text);
     g_focus_holder = 0;
 }
@@ -2002,6 +2096,12 @@ Are you sure ..."): the text field got the whole sentence just before */
 void menu_poll(void) {
     static LocCall grp[LQ];
     watch_input();
+    if (g_stats_due && (LONG)(GetTickCount() - g_stats_due) >= 0) { g_stats_due = 0; stats_say(); }
+    if (g_fd_due && (LONG)(GetTickCount() - g_fd_due) >= 0) {   /* rested on a fighter: their look, after the name */
+        g_fd_due = 0;
+        const char *d = fdesc_get(g_fd_name);
+        if (d && fighter_desc_auto() && fight_game_state() == 7) speak_utf8(d, 0);
+    }
     if (g_np_t && GetTickCount() - g_np_t > 500) {
         int disabled = (LONG)(g_dis_t - g_np_t) > -1000 && (LONG)(g_dis_t - g_np_t) < 1000 ? g_dis_n : 0;
         if (g_np_count >= 2 && disabled)

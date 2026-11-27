@@ -1,0 +1,27 @@
+0.30	En la azotea, Raiden resplandece en oro, rodeado de dragones de luz. Shao Kahn se arrodilla ante él, sangrando.
+6.80	Dragones dorados se enroscan alrededor de Kahn, que está a cuatro patas.
+12.00	Raiden lanza los dragones contra Kahn. Kahn se levanta tambaleante, martillo en mano.
+21.00	Kahn gruñe entre dientes ensangrentados y alza el martillo en alto.
+29.00	Raiden brilla intensamente y desata un torrente de energía dorada.
+33.50	Un enjambre de dragones dorados se hunde ardiendo en Kahn y lo levanta del suelo.
+39.00	Brota fuego de la boca y el pecho de Kahn.
+42.50	Raiden baja los brazos y se encorva, agotado.
+46.00	Kahn arde por dentro. Los dragones desgarran su cuerpo.
+49.60	Kahn se tambalea en llamas junto al portal mientras Raiden cae sobre una rodilla.
+55.00	Shao Kahn estalla en una explosión cegadora.
+57.80	Un haz de luz sale disparado al cielo y estalla.
+61.80	Un anillo de fuego se apaga en las nubes. La luz las atraviesa.
+66.50	Raiden alza la vista.
+70.50	La luz se extiende y las nubes oscuras se retiran, dejando ver el cielo azul.
+82.50	Raiden está solo en la azotea bajo un cielo que se despeja.
+87.50	Se gira y toca el amuleto de su pecho.
+91.00	Las grietas del amuleto se desvanecen y revelan un emblema de dragón.
+97.00	Raiden se sienta, maltrecho, y guarda el amuleto.
+100.20	Johnny y Sonya lo ayudan a levantarse.
+108.50	Los tres bajan la mirada hacia el cuerpo calcinado de Liu Kang.
+143.80	Cae un rayo y los tres desaparecen con el cuerpo de Liu Kang.
+148.50	La azotea queda vacía.
+152.50	El casco de calavera de Shao Kahn humea en el suelo.
+159.60	Quan Chi levanta el casco. Una figura fantasmal surge de él entre humo morado.
+168.00	El espíritu de Shinnok, imponente.
+197.98	Shinnok es un fantasma morado, de rostro gris demacrado, ojos brillantes y alta capucha oscura.

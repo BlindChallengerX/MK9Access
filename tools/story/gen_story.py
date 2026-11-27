@@ -8,7 +8,10 @@ peaks under -1 dBFS, 5 ms fades, no compression.
 cues.tsv rows: movie<TAB>seconds<TAB>clip<TAB>text (the text is spoken by the screen reader when the player picks
 "Descriptions: screen reader", Alt+F12).
 Usage: python -I gen_story.py [movie ...]      (no names: every data/story/*.txt; cues.tsv is always rewritten)
-       python -I gen_story.py --index-only     (rewrites cues.tsv only, keeps the clips)"""
+       python -I gen_story.py --index-only     (rewrites cues.tsv only, keeps the clips)
+       add --es for the Spanish set: data/story_es -> out/MK9Access/story_es (voice ef_dora, tools/es_voice.py); each
+       clip must end before the next Spanish spoken line (es_sheets.speech_spans: the Spanish track's own voice, see
+       voice_track.py), not the English subtitle timings."""
 import os, re, sys, numpy as np, soundfile as sf
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from prep import story_sections
@@ -16,8 +19,13 @@ import av
 from kokoro_onnx import Kokoro
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SRC = os.path.join(HERE, "..", "..", "data", "story")
-OUT = os.path.join(HERE, "..", "..", "out", "MK9Access", "story")
+ES = "--es" in sys.argv
+SRC = os.path.join(HERE, "..", "..", "data", "story_es" if ES else "story")
+OUT = os.path.join(HERE, "..", "..", "out", "MK9Access", "story_es" if ES else "story")
+if ES:
+    sys.path.insert(0, os.path.join(HERE, ".."))
+    import es_voice
+    from es_sheets import sections as es_sections, speech_spans as es_speech
 MOV = r"C:\Users\michm\Downloads\MK9 Access\game\game_root\Movies"
 KDIR = r"C:\Users\michm\tools\tts\kokoro"
 SPEED, MAXSPEED, MARGIN = 1.15, 1.45, 0.15
@@ -53,10 +61,11 @@ def phonemes(txt):
     return s
 
 def speak(txt, speed):
-    a, sr = k.create(phonemes(txt), voice="af_heart", speed=speed, lang="en-us", is_phonemes=True)
+    if ES: a, sr = k.create(es_voice.phonemes(k, txt), voice=es_voice.VOICE, speed=speed, lang=es_voice.LANG, is_phonemes=True)
+    else: a, sr = k.create(phonemes(txt), voice="af_heart", speed=speed, lang="en-us", is_phonemes=True)
     a = np.asarray(a, np.float32)
     nz = np.where(np.abs(a) > 0.01)[0]
-    if len(nz): a = a[max(0, nz[0] - 120): nz[-1] + 1200]
+    if len(nz): a = a[max(0, nz[0] - (es_voice.PREROLL if ES else 120)): nz[-1] + 1200]
     return a, sr
 
 def level(a, sr):
@@ -84,7 +93,7 @@ def main(names):
     index_only = "--index-only" in names
     names = [n for n in names if not n.startswith("--")]
     todo = [] if index_only else names or allnames
-    secs = story_sections()
+    secs = story_sections() if not ES else es_sections("spa")
     os.makedirs(OUT, exist_ok=True)
     if todo: k = Kokoro(os.path.join(KDIR, "kokoro-v1.0.onnx"), os.path.join(KDIR, "voices-v1.0.bin"))
     late = total = 0
@@ -93,6 +102,7 @@ def main(names):
             if f.startswith(name + "_") and f.endswith(".wav"): os.remove(os.path.join(OUT, f))
         cues = read_cues(name)
         rows = secs.get(name.lower(), [])
+        if ES: rows = [(a, b, "") for a, b in es_speech(name, rows)]   # the Spanish voice itself, cut to its rows
         c = av.open(os.path.join(MOV, name + ".wmv")); dur = c.duration / 1e6; c.close()
         for i, (t, txt) in enumerate(cues):
             limit = min([s for s, e, _ in rows if s > t + 0.05] + [cues[i + 1][0] if i + 1 < len(cues) else dur, dur])
@@ -100,8 +110,9 @@ def main(names):
             if talking: print(f"  ! {name} {t:.1f}: starts while someone speaks: {talking[0][:40]}")
             room = limit - t - MARGIN
             speed = SPEED; a, sr = speak(txt, speed)
-            while len(a) / sr > room and speed < MAXSPEED:
-                speed = min(MAXSPEED, speed + 0.1); a, sr = speak(txt, speed)
+            top = es_voice.MAXSPEED if ES else MAXSPEED
+            while len(a) / sr > room and speed < top:
+                speed = min(top, speed + 0.05 if ES else speed + 0.1); a, sr = speak(txt, speed)
             if len(a) / sr > room + 0.25:
                 late += 1; print(f"  LATE {name} {t:6.1f}: {len(a)/sr:.1f}s in {room:.1f}s room: {txt}")
             elif speed > SPEED + 0.05: print(f"  sped {speed:.2f} {name} {t:6.1f}: {txt[:60]}")

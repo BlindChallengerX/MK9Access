@@ -1,0 +1,39 @@
+3.20	Los títulos iniciales aparecen sobre agujas de roca dentadas, bajo un cielo ámbar y humeante. Unos pájaros negros vuelan en círculos.
+21.60	Un buitre alza su cabeza calva y ensangrentada.
+26.10	Una enorme mano huesuda, envuelta en niebla púrpura, yace sobre una mujer muerta.
+30.60	Una lanza de cuerda ensangrentada sobresale de la tierra agrietada entre cuerpos dispersos.
+35.20	Un guerrero con armadura de pinchos, muerto, apoyado en un muro.
+39.30	Johnny Cage yace muerto, sangrando por la boca, junto a sus gafas de sol.
+44.20	Los buitres devoran a los muertos, entre ellos una mujer rubia vestida de verde.
+52.40	Un buitre extiende las alas y se aleja volando.
+56.50	Tras el campo de batalla se alza una pirámide escalonada de piedra, coronada por una columna de fuego rugiente.
+63.50	Guerreros muertos yacen tendidos a lo largo de todos sus escalones.
+77.40	En la cima, un muro de llamas.
+80.30	Allí yace Raiden, ensangrentado, con capucha oscura y armadura negra y dorada.
+87.60	Shao Kahn: máscara de calavera con cuernos, ojos rojos encendidos.
+96.18	Kahn agarra a Raiden: un bruto enorme de torso desnudo, hombreras de pinchos, capa roja, botas blindadas.
+102.00	Lanza a Raiden desde la cima.
+104.50	El amuleto se desprende del cinturón de Raiden y se hace añicos en los escalones.
+110.30	Raiden cae de bruces sobre una cornisa.
+119.00	Kahn empuña un martillo de fuego verde.
+134.40	En llamas, Kahn alza a Raiden.
+139.50	Kahn estrella a Raiden contra el suelo y se aleja, martillo en alto.
+144.60	Raiden, sangrando, se incorpora con los ojos brillando en rojo.
+151.50	El amuleto está en pedazos.
+157.20	Raiden recoge los pedazos. Un fragmento brilla azul en su mano.
+162.70	Kahn se alza sobre él, envuelto en llamas.
+# dropped 172.53: inside Spanish speech; the lightning in his fist is folded into 181.70
+176.53	Kahn alza el martillo para golpear.
+181.70	Rayos chisporrotean en el puño de Raiden. Sus ojos arden con rayos azules. Una tormenta de visiones pasa en remolino.
+189.40	Raiden sostiene el cuerpo inerte de Liu Kang.
+192.60	Un gigante de cuatro brazos arrasa una ciudad. Un centauro embiste contra un luchador.
+204.20	Un destello cegador.
+205.50	Raiden jadea, ahora con sombrero de paja y túnica blanca y azul.
+215.10	Liu Kang observa: un joven luchador, cinta roja en la frente, largo pelo negro.
+221.60	Está agrietado.
+227.30	Noche. Guerreros formados en un templo.
+229.70	Entre ellos, Sonya Blade, rubia, con chaleco negro y placas militares, y Johnny Cage: gafas de sol, traje azul claro, zapatos blancos.
+237.80	Sub-Zero, con máscara azul. Nightwolf, con pintura de guerra. Quan Chi, pálido y calvo, junto a Scorpion, con máscara amarilla.
+244.90	Kitana y Jade, con máscaras azul y verde, flanquean a Shang Tsung, el brujo de barba gris.
+322.50	Cage entra pavoneándose.
+330.60	Reptile, un luchador verde y escamoso con cuero negro y botas, repta por un tejado y luego salta al suelo.

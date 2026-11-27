@@ -1,0 +1,10 @@
+1.60	Smoke corre hacia el Sub-Zero caído.
+35.00	Kabal fuerza un panel en la espalda blindada de Sub-Zero y manipula el cableado interior.
+40.60	Sub-Zero es ahora todo armadura azul y plateada, salpicada de luces brillantes.
+54.20	El visor azul de Sub-Zero se reinicia. Parpadea en rojo: anulación.
+58.20	Texto: conexión fallida, falta el módulo de mando y control.
+62.00	Protocolos de sometimiento desactivados. Mando autónomo activado.
+76.30	Más tarde, Sub-Zero está sentado en una losa de piedra entre los luchadores de la Tierra.
+121.90	Más tarde, en el salón de Shao Kahn, Sub-Zero sale de un portal verde.
+133.20	Sektor y Cyrax esperan.
+148.90	Sektor se da la vuelta y entra en un portal verde. Sub-Zero lo sigue.

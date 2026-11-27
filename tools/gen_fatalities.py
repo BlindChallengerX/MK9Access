@@ -11,15 +11,22 @@ in a live match from the player's motion.
 Usage: python gen_fatalities.py [speed]     (records every clip)
        python gen_fatalities.py --index-only (rewrites index.tsv, keeps the clips)
        python gen_fatalities.py --missing    (records only clips that don't exist yet, keeps the rest)
+       add --es for the Spanish set: data/fatalities_es.tsv + data/stage_fatalities_es.tsv -> out/MK9Access/fatalities_es/
+       (voice ef_dora, tools/es_voice.py; input words in the game's Spanish; the names stay English as in the game)
 """
 import os, re, sys, numpy as np, soundfile as sf
 from kokoro_onnx import Kokoro
 
 KDIR = r"C:\Users\michm\tools\tts\kokoro"
 HERE = os.path.dirname(os.path.abspath(__file__))
-SRC = os.path.join(HERE, "..", "data", "fatalities.tsv")
-OUT = os.path.join(HERE, "..", "out", "MK9Access", "fatalities")
+ES = "--es" in sys.argv
+SFX = "_es" if ES else ""
+SRC = os.path.join(HERE, "..", "data", "fatalities%s.tsv" % SFX)
+OUT = os.path.join(HERE, "..", "out", "MK9Access", "fatalities%s" % SFX)
 VOICE = "af_heart"
+if ES:
+    sys.path.insert(0, HERE)
+    import es_voice
 INDEX_ONLY = "--index-only" in sys.argv
 MISSING = "--missing" in sys.argv
 _args = [a for a in sys.argv[1:] if not a.startswith("--")]
@@ -53,10 +60,11 @@ def phonemes(txt):
     return s
 
 def speak(txt, speed):
-    a, sr = k.create(phonemes(txt), voice=VOICE, speed=speed, lang="en-us", is_phonemes=True)
+    if ES: a, sr = k.create(es_voice.phonemes(k, txt), voice=es_voice.VOICE, speed=speed, lang=es_voice.LANG, is_phonemes=True)
+    else: a, sr = k.create(phonemes(txt), voice=VOICE, speed=speed, lang="en-us", is_phonemes=True)
     a = np.asarray(a, np.float32)
     nz = np.where(np.abs(a) > 0.01)[0]
-    if len(nz): a = a[max(0, nz[0] - 120): nz[-1] + 1200]
+    if len(nz): a = a[max(0, nz[0] - (es_voice.PREROLL if ES else 120)): nz[-1] + 1200]
     return a, sr
 
 def level(a, sr):
@@ -108,7 +116,7 @@ def main():
             if key in seen: print("dup key, skipped:", name)
             continue
         seen.add(key)
-        words = input_words(inp)
+        words = es_voice.input_words(inp) if ES else input_words(inp)
         # the clip is the description only (the Kokoro voice, played when the fatality
         # is performed); the mod speaks the name and input through the screen reader.
         text = desc.rstrip(".") + "."
@@ -126,7 +134,7 @@ def main():
     print("indexed" if INDEX_ONLY else "generated", len(index), "fatality clips in", OUT)
     # stage fatalities: data/stage_fatalities.tsv (<stage key><TAB><description>) -> stage_<key>.wav + stages.tsv
     # (<stage key><TAB><clip><TAB><description>); the stage key is the game's BGND_<key>.xxx package name.
-    ssrc = os.path.join(HERE, "..", "data", "stage_fatalities.tsv")
+    ssrc = os.path.join(HERE, "..", "data", "stage_fatalities%s.tsv" % SFX)
     if not os.path.exists(ssrc): return
     stages = []
     for line in open(ssrc, encoding="utf-8"):
