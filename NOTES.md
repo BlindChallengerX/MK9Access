@@ -867,3 +867,10 @@ GitHub (settings.txt + mk9.toml kept). Zip recycled from Downloads after upload.
   as junctions, own saves, name MKATest; removed after): host made a private room, Copy code, guest pasted after "XY",
   replaced, joined: chime both sides, "Joined BlindChallengerX's room"; left and joined again. Sounds not heard by
   the user. A cheap guest copy for duo.py: junctions instead of install.ps1 (remove them with rmdir before deleting).
+
+## 1.0.13 released 2026-11-27
+Room joining (text boxes read, paste warning, clipboard code, join chime / fail pair + spoken result), online drop
+recovery (F1 explained, window raised, SDL background pad events), tutorial Continue menu, row 7 strip, Ladder ending
+hold (unverified in game), README online section. Commit c03281f, GitHub v1.0.13 (820 files, Defender clean); a 1.0.12
+scratch folder self-updated from GitHub (settings.txt + mk9.toml kept). Zip recycled from Downloads after upload.
+Note for update tests: a scratch folder without mk9.exe takes the first-install path (port download) first.
