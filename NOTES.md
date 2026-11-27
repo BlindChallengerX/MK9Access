@@ -981,3 +981,9 @@ with the game's Spanish arena names. Babality and the mod's other phrases are un
   Verified in Practice's select: Sheeva after resting, a quick pass skipped, F6 repeats.
 - Spanish audio descriptions: a separate session works on them in this folder at the same time (story.c, fatality.c,
   tools/story, data/*_es); its changes are uncommitted too.
+
+## 1.0.15 released 2026-11-27
+Spanish audio descriptions (story + fatalities), X-ray ready sounds, fighter looks at character select, Nekropolis
+bios/menu/stats, "View" button naming, combo damage rounded down. Commit 42580a0, GitHub v1.0.15 (1529 files, 198 MB,
+Defender clean); a 1.0.14 scratch folder self-updated from GitHub (settings.txt + mk9.toml kept, story_es 632 and
+fatalities_es 76 files arrived). Zip recycled from Downloads after upload.
