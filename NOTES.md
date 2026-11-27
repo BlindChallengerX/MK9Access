@@ -902,3 +902,8 @@ Note for update tests: a scratch folder without mk9.exe takes the first-install 
 - Fixed while testing: fight.c used -1 in s_dealt as "not known", but the dealt value goes negative in Practice after
   the dummy's health refills (-0.13 rising), so every hit after a refill went unheard (no knock, no combo). Now
   s_dealt_ok. tools/mk9.py reads the guest base from the log (port 1.4.4 moved it to 0x200000000); snap.py follows.
+
+## 1.0.14 released 2026-11-27
+Settings menu (F4 / Back + A), combo readout, 75 % health tone, Krypt keys Shift+F4 / Ctrl+F4, Practice F8 left to the
+port, Practice refill bug fixed. Commit a73bf09, GitHub v1.0.14 (820 files, Defender clean); a 1.0.13 scratch folder
+self-updated from GitHub (settings.txt + mk9.toml kept). Zip recycled from Downloads after upload.
