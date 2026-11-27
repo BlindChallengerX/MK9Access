@@ -17,4 +17,6 @@ rem the game files from the player's .iso the first time (MK9Access\install.ps1 
 rem own installer window cannot be used with Tab). 0 = files there, 3 = it started the game, 2 = quit.
 powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0MK9Access\install.ps1" -GameDir "%~dp0."
 if errorlevel 2 exit /b 0
+rem the controller keeps working when the game window is not in front (the mod sets it for the copies the game starts)
+set SDL_JOYSTICK_ALLOW_BACKGROUND_EVENTS=1
 start "" "%~dp0mk9.exe" --mk9_plugins=true --user_data_root="%~dp0saves"

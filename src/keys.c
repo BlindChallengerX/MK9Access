@@ -472,9 +472,51 @@ static void second_player_watch(void) {
 }
 
 /* Every second until the game window exists: hook its thread's message queue. */
+/* Back from an online session (forum report 2026-11-25: "after the connection drops the controller is dead until I
+ * restart"). A session's end - dropped, or left on purpose - always restarts the game (session.cpp Back) with
+ * --mk9_online_show=true, and that copy opens the F1 online window by itself; while it is open the port gives the game
+ * a neutral pad and no keys (mk9_overlay_input.cpp GameMayRead). The new window can also come up behind another one,
+ * and then SDL drops the controller's events altogether, so even Back+Y can't close F1. Here: for the first 20 s the
+ * window is brought to the front when it is not, and the player is told once how to get back to the game. */
+static void online_return_poll(void) {
+    static int state = -1;                  /* -1 unchecked, 0 nothing to do, 1 watching, 2 done */
+    static DWORD t0, last;
+    if (state == 0 || state == 2) return;
+    if (state < 0) {
+        const wchar_t *cl = GetCommandLineW();
+        state = cl && wcsstr(cl, L"--mk9_online_show=true") ? 1 : 0;
+        t0 = GetTickCount();
+        if (state) log_line("online: started again after a session");
+        return;
+    }
+    DWORD now = GetTickCount();
+    if (now - last < 500) return;
+    last = now;
+    WinFind w = { NULL, 0 };
+    EnumWindows(find_game_win, (LPARAM)&w);
+    if (!w.best) { if (now - t0 > 60000) state = 2; return; }
+    HWND fg = GetForegroundWindow();
+    if (fg != w.best && now - t0 < 20000) {
+        DWORD fg_tid = fg ? GetWindowThreadProcessId(fg, NULL) : 0, me = GetCurrentThreadId();
+        if (fg_tid && fg_tid != me) AttachThreadInput(me, fg_tid, TRUE);
+        ShowWindow(w.best, SW_RESTORE);
+        BringWindowToTop(w.best);
+        BOOL ok = SetForegroundWindow(w.best);
+        if (fg_tid && fg_tid != me) AttachThreadInput(me, fg_tid, FALSE);
+        log_line("online: game window not in front, raised (%d)", (int)ok);
+        return;
+    }
+    if (now - t0 < 2500) return;            /* let the lobby window's own reading start first */
+    speak(L"Online session over. The online window is open, and the game ignores the controller until it closes: "
+          L"press F1, or Back and Y on the controller.", 0);
+    log_line("online: back in the lobby, %s", fg == w.best ? "window in front" : "window NOT in front");
+    state = 2;
+}
+
 void keys_poll(void) {
     static DWORD last;
     second_player_watch();
+    online_return_poll();
     if (g_msg_hook || GetTickCount() - last < 1000) return;
     last = GetTickCount();
     keys_pc_on();

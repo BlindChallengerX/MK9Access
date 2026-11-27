@@ -136,7 +136,8 @@ void desc_key(int shift) {
 
 /* Read from any thread before speaking. The pause menu, the port overlay and a challenge result speak at once,
  * without waiting for the next poll. */
-int fight_live(void) { return s_live && !s_hold && !s_over && !g32(PAUSED) && !im_menu_on(); }
+static volatile int s_end;              /* a Ladder ending or the credits (fight_ending) */
+int fight_live(void) { return s_live && !s_hold && !s_over && !s_end && !g32(PAUSED) && !im_menu_on(); }
 int fight_quiet(void) { return !s_fight_speech && fight_live(); }
 
 static void cues_off(void) { hum_set(0, 110, 0, 0, W_SOFT); hum_trem(0, 0); click_set(0, 0, 0, 700); }
@@ -344,11 +345,23 @@ void fight_resume(void) { if (s_hold) log_line("fight: cues resumed"); s_hold = 
  * 2026-11-25). Cleared when the next round starts (both back at full health) or the fight state ends. */
 void fight_round_over(void) { if (!s_over) log_line("fight: round over, speech on"); s_over = 1; }
 
+/* A Ladder ending or the credits (menu.c: the game looked up their text): no distance cue until the fight state
+ * ends, whatever the fighters' health does meanwhile. */
+void fight_ending(const char *sec) {
+    if (!s_end) {
+        char a[48], b[48]; fighter_name(0, a, sizeof a); fighter_name(1, b, sizeof b);
+        log_line("fight: ending or credits ([%s]), cues held (state %d, %s / %s)", sec, game_state(), a, b);
+    }
+    s_end = 1;
+}
+
 void fight_poll(void) {
     Fighter me, op;
     /* the hum carries on through Finish Him (state 11) until the fatality starts: range matters there */
     settings_load();
     int st = game_state();
+    static int last_st = -2;
+    if (st != last_st) { log_line("fight: game state %d -> %d", last_st, st); last_st = st; }
     int ms = me_slot();
     int inplay = (st == GS_PLAY || (st == GS_FATALITY && fatality_finish_him())) && read_fighter(ms, &me) && read_fighter(1 - ms, &op);
     /* Story Mode loads the next fight behind its movies (state 8 with both fighters from 3 s in): no cues there */
@@ -360,11 +373,13 @@ void fight_poll(void) {
         s_live = 0;
         s_hold = 0;
         s_over = 0;
+        if (s_end) log_line("fight: ending over");
+        s_end = 0;
         return;
     }
     if (s_over && me.hp >= 0.999f && op.hp >= 0.999f) { s_over = 0; log_line("fight: next round, speech quiet"); }
     if (s_hold && me.hp >= 0.999f && op.hp >= 0.999f) fight_resume();
-    if (s_hold) {
+    if (s_hold || s_end) {
         if (s_inplay) cues_off();
         s_live = 0;
         s_hp[0] = me.hp; s_hp[1] = op.hp;

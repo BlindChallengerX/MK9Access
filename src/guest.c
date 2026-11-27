@@ -15,6 +15,7 @@
  *   poke ADDR VALUE    write a big-endian 32-bit value (testing only)
  *   pad BUTTONS MS     hold controller buttons, e.g. "pad lb+a 200"
  *   imdump             log the text of the port's ImGui screens (last frame)
+ *   hook off|on ADDR   switch one of the mod's guest hooks off or back on (finding which one breaks something)
  */
 #include "access.h"
 #include <stdio.h>
@@ -345,6 +346,10 @@ static void run_cmd(char *line) {
     } else if (!strcmp(cmd, "unwatch")) {
         set_dr_all(0, 0, 0);
         g_watch_addr = 0;
+    } else if (!strcmp(cmd, "hook")) {        /* hook off|on ADDR: switch one of the mod's hooks (bisecting) */
+        void *h = guest_host_fn((uint32_t)strtoul(a2, NULL, 16));
+        MH_STATUS s = !h ? MH_ERROR_NOT_CREATED : !strcmp(a1, "off") ? MH_DisableHook(h) : MH_EnableHook(h);
+        log_line("hook %s %s: %d", a1, a2, (int)s);
     }
 }
 
@@ -353,6 +358,12 @@ void tools_poll(void) {
     if (GetTickCount() - last < 300) return;
     last = GetTickCount();
     wchar_t path[MAX_PATH];
+    static int first = 1;
+    if (first) {                              /* MK9Access\menudebug.txt: text logging from the start (a player's test run) */
+        first = 0;
+        swprintf(path, MAX_PATH, L"%lsmenudebug.txt", g_mod_dir);
+        if (GetFileAttributesW(path) != INVALID_FILE_ATTRIBUTES) { log_line("menudebug.txt: text logging on"); menu_debug(1); }
+    }
     swprintf(path, MAX_PATH, L"%lscmd.txt", g_mod_dir);
     FILE *f = _wfopen(path, L"r");
     if (!f) return;

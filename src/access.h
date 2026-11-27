@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include "rex_mod.h"
 
-#define MOD_VERSION "1.0.12"
+#define MOD_VERSION "1.0.13"
 
 extern wchar_t g_game_dir[MAX_PATH];   /* folder of mk9.exe, with trailing backslash */
 extern wchar_t g_mod_dir[MAX_PATH];    /* g_game_dir + "MK9Access\" */
@@ -144,6 +144,7 @@ extern volatile float g_master;
 /* fight.c: cues during a fight */
 void fight_poll(void);
 void fight_round_over(void);             /* "<Fighter> WINS!": speech free until the next round */
+void fight_ending(const char *sec);     /* a Ladder ending or the credits: cues held until the fight state ends */
 void fight_hold(void);                   /* a challenge result: no fight cues behind its Continue menu */
 void fight_resume(void);                 /* something loads: cues allowed again */
 int fight_live(void);                    /* a fight is being played: not paused, no port window, no result menu */

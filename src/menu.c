@@ -574,6 +574,14 @@ static int ends_with(const char *s, const char *suf) {
     return a >= b && !_stricmp(s + a - b, suf);
 }
 
+/* A Ladder ending and the credits after it: the game looks up the ending's timed subtitles ([Scorpion_ladder],
+ * [ui_e_Scorpion]), its text ([Endings]) and the credits ([Kredits]). Both fighters stay in the fight state behind
+ * them, so the distance cue went on through the ending and the credits (forum report 2026-11-25). */
+static int ending_section(const char *sec) {
+    return (ends_with(sec, "_ladder") && _stricmp(sec, "Ladder")) || !_strnicmp(sec, "ui_e_", 5) ||
+           !_stricmp(sec, "Endings") || !_stricmp(sec, "Kredits");
+}
+
 /* Button prompts and system texts: never spoken as a focus change. */
 static int quiet_key(const char *sec, const char *key) {
     if (!_strnicmp(key, "Nav", 3) || !_strnicmp(key, "PressStart", 10)) return 1;
@@ -582,6 +590,7 @@ static int quiet_key(const char *sec, const char *key) {
     /* social-network post templates ("%s just performed their first Fatality..."),
      * localized after a first fatality / trophy but never shown on screen */
     if (!_stricmp(sec, "SocialMessages")) return 1;
+    if (ending_section(sec)) return 1;       /* the ending is narrated; its subtitles and the credits are not read */
     /* combo counter labels: said as "Damage. Hits" on every combo, without the numbers */
     if (!_stricmp(sec, "Gameplay.Fighting") && (!_stricmp(key, "Hit") || !_stricmp(key, "Hits") || !_stricmp(key, "Damage"))) return 1;
     /* Challenge Tower chrome (button labels, column headers, scroll hints): the
@@ -1617,6 +1626,7 @@ static void on_focus_event(FocusEv *e) {
 static void on_group(LocCall *g, int n) {
     /* a fight or challenge loading: the cues may come back (fight.c holds them after a challenge result) */
     for (int i = 0; i < n; i++) if (!_stricmp(g[i].key, "LOADING")) { fight_resume(); break; }
+    for (int i = 0; i < n; i++) if (ending_section(g[i].sec)) { fight_ending(g[i].sec); break; }
     DWORD now = GetTickCount();
     uint32_t first_label = 0, focus_label = 0;
     int nlabels = 0, focus = -1, picker = 0;
@@ -1969,8 +1979,19 @@ Are you sure ..."): the text field got the whole sentence just before */
     /* picking a fighter re-reads the name without moving the cursor: already said */
     if (fighter && !_stricmp(text, g_fighter_said) && g_grid_t < g_fighter_said_t) return;
     char pos[64] = "";
-    if (fighter && g_grid_cell >= 0 && now - g_grid_t < 1000)
-        snprintf(pos, sizeof pos, "row %d, column %d", g_grid_cell / 4 + 1, g_grid_cell % 4 + 1);
+    if (fighter && g_grid_cell >= 0 && now - g_grid_t < 1000) {
+        /* Row 7 starts with a strip that scrolls left past the grid (Cyber Sub-Zero, then the Komplete Edition
+         * fighters) and numbers its own slots Highlight1-5, so it read as rows 1 and 2. Its order is fixed. */
+        static const char *strip[] = { "Cyber Sub-Zero", "Skarlet", "Kenshi", "Rain", "Freddy Krueger", "Kratos" };
+        int si = -1;
+        for (int k = 0; k < 6 && si < 0; k++) {
+            size_t L = strlen(strip[k]);
+            if (!_strnicmp(text, strip[k], L) && (!text[L] || text[L] == '.')) si = k;
+        }
+        if (si == 0) snprintf(pos, sizeof pos, "row 7, column 1");
+        else if (si > 0) snprintf(pos, sizeof pos, "row 7, %d left of column 1", si);
+        else snprintf(pos, sizeof pos, "row %d, column %d", g_grid_cell / 4 + 1, g_grid_cell % 4 + 1);
+    }
     if (fighter) { snprintf(g_fighter_said, sizeof g_fighter_said, "%s", text); g_fighter_said_t = now; }
     say(text, pos);
     snprintf(g_focus_label, sizeof g_focus_label, "%s", text);

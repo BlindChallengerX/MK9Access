@@ -400,6 +400,14 @@ void fatality_poll(void) {
         else memcpy(cb, g_cb_name, sizeof cb);
         g_cb_fat_seen = fseq;
         cb[63] = 0;
+        /* The fatality's cinematic is loading: Finish Him is over. Some cinematics never put both actors on one
+         * position until their very end (Freddy's Tell 'Em Freddy Sent Ya: at the Continue menu), so without this
+         * the Continue? menu after them was held back as live-fight speech. */
+        if (s == GS_FATALITY && (!_strnicmp(cb, "Fatality", 8) || !_strnicmp(cb, "BgndFatality", 12) ||
+                                 !_strnicmp(cb, "Babality", 8)) && g_finish && !g_cine) {
+            g_cine = 1;
+            log_line("fatality: cinematic loading (%s)", cb);
+        }
         /* Matches, the Challenge Tower and the Fatality Tutorial alike; one per fatality */
         if (s == GS_FATALITY && now - g_play_t > 5000) named_fatality(cb);
         else log_line("fatality callback %s (state %d, not named)", cb, s);

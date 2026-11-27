@@ -808,3 +808,62 @@ they choose Join with a code." ("Copy diagnostics" -> "Diagnostics copied."). F2
 Stage fatalities (6 stages) + Klassic Fatalities + Kratos + Babality named/described; round winner and result menu
 read again. GitHub v1.0.12, commit 8776e96, zip 820 files, Defender clean; a 1.0.11 scratch folder self-updated from
 GitHub (settings.txt + mk9.toml kept). Zip recycled from Downloads after upload.
+
+## Nightly report bugs of 2026-11-26 (worked 2026-11-27; deployed, not committed or released)
+- Fatality Tutorial "hangs after Continue" (Liam, Quan Chi Beat Down / Freddy's first): reproduced ONCE in 17 tries
+  with the mod (Freddy, test saves): the port opened FreddyKrueger_Fatality1.xxx, read 0.2 MB and never finished; no
+  cinematic, no Fatality1CinemaPostLoadCallback, the game timed out to "Continue? Retry" ~32 s later and Retry then sat
+  on the loading dragon forever (game still at 60 fps). Port log difference: XGIUserWriteAchievements 44/4/43 came, id 24
+  (2.5 s later in every good run) never did. 10 later rounds (Freddy x5, Quan Chi x5) + Select A New Fighter, an empty
+  profile, and one run without the mod (--mk9_plugins=false) all worked. Looks like the port's package loading (same
+  family as the Krypt-load crash, #19), not the mod: the hooks around it only read. Before 1.0.10 the mod described on
+  the tutorial's input display, so a player heard the description even when the cinematic never loaded.
+- Fixed: the Continue? menu after a tutorial fatality was held back as fight speech ("QUIET (fight): Continue? Retry"):
+  Freddy's cinematic never puts both actors on one position until the Continue menu, so Finish Him never ended. Now a
+  Fatality*/BgndFatality*/Babality callback in state 11 ends Finish Him ("fatality: cinematic loading"). Verified.
+- Fixed: character select row 7 is a strip that scrolls left past the grid with its own Highlight1-5 (Cyber Sub-Zero,
+  Skarlet, Kenshi, Rain, Freddy/Kratos share slot 5), read as "row 1/2, column N". Now "row 7, column 1" (Cyber
+  Sub-Zero) and "row 7, N left of column 1" by the fixed order. Verified.
+- Tower ending clicks (TheUnseeing): the game looks up [<Char>_ladder] / [ui_e_<Char>] (timed ending subtitles),
+  [Endings] and [Kredits]; menu.c ending_section() -> fight_ending(): cues held and speech free until the fight state
+  ends (health refills don't release it); those sections are quiet (the ending is narrated). NOT verified: no Ladder
+  played to the end yet. menudebug.txt in MK9Access turns text logging on from the start for that run.
+- Stage fatality in the Challenge Tower: Foul Ball = challenge 25 (Nightwolf vs Sonya, The Dead Pool; Master of Ice is
+  in TowerBlock44). Skipped to it on the test saves (koins 74061 left); the bot's Down Down Down Block never landed the
+  stage fatality (3 tries, gap 89 and ~170, then the challenge failed), so the tower path is unverified. The report was
+  most likely from 1.0.11, which had no stage fatalities at all.
+- Controller dead after an online drop: a session's end always restarts the game (session.cpp Back) with
+  --mk9_online_show=true; that copy opens F1 itself, and while it is open the port gives the game a neutral pad and no
+  keys (mk9_overlay_input.cpp GameMayRead). If the new window opens behind another one, SDL drops gamepad events
+  (SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS unset), so even Back+Y can't close F1. Mod: keys.c online_return_poll
+  raises the window for 20 s if it is not in front and says "Online session over. The online window is open ... press
+  F1, or Back and Y"; plugin.c sets SDL_JOYSTICK_ALLOW_BACKGROUND_EVENTS=1 for every copy started from a copy (session
+  restarts, back to the lobby, saves relaunch) and launch.cmd sets it for the first. Message verified by starting with
+  --mk9_online_show=true; the raise path (window behind) and the pad in the background not tested.
+- RE: `hook off|on ADDR` switches one of the mod's guest hooks; fight.c logs every game state change.
+- Bots: stop pressing keys when the fight state ends (a hammering loop cycled the tower Failure menu for 30 s and the
+  user closed the game).
+
+## Joining rooms by code (2026-11-27, user request; deployed, not committed or released)
+- Text boxes: ImGui::InputText in mk9.exe matches the DLL's copy for 10 bytes only (other stack frame) and
+  InputTextEx's prologue matches 5 functions, so InputText is found through the port's "##code" label: the first call
+  after its LEA (exe+471c380 on 1.4.2). Hooked; its buffer pointer is tagged on the box's ItemAdd (ImItem.buf) and read
+  with ReadProcessMemory. Typed text is not drawn through the hooked AddText (inlined), so this is the only way in.
+- Said: the box's contents when it's reached ("text box, has A B C" / "empty", kept out of the compared item text so
+  typing doesn't re-read it); a room-code box mentions a 4-8 letter/digit code on the clipboard ("Control V pastes
+  it", or "Control A ... then Control V replaces it" when the box isn't empty; the clipboard is only opened when the
+  item is spoken, never per frame). While typing: each character, "<c> deleted", "Box empty", "Box has ..." after a
+  replace, and a paste after earlier text: "Added to what was there. The box had X Y, now it has X Y 3 V 5 T B 2.
+  Control A then Control V replaces it all." The Join button reads the box: "Join with a code: 3 V 5 T B 2, Join".
+  Enter in a box doesn't re-read it.
+- Join result (status lines from room.cpp/i18n.cpp, English/Spanish/Portuguese): guest "In X's room" or host
+  "Opponent in the room" = rising chime (523/659/784 Hz soft); does not answer / already has two players / already
+  full / code must have 4 to 8 = low falling pair. Only on a change in a window already showing; 3 s apart. Then,
+  queued after the screen's own reading: "Joined X's room" (guest) / "Could not join. Room Z Q 7 X K 2 does not
+  answer" (the failure status was not read before: the tab change swallowed it). A wrong code fails after the port's
+  10 s (kJoinFor).
+- Tested on the real lobby: a made-up code ZQ7XK2 (paste after ABC, Ctrl+A replace, Backspace, failure sound + words
+  after 10 s), then two copies (host = game on test saves, guest = a temporary work\fresh with game_root and costumes
+  as junctions, own saves, name MKATest; removed after): host made a private room, Copy code, guest pasted after "XY",
+  replaced, joined: chime both sides, "Joined BlindChallengerX's room"; left and joined again. Sounds not heard by
+  the user. A cheap guest copy for duo.py: junctions instead of install.ps1 (remove them with rmdir before deleting).

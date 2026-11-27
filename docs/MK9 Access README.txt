@@ -329,7 +329,9 @@ checked or not checked. A dropdown (a setting with a value) opens with Enter
 or Space; the arrows pick a value and Enter keeps it.
 On a text box (your username, a room code, a chat line): reached with Tab,
 you are already typing in it ("text box, typing"): type and press Enter.
-Reached with the arrows, press Enter first, type, and press Enter again. If
+Reached with the arrows, press Enter first, type, and press Enter again. A box
+says what it already holds ("text box, has A B C" or "empty"), each letter you
+type is repeated, and Backspace says the letter it deleted. If
 nothing answers to Tab (after Escape at the top of the window), Tab puts the
 focus back on the first item. A list (the open rooms, the chats, replays) is entered
 with Enter; then the arrows move through its rows and Escape leaves it. Each
@@ -344,6 +346,12 @@ The Rooms tab:
 - Create private room: the room's code is read letter by letter. "Copy code"
   puts it on the clipboard (you hear "Code copied"); paste it to your friend,
   who chooses "Join with a code".
+- Join with a code: when a code is on the clipboard, the box tells you and
+  Control V pastes it. If the box already had something, you hear what it
+  holds now; Control A, then Control V, replaces it. The Join button reads the
+  code it will use. Joining plays a rising chime and says "Joined (name)'s room";
+  a code that doesn't work plays a low pair and says why (a wrong code takes
+  about 10 seconds). The host hears the chime when someone comes in.
 - Create public room: anyone can join it from the list.
 In the room, when both press "I'm ready", the game starts again by itself,
 connected to the other player. Don't press anything while it restarts.
@@ -356,6 +364,9 @@ when you are player 2. A bad connection is said once ("Unstable connection",
 "Waiting for (name)"); F5 reads the opponent's name, the ping and the input
 delay. After the match the loser chooses Rematch, another fighter or the menu.
 To leave: F1, Room tab, "End the session and go back to the lobby".
+When a session ends (left, or the connection dropped) the game starts again with
+the online window open, and the game ignores the controller until it closes:
+you hear "Online session over"; press F1, or Back and Y on the controller.
 
 Both players need the same version of MK9 by Lauta; the mod keeps yours up to
 date (section 9).

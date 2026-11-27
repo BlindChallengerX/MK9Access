@@ -183,6 +183,12 @@ static void relaunch_for_saves(void) {
 
 __declspec(dllexport) void rex_mod_init(const RexModHost *host) {
     g_host = host;
+    /* The controller keeps working while the game window is not in front: SDL drops gamepad events in the
+     * background by default, and the copy the port starts after an online session can open behind another window
+     * (forum report 2026-11-25: controller dead after a dropped connection). SDL reads this when it starts, which in
+     * this copy has already happened, so it takes effect in every copy started from here (session restarts, the way
+     * back to the lobby, the saves relaunch); the launch .cmd sets it for the first one. */
+    SetEnvironmentVariableW(L"SDL_JOYSTICK_ALLOW_BACKGROUND_EVENTS", L"1");
     relaunch_for_saves();
     plog("accessibility plugin: starting MK9Access.dll");
     GetModuleFileNameW(NULL, g_dir, MAX_PATH);   /* mk9.exe, so the folder is the game folder */
