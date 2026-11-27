@@ -1062,12 +1062,17 @@ static void badge_poll(void) {
 const char *im_rival_name(void) { return g_badge_rival; }
 
 int im_practice_record_on(void) { return g_ready && GetTickCount() - g_rec_panel_t < 500; }
+/* in a Practice fight: the port's frame data panel is drawn there all the time */
+int im_practice_on(void) { return g_ready && GetTickCount() - g_fd_panel_t < 1500; }
+int im_fd_auto(void) { return g_fd_auto; }
+void im_fd_auto_set(int on) { g_fd_auto = on != 0; }
 int im_practice_nothing_recorded(void) { return im_practice_record_on() && g_rec.mode == 1 && !g_rec.len[0]; }
 
 void im_frame_data_key(int shift) {
     if (!g_ready || GetTickCount() - g_fd_panel_t > 500) { speak(L"Frame data is only shown in Practice", 1); return; }
     if (shift) {
         g_fd_auto = !g_fd_auto;
+        fset_save();
         speak(g_fd_auto ? L"Frame data after every attack" : L"Frame data on F10 only", 1);
         return;
     }

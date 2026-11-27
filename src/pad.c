@@ -90,6 +90,18 @@ static void h_get_state(PPCContext *c, uint8_t *b) {
         if (g_inject_rx) *(uint16_t *)gptr(st + 12) = _byteswap_ushort((uint16_t)g_inject_rx);
         if (g_inject_ry) *(uint16_t *)gptr(st + 14) = _byteswap_ushort((uint16_t)g_inject_ry);
     } else if (g_inject_on) { g_inject_on = 0; InterlockedIncrement(&g_pkt_bias); }
+    /* The accessibility menu (Back + A, a11ymenu.c) takes the controller: the game sees it idle while the menu is
+     * open and until every button is let go after it closes (B or Back + A closing it must not act in the game).
+     * A held Back also hides A from the game, so Back + A never chooses something in a game menu. */
+    {
+        static int masking;
+        int16_t lx = (int16_t)g16(st + 8), ly = (int16_t)g16(st + 10);
+        int idle = !btn && lx > -12000 && lx < 12000 && ly > -12000 && ly < 12000;
+        int want = a11y_menu_open() || (masking && !idle);
+        if (want != masking) { masking = want; InterlockedIncrement(&g_pkt_bias); }
+        if (masking) memset(gptr(st + 4), 0, 12);                  /* buttons, triggers, both sticks */
+        else if ((btn & 0x20) && (btn & 0x1000)) *(uint16_t *)gptr(st + 4) = _byteswap_ushort((uint16_t)(btn & ~0x1000));
+    }
     if (g_pkt_bias) w32(st, g32(st) + (uint32_t)g_pkt_bias);
     mot_record(0, btn, (int16_t)g16(st + 8), (int16_t)g16(st + 10));
     if ((btn & 3) && !(g_pad_buttons & 3)) InterlockedIncrement(&g_pad_moves);

@@ -301,6 +301,12 @@ static const struct { int code; const wchar_t *ext; const char *online, *said; }
 
 static int lang_index(int code) { for (int i = 0; i < NLANG; i++) if (k_lang[i].code == code) return i; return -1; }
 int lang_code(void) { return g_lang; }
+/* the language the game starts in next time, by its own name ("English", "Español") */
+void lang_next_name(char *out, size_t cap) {
+    int i = lang_index(g_lang_next ? g_lang_next : g_lang);
+    const char *s = i >= 0 ? k_lang[i].said : "English.";
+    snprintf(out, cap, "%.*s", (int)strcspn(s, "."), s);
+}
 /* between the game's own choice words ("Sí o No") */
 const char *lang_or(void) {
     switch (g_lang) { case 5: case 6: return " o "; case 9: case 4: return " ou "; case 3: return " oder "; default: return " or "; }
@@ -401,6 +407,18 @@ static int pc_drop(const MSG *m) {
 static LRESULT CALLBACK getmsg_proc(int code, WPARAM wp, LPARAM lp) {
     if (code == HC_ACTION && lp) {
         MSG *m = (MSG *)lp;
+        int down = m->message == WM_KEYDOWN || m->message == WM_SYSKEYDOWN;
+        /* the accessibility menu (F4, game.c) has the keyboard while it is open: the game gets no presses (key-ups
+         * pass so nothing stays held); F4 itself is handled with the other mod keys */
+        /* Shift / Ctrl / Alt + F8 are the mod's; ImGui would also take them as the port's F8 in Practice */
+        if (down && m->wParam == VK_F8 && (GetKeyState(VK_SHIFT) < 0 || GetKeyState(VK_CONTROL) < 0 || GetKeyState(VK_MENU) < 0)) {
+            m->message = WM_NULL;
+        } else if (down && a11y_menu_open()) {
+            if (m->wParam != VK_F4) a11y_menu_key((int)m->wParam);
+            m->message = WM_NULL;
+        } else if (a11y_menu_open() && (m->message == WM_CHAR || m->message == WM_SYSCHAR)) {
+            m->message = WM_NULL;
+        } else
         /* Ctrl+Tab in a port window with tabs (F2, F1): the mod changes the tab; ImGui would switch windows */
         if (m->message == WM_KEYDOWN && m->wParam == VK_TAB && GetKeyState(VK_CONTROL) < 0 && im_tabs_on()) {
             if (!(m->lParam & (1 << 30))) im_tab_step(GetKeyState(VK_SHIFT) < 0 ? -1 : 1);   /* not auto-repeat */
@@ -529,3 +547,16 @@ void keys_poll(void) {
 }
 
 void keys_shutdown(void) { if (g_msg_hook) { UnhookWindowsHookEx(g_msg_hook); g_msg_hook = NULL; } }
+
+/* Practice, plain F8: the port changes player 1's fighter while recording (mk9_practice_record.cpp, the cvar
+ * mk9_practice_record_guard: stand -> crouch -> none -> stand) on its next frame; said once it has. */
+static DWORD WINAPI guard_thread(LPVOID unused) {
+    (void)unused;
+    Sleep(150);
+    char v[32]; flag_str("mk9_practice_record_guard", v, sizeof v);
+    const char *s = !strcmp(v, "stand") ? "blocks standing" : !strcmp(v, "crouch") ? "blocks crouching" : "stands still";
+    char msg[96]; snprintf(msg, sizeof msg, "While recording, your fighter %s", s);
+    int was = speech_force(1); speak_utf8(msg, 1); speech_force(was);
+    return 0;
+}
+void practice_guard_say(void) { HANDLE t = CreateThread(NULL, 0, guard_thread, NULL, 0, NULL); if (t) CloseHandle(t); }

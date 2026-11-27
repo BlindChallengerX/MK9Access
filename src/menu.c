@@ -886,7 +886,7 @@ static void krypt_side(float x, char *out, size_t cap) {
     snprintf(out, cap, "%s", x < 470 ? "left" : x > 810 ? "right" : "ahead");
 }
 
-/* F4 in the Krypt: the other koffins in view; Shift+F4: pings on/off. 0 = not in the Krypt. */
+/* In the Krypt: Shift+F4 (game.c) the other koffins in view; Ctrl+F4: pings on/off. 0 = not in the Krypt. */
 int krypt_key(int vk, int shift) {
     if (vk != VK_F4 || !g_krypt_active_t || GetTickCount() - g_krypt_active_t > 600000) return 0;
     if (shift) {

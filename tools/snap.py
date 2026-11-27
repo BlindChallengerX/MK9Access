@@ -8,7 +8,8 @@ class MBI(ctypes.Structure):
                 ('__a', w.DWORD), ('RegionSize', ctypes.c_ulonglong), ('State', w.DWORD), ('Protect', w.DWORD), ('Type', w.DWORD), ('__b', w.DWORD)]
 k.VirtualQueryEx.argtypes = [w.HANDLE, ctypes.c_void_p, ctypes.POINTER(MBI), ctypes.c_size_t]
 
-def regions(lo=0x100000000 + 0x40000000, hi=0x100000000 + 0xA0000000):
+def regions(lo=None, hi=None):
+    lo = mk9.GBASE + 0x40000000 if lo is None else lo; hi = mk9.GBASE + 0xA0000000 if hi is None else hi
     """committed RW guest regions (default: guest 0x40000000-0xA0000000 heaps)"""
     out = []; a = lo; m = MBI()
     while a < hi and k.VirtualQueryEx(mk9.hproc, ctypes.c_void_p(a), ctypes.byref(m), ctypes.sizeof(m)):
@@ -44,4 +45,4 @@ def show(addrs, width=4):
     for a in addrs[:40]:
         b = mk9.read(a, width)
         v = int.from_bytes(b, 'big') if b else None
-        print(hex(a - 0x100000000), v)
+        print(hex(a - mk9.GBASE), v)

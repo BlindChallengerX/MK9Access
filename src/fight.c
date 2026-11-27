@@ -65,7 +65,11 @@ static int me_slot(void) {
 }
 
 enum { CUE_OFF, CUE_CLICKS, CUE_HUM, CUE_N };
-static int s_cue = CUE_CLICKS, s_hp_tones = 1, s_vol = 2, s_fight_speech = 0;
+static int s_cue = CUE_CLICKS, s_hp_tones = 1, s_vol = 2, s_fight_speech = 0;   /* health tones: 0 off, 1 at 50/25 %, 2 also 75 % */
+/* Combo readout (2026-11-27, from TBlaze's MKX Access): "3 hits, 14 percent" when a combo ends; 0 off, 1 in Practice
+ * (default: speech only as a learning aid), 2 in every fight. Overall volume of the mod's sounds 0-100 (0 off). */
+enum { COMBO_OFF, COMBO_PRACTICE, COMBO_ALL, COMBO_N };
+static int s_combo = COMBO_PRACTICE, s_master = 100;
 static int s_hvol = 2;                  /* attack height sounds: 0 off, 1-4 */
 static const float k_hgain[5] = { 0, 0.5f, 0.71f, 1.0f, 1.41f };
 static const float k_vol[4] = { 0.5f, 0.71f, 1.0f, 1.41f };    /* about -6, -3, 0, +3 dB */
@@ -88,10 +92,11 @@ static void settings_save(void) {
     if (!f) { log_line("fight: settings not saved"); return; }
     static const char *desc[DESC_N] = { "voice", "screen_reader", "off" };
     fprintf(f, "distance_cue=%s\ndistance_volume=%d\nhealth_tones=%d\nfight_speech=%d\nheight_sounds=%d\n"
-            "descriptions=%s\ndescription_volume=%d\n", cue[s_cue], s_vol + 1, s_hp_tones, s_fight_speech, s_hvol,
-            desc[s_desc], s_dvol);
+            "descriptions=%s\ndescription_volume=%d\ncombo_readout=%d\nvolume=%d\nframe_data_auto=%d\n", cue[s_cue],
+            s_vol + 1, s_hp_tones, s_fight_speech, s_hvol, desc[s_desc], s_dvol, s_combo, s_master, im_fd_auto());
     fclose(f);
 }
+static void master_apply(void) { g_master = 1.2f * (float)s_master / 100.0f; }
 static void settings_load(void) {
     static int done;
     if (done) return;
@@ -104,7 +109,10 @@ static void settings_load(void) {
     while (fgets(line, sizeof line, f)) {
         if (sscanf(line, "distance_cue=%63s", v) == 1) s_cue = !strcmp(v, "off") ? CUE_OFF : !strcmp(v, "hum") ? CUE_HUM : CUE_CLICKS;
         else if (sscanf(line, "distance_volume=%d", &n) == 1 && n >= 1 && n <= 4) s_vol = n - 1;
-        else if (sscanf(line, "health_tones=%d", &n) == 1) s_hp_tones = n != 0;
+        else if (sscanf(line, "health_tones=%d", &n) == 1) s_hp_tones = n < 0 ? 0 : n > 2 ? 2 : n;
+        else if (sscanf(line, "combo_readout=%d", &n) == 1 && n >= 0 && n < COMBO_N) s_combo = n;
+        else if (sscanf(line, "volume=%d", &n) == 1 && n >= 0 && n <= 100) s_master = n / 10 * 10;
+        else if (sscanf(line, "frame_data_auto=%d", &n) == 1) im_fd_auto_set(n != 0);
         else if (sscanf(line, "fight_speech=%d", &n) == 1) s_fight_speech = n != 0;
         else if (sscanf(line, "height_sounds=%d", &n) == 1 && n >= 0 && n <= 4) s_hvol = n;
         else if (sscanf(line, "descriptions=%63s", v) == 1)
@@ -112,8 +120,10 @@ static void settings_load(void) {
         else if (sscanf(line, "description_volume=%d", &n) == 1 && n >= 1 && n <= 5) s_dvol = n;
     }
     fclose(f);
+    master_apply();
     log_line("fight: settings cue %d volume %d health tones %d fight speech %d height sounds %d descriptions %d "
-             "voice %d", s_cue, s_vol + 1, s_hp_tones, s_fight_speech, s_hvol, s_desc, s_dvol);
+             "voice %d combo %d overall %d", s_cue, s_vol + 1, s_hp_tones, s_fight_speech, s_hvol, s_desc, s_dvol,
+             s_combo, s_master);
 }
 
 int desc_mode(void) { settings_load(); return s_desc; }
@@ -137,7 +147,8 @@ void desc_key(int shift) {
 /* Read from any thread before speaking. The pause menu, the port overlay and a challenge result speak at once,
  * without waiting for the next poll. */
 static volatile int s_end;              /* a Ladder ending or the credits (fight_ending) */
-int fight_live(void) { return s_live && !s_hold && !s_over && !s_end && !g32(PAUSED) && !im_menu_on(); }
+static volatile DWORD s_preview_until;  /* the accessibility menu is playing a cue for the player to hear */
+int fight_live(void) { return s_live && !s_hold && !s_over && !s_end && !g32(PAUSED) && !im_menu_on() && !a11y_menu_open(); }
 int fight_quiet(void) { return !s_fight_speech && fight_live(); }
 
 static void cues_off(void) { hum_set(0, 110, 0, 0, W_SOFT); hum_trem(0, 0); click_set(0, 0, 0, 700); }
@@ -229,15 +240,17 @@ int fight_winner_name(char *out, size_t cap) {
 
 static void hp_tones(int p, float before, float after, float pan) {
     if (!s_hp_tones) return;
-    static const float marks[2] = { 0.5f, 0.25f };
-    for (int m = 0; m < 2; m++) {
+    /* 75 % only when chosen (MKX Access warns at 75, 50 and 25); mine fall lower and theirs climb higher as health goes */
+    static const float marks[3] = { 0.5f, 0.25f, 0.75f };
+    static const float mine_f[3] = { 392, 294, 494 }, theirs_f[3] = { 587, 784, 440 };
+    for (int m = 0; m < (s_hp_tones == 2 ? 3 : 2); m++) {
         if (!(before > marks[m] && after <= marks[m])) continue;
         if (p == 0) {     /* mine: falling, low, centred */
-            float f = m ? 294 : 392;
+            float f = mine_f[m];
             tone_at(0, f, f, 0.12f, 0.16f, 0, W_SOFT);
             tone_at(0.15f, f * 0.75f, f * 0.75f, 0.16f, 0.16f, 0, W_SOFT);
         } else {          /* theirs: rising, higher, from their side */
-            float f = m ? 784 : 587;
+            float f = theirs_f[m];
             tone_at(0, f, f, 0.10f, 0.13f, pan, W_SOFT);
             tone_at(0.13f, f * 1.335f, f * 1.335f, 0.12f, 0.13f, pan, W_SOFT);
         }
@@ -290,13 +303,17 @@ static void height_play(int h, int blocked, float delay, float pan, float gain) 
     sfx_play(s_hsnd[h][blocked], delay, gain, pan, 1.0f);
 }
 
-static float s_dealt[2] = { -1, -1 };    /* damage dealt at the last poll: mine, the opponent's */
+static float s_dealt[2];                 /* damage dealt at the last poll: mine, the opponent's */
+/* known since the last pause / round: the value itself can be negative (Practice, after the dummy's health refills:
+ * -0.13 rising with each hit, seen 2026-11-27), so it can't double as the "not known" mark (before, every hit after
+ * a refill went unheard: no knock, no combo) */
+static int s_dealt_ok[2];
 static DWORD s_hcue_at[2];
 
 static int kind_of(uint32_t obj) { return (int)(g32(obj + O_ACTION) >> 8 & 0xFF); }
 
-/* attacker 0 = me, 1 = the opponent; pan = the opponent's side */
-static void height_contact(int attacker, uint32_t touched, float pan) {
+/* attacker 0 = me, 1 = the opponent; pan = the opponent's side. Returns 1 when the attack was blocked. */
+static int height_contact(int attacker, uint32_t touched, float pan) {
     int k1 = kind_of(touched);
     Sleep(4);
     int k = kind_of(touched);
@@ -306,11 +323,50 @@ static void height_contact(int attacker, uint32_t touched, float pan) {
     static const char *hn[H_N] = { "high", "mid", "low", "overhead" };
     log_line("fight: %s %s %s (level %u, kind %02x)", attacker ? "opponent" : "me", h < 0 ? "no height" : hn[h],
              blocked ? "blocked" : "landed", level, k);
-    if (h < 0 || !s_hvol) return;
+    if (h < 0 || !s_hvol) return blocked;
     DWORD now = GetTickCount();
-    if (now - s_hcue_at[attacker] < 70) return;  /* multi-hit specials: one knock per 70 ms */
+    if (now - s_hcue_at[attacker] < 70) return blocked;  /* multi-hit specials: one knock per 70 ms */
     s_hcue_at[attacker] = now;
     height_play(h, blocked, 0, attacker ? 0 : pan, k_hgain[s_hvol]);
+    return blocked;
+}
+
+/* ---------- combo readout ----------
+ * The combo counter's numbers are not drawn through the hooked text calls (only its "HITS" / "Damage" labels are
+ * localized), so the mod counts: a landed hit while the one hit is still reeling (action kind 0x40-0x5F except 0x4F,
+ * the crouching block reaction: 0x46 while hit, through a launcher's air time and the knockdown; 0x62 getting up, 0x00
+ * free - measured on the Practice dummy 2026-11-27) adds to the combo; the damage is the drop in their health since
+ * just before the first hit. Said when they are free again: "3 hits, 14 percent", a single hit "4 percent"; the
+ * opponent's on me "Took 3 hits, 14 percent". */
+typedef struct { int n; float hp0; int free_polls; DWORD hit_t; } Combo;
+static Combo s_cb[2];                    /* by attacker: 0 me, 1 the opponent */
+static int reeling(int kind) { return kind >= 0x40 && kind < 0x60 && kind != 0x4F; }
+
+static int combo_wanted(void) {
+    return s_combo == COMBO_ALL || (s_combo == COMBO_PRACTICE && im_practice_on());
+}
+
+static void combo_hit(int a, float victim_hp_before) {
+    Combo *c = &s_cb[a];
+    if (!c->n) c->hp0 = victim_hp_before;
+    c->n++; c->free_polls = 0; c->hit_t = GetTickCount();
+}
+
+static void combo_poll(const uint32_t obj[2], const float hp[2]) {
+    for (int a = 0; a < 2; a++) {
+        Combo *c = &s_cb[a];
+        if (!c->n) continue;
+        if (reeling(kind_of(obj[1 - a]))) { c->free_polls = 0; continue; }
+        /* free for two polls in a row (~30 ms), and not in the instant of the hit itself: over */
+        if (++c->free_polls < 2 || GetTickCount() - c->hit_t < 150) continue;
+        int pct = (int)lroundf((c->hp0 - hp[1 - a]) * 100.0f);
+        char msg[96];
+        if (c->n >= 2) snprintf(msg, sizeof msg, a ? "Took %d hits, %d percent" : "%d hits, %d percent", c->n, pct);
+        else snprintf(msg, sizeof msg, a ? "Took %d percent" : "%d percent", pct);
+        log_line("fight: combo %s%s", msg, combo_wanted() ? "" : " (readout off)");
+        if (combo_wanted() && pct > 0) { int was = speech_force(1); speak_utf8(msg, 1); speech_force(was); }
+        c->n = 0;
+    }
 }
 
 /* Ctrl+Alt+F8: each height named, then its sound landing, then blocked */
@@ -368,11 +424,12 @@ void fight_poll(void) {
     if (story_playing()) inplay = 0;
     if (!inplay) {
         if (s_inplay) { cues_off(); s_hp[0] = s_hp[1] = -1; log_line("fight: cues off"); }
-        s_dealt[0] = s_dealt[1] = -1;
+        s_dealt_ok[0] = s_dealt_ok[1] = 0;
         s_inplay = 0;
         s_live = 0;
         s_hold = 0;
         s_over = 0;
+        s_cb[0].n = s_cb[1].n = 0;
         if (s_end) log_line("fight: ending over");
         s_end = 0;
         return;
@@ -383,14 +440,19 @@ void fight_poll(void) {
         if (s_inplay) cues_off();
         s_live = 0;
         s_hp[0] = me.hp; s_hp[1] = op.hp;
-        s_dealt[0] = s_dealt[1] = -1;
+        s_dealt_ok[0] = s_dealt_ok[1] = 0;
         return;
     }
     if (!s_inplay) log_line("fight: cues on");
     s_inplay = 1;
     s_live = 1;
     /* paused (engine flag 0x833DD100, found 2026-11-16) or the port's overlay up: hush, keep counting */
-    if (g32(PAUSED) || im_menu_on()) { cues_off(); s_dealt[0] = s_dealt[1] = -1; return; }
+    /* the accessibility menu too, except while it previews a cue */
+    if (g32(PAUSED) || im_menu_on() || a11y_menu_open()) {
+        if (GetTickCount() >= s_preview_until) cues_off();
+        s_dealt_ok[0] = s_dealt_ok[1] = 0;
+        return;
+    }
     float dx = op.x - me.x, d = fabsf(dx);
     float k = clampf((D_FAR - d) / (D_FAR - D_NEAR), 0, 1);
     /* full side as soon as they are apart (contact is 89): the side matters most up close, for cross-ups */
@@ -412,11 +474,12 @@ void fight_poll(void) {
         float dealt = gf(obj[a] + O_DEALT);
         if (!isfinite(dealt)) continue;
         /* it rises at every contact; a new round starts it again from 0 (no sound) */
-        int contact = s_dealt[a] >= 0 && dealt > s_dealt[a] + 0.00001f;
-        s_dealt[a] = dealt;
-        if (contact) height_contact(a, obj[1 - a], pan);
+        int contact = s_dealt_ok[a] && dealt > s_dealt[a] + 0.00001f;
+        s_dealt[a] = dealt; s_dealt_ok[a] = 1;
+        if (contact && !height_contact(a, obj[1 - a], pan)) combo_hit(a, s_hp[1 - a] >= 0 ? s_hp[1 - a] : (a ? me.hp : op.hp));
     }
     float hp[2] = { me.hp, op.hp };
+    combo_poll(obj, hp);
     for (int p = 0; p < 2; p++) {
         /* a new round refills health: start counting again without tones */
         if (s_hp[p] >= 0 && hp[p] < s_hp[p]) hp_tones(p, s_hp[p], hp[p], pan);
@@ -462,7 +525,9 @@ void fight_key(int vk, int shift, int ctrl) {
             s_vol = (s_vol + 1) % 4;
             speakf(1, "Distance volume %d of 4", s_vol + 1);
         } else if (shift) {
-            s_hp_tones = !s_hp_tones; speak(s_hp_tones ? L"Health tones on" : L"Health tones off", 1);
+            s_hp_tones = (s_hp_tones + 1) % 3;
+            speak(!s_hp_tones ? L"Health tones off" : s_hp_tones == 1 ? L"Health tones at 50 and 25 percent"
+                                                                     : L"Health tones at 75, 50 and 25 percent", 1);
         } else {
             s_cue = (s_cue + 1) % CUE_N;
             static const wchar_t *names[CUE_N] = { L"Distance cue off", L"Distance clicks", L"Distance hum" };
@@ -472,3 +537,107 @@ void fight_key(int vk, int shift, int ctrl) {
         break;
     }
 }
+
+/* ---------- settings for the accessibility menu (a11ymenu.c) ----------
+ * The same settings as the F8 / F12 chords, one value each, saved at once. */
+void fset_value(int id, char *out, size_t cap) {
+    settings_load();
+    static const char *cue[CUE_N] = { "off", "clicks", "hum" };
+    static const char *hp[3] = { "off", "at 50 and 25 percent", "at 75, 50 and 25 percent" };
+    static const char *combo[COMBO_N] = { "off", "in Practice", "in every fight" };
+    static const char *desc[DESC_N] = { "recorded voice", "screen reader", "off" };
+    switch (id) {
+    case FS_CUE: snprintf(out, cap, "%s", cue[s_cue]); break;
+    case FS_CUE_VOL: snprintf(out, cap, "%d of 4", s_vol + 1); break;
+    case FS_HEALTH: snprintf(out, cap, "%s", hp[s_hp_tones]); break;
+    case FS_HEIGHT: if (s_hvol) snprintf(out, cap, "%d of 4", s_hvol); else snprintf(out, cap, "off"); break;
+    case FS_COMBO: snprintf(out, cap, "%s", combo[s_combo]); break;
+    case FS_SPEECH: snprintf(out, cap, "%s", s_fight_speech ? "on" : "off"); break;
+    case FS_DESC: snprintf(out, cap, "%s", desc[s_desc]); break;
+    case FS_DESC_VOL: snprintf(out, cap, "%d of 5", s_dvol); break;
+    case FS_VOLUME: if (s_master) snprintf(out, cap, "%d percent", s_master); else snprintf(out, cap, "off"); break;
+    default: out[0] = 0;
+    }
+}
+
+static int clamp_step(int *v, int d, int lo, int hi) {
+    int n = *v + d;
+    if (n < lo || n > hi) return 0;
+    *v = n;
+    return 1;
+}
+
+/* Left (-1) or Right (+1). Lists go round; numbers stop at their ends (returns 0 there). */
+int fset_step(int id, int d) {
+    settings_load();
+    int ok = 1;
+    switch (id) {
+    case FS_CUE: s_cue = (s_cue + CUE_N + d) % CUE_N; break;
+    case FS_CUE_VOL: ok = clamp_step(&s_vol, d, 0, 3); break;
+    case FS_HEALTH: s_hp_tones = (s_hp_tones + 3 + d) % 3; break;
+    case FS_HEIGHT: ok = clamp_step(&s_hvol, d, 0, 4); break;
+    case FS_COMBO: s_combo = (s_combo + COMBO_N + d) % COMBO_N; break;
+    case FS_SPEECH: s_fight_speech = !s_fight_speech; break;
+    case FS_DESC: s_desc = (s_desc + DESC_N + d) % DESC_N; break;
+    case FS_DESC_VOL: ok = clamp_step(&s_dvol, d, 1, 5); break;
+    case FS_VOLUME: ok = clamp_step(&s_master, 10 * d, 0, 100); master_apply(); break;
+    default: return 0;
+    }
+    if (ok) settings_save();
+    return ok;
+}
+
+static DWORD WINAPI preview_off(LPVOID unused) {
+    (void)unused;
+    Sleep(1350);
+    if (GetTickCount() >= s_preview_until) cues_off();
+    return 0;
+}
+static DWORD WINAPI clip_off(LPVOID unused) { (void)unused; Sleep(3000); clip_stop(); return 0; }
+static void detach(LPTHREAD_START_ROUTINE fn) { HANDLE t = CreateThread(NULL, 0, fn, NULL, 0, NULL); if (t) CloseHandle(t); }
+
+/* What a setting sounds like now: the distance cue at middle distance for a second, a health tone, a knock, a bit of
+ * description voice. Settings without a sound play nothing. */
+void fset_preview(int id) {
+    settings_load();
+    float vol = k_vol[s_vol];
+    switch (id) {
+    case FS_CUE: case FS_CUE_VOL:
+        if (s_cue == CUE_OFF) return;
+        s_preview_until = GetTickCount() + 1300;
+        if (s_cue == CUE_HUM) { hum_set(0, 110.0f * powf(3.0f, 0.5f), (0.035f + 0.065f * 0.5f) * vol, 0, W_SOFT); hum_trem(0, 0); }
+        else click_set(1.0f / (0.450f * powf(0.085f / 0.450f, 0.5f)), (0.075f + 0.035f * 0.5f) * vol, 0, 700);
+        detach(preview_off);
+        break;
+    case FS_HEALTH: case FS_VOLUME:
+        if (id == FS_HEALTH && !s_hp_tones) return;
+        tone_at(0, 392, 392, 0.12f, 0.16f, 0, W_SOFT);
+        tone_at(0.15f, 294, 294, 0.16f, 0.16f, 0, W_SOFT);
+        break;
+    case FS_HEIGHT:
+        if (s_hvol) height_play(H_MID, 0, 0, 0, k_hgain[s_hvol]);
+        break;
+    case FS_DESC_VOL: {
+        wchar_t pat[MAX_PATH], p[MAX_PATH]; WIN32_FIND_DATAW fd;
+        swprintf(pat, MAX_PATH, L"%lsfatalities\\*.wav", g_mod_dir);
+        HANDLE h = FindFirstFileW(pat, &fd);
+        if (h == INVALID_HANDLE_VALUE) return;
+        FindClose(h);
+        swprintf(p, MAX_PATH, L"%lsfatalities\\%ls", g_mod_dir, fd.cFileName);
+        clip_play(p, desc_gain());
+        detach(clip_off);
+        break;
+    }
+    default: break;
+    }
+}
+
+/* Ctrl+Alt+F8's walk through the attack heights, for the menu's Enter */
+void fset_height_learn(void) {
+    if (!InterlockedExchange(&s_learning, 1)) {
+        HANDLE t = CreateThread(NULL, 0, height_learn_thread, NULL, 0, NULL);
+        if (t) CloseHandle(t); else InterlockedExchange(&s_learning, 0);
+    }
+}
+
+void fset_save(void) { settings_load(); settings_save(); }

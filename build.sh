@@ -17,7 +17,7 @@ mkdir -p out/MK9Access out/plugins
 windres src/plugin.rc -O coff -o out/plugin_res.o
 gcc -O2 -Wall -Wextra -shared -s -o out/plugins/mk9access.dll src/plugin.c out/plugin_res.o -static-libgcc
 gcc -O2 -Wall -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -Wno-cast-function-type -shared -o out/MK9Access/MK9Access.dll \
-  src/dllmain.c src/speech.c src/guest.c src/pad.c src/imgui.c src/health.c src/movelist.c src/game.c src/menu.c src/audio.c src/fight.c src/fatality.c src/sysdialog.c src/update.c src/minigame.c src/keys.c src/story.c \
+  src/dllmain.c src/speech.c src/guest.c src/pad.c src/imgui.c src/health.c src/movelist.c src/game.c src/menu.c src/audio.c src/fight.c src/fatality.c src/sysdialog.c src/update.c src/minigame.c src/keys.c src/story.c src/a11ymenu.c \
   $MH/src/hook.c $MH/src/buffer.c $MH/src/trampoline.c $MH/src/hde/hde64.c \
   -I$MH/include -Ithird_party/prism -Isrc -static-libgcc -lole32 -luuid -lsapi -lwinmm -lversion
 cp third_party/prism/prism.dll out/MK9Access/

@@ -142,20 +142,22 @@ editing; on each action press the key you want for it. The action that had
 that key takes the old one, and both are read.
 
 Mod keys:
+  F4          the settings menu (on a controller: hold Back and press A)
   F5          read the port's window that is open (F1 online, F2 options);
               in an online session with no window open: the connection
   F6          health of both fighters, in percent
   F8          distance cue: clicks, hum, or off
   Ctrl+F8     distance cue volume, 4 steps
-  Shift+F8    health tones on or off
+  Shift+F8    health tones: at 50 and 25 percent, also at 75, or off
   Ctrl+Shift+F8  speech during fights on or off (off at first)
   Alt+F8      attack height sounds volume, 4 steps, then off
   Ctrl+Alt+F8 hear the attack height sounds, each one named
-              These settings are kept for the next start.
+              These settings are kept for the next start, and all of them are
+              also in the settings menu (F4).
   F10         Practice: the last attack's frame data
   Shift+F10   Practice: frame data read after every attack, on or off
-  F4          Krypt: the other koffins in view
-  Shift+F4    Krypt: koffin pings on or off
+  Shift+F4    Krypt: the other koffins in view
+  Ctrl+F4     Krypt: koffin pings on or off
   F12         repeat the last thing said
   Alt+F12     descriptions (Story Mode, fatalities): recorded voice, your
               screen reader, or off
@@ -175,8 +177,21 @@ Port keys:
   F1    online (rooms, quick match, chat)
   F2    options (in F1 and F2, Ctrl+Tab changes tabs: see section 8)
   F5, F6, F7   in Practice: record the opponent, play it back, loop it
+  F8    in Practice: your fighter while recording (stands still, blocks
+        standing, blocks crouching); the mod says the new choice
   Don't press F9: it switches the port's rendering mode, and the game has
   crashed after it.
+
+
+The settings menu (F4, or hold Back and press A on a controller) has every
+setting of the mod in one list: distance cue and its volume, health tones,
+attack height sounds, combo readout, speech during fights, descriptions and
+their voice volume, frame data in Practice, keyboard layout, game language and
+the overall volume of the mod's sounds. Up and Down choose, Left and Right
+change the value (saved at once; a sound plays at its new setting), Enter or A
+plays the sound again (on Attack height sounds: each height, named), Home and
+End jump to the first and last item, Escape or B closes it. While it is open
+the game gets none of your keys or buttons.
 
 
 4. FIGHTS
@@ -198,8 +213,13 @@ Ctrl+Shift+F8 turns speech during fights back on.
 
 Health tones: two falling notes, in the middle, when you drop below half and
 below a quarter of your health. Two rising notes, from the opponent's side,
-when they do. F6 tells you both health values in percent. Shift+F8 turns the
-tones off.
+when they do. F6 tells you both health values in percent. Shift+F8 (or the
+settings menu) adds a warning at 75 percent, or turns the tones off.
+
+Combo readout: when a combo ends, the mod says how many hits and how much
+damage, "3 hits, 14 percent", or just the damage for a single hit. A combo on
+you is "Took 3 hits, 14 percent". It is on in Practice and off in other fights
+at first; the settings menu turns it on everywhere or off.
 
 Attack height sounds: every time an attack lands or is blocked, a short
 wooden knock tells you its height. Low is a low note, mid a middle note,
@@ -277,7 +297,9 @@ your controls move the opponent and your own fighter stands still. F5 again
 ends it, and you hear how long the recording is. F6 makes the opponent play
 it back, F6 again stops it, and F7 turns the loop on or off. The opponent only
 moves if Enemy type is set to Human in the pause menu's AI Options. In
-Practice, F5 and F6 belong to the port, so F6 doesn't read health there.
+Practice, F5 and F6 belong to the port, so F6 doesn't read health there; F8
+changes what your fighter does while recording (the distance cue is in the
+settings menu, F4).
 
 
 7. CHALLENGE TOWER, KRYPT AND MINIGAMES
@@ -289,7 +311,7 @@ read.
 
 Krypt (Extras > Krypt): moving between koffins plays footsteps, and a bump
 when you can't go that way. Each koffin is read with its zone, number and
-price, and your koin balance on entry. F4 lists the other koffins in view
+price, and your koin balance on entry. Shift+F4 lists the other koffins in view
 (side, near or far, price), and soft pings come from their direction.
 Buying reads what you unlocked and your new balance. The map reads each zone
 with how many koffins you have opened.

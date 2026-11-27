@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include "rex_mod.h"
 
-#define MOD_VERSION "1.0.13"
+#define MOD_VERSION "1.0.14"
 
 extern wchar_t g_game_dir[MAX_PATH];   /* folder of mk9.exe, with trailing backslash */
 extern wchar_t g_mod_dir[MAX_PATH];    /* g_game_dir + "MK9Access\" */
@@ -144,7 +144,25 @@ extern volatile float g_master;
 /* fight.c: cues during a fight */
 void fight_poll(void);
 void fight_round_over(void);             /* "<Fighter> WINS!": speech free until the next round */
-void fight_ending(const char *sec);     /* a Ladder ending or the credits: cues held until the fight state ends */
+/* fight.c: the settings the accessibility menu shows */
+enum { FS_CUE, FS_CUE_VOL, FS_HEALTH, FS_HEIGHT, FS_COMBO, FS_SPEECH, FS_DESC, FS_DESC_VOL, FS_VOLUME };
+void fset_value(int id, char *out, size_t cap);
+int fset_step(int id, int d);            /* 0 at the end of a range */
+void fset_preview(int id);
+void fset_height_learn(void);
+void fset_save(void);
+/* a11ymenu.c: the accessibility menu (F4, Back + A) */
+int a11y_menu_open(void);
+void a11y_menu_key(int vk);              /* game window thread: a key press while it is open */
+void a11y_menu_poll(void);
+void a11y_menu_toggle(void);             /* F4 */
+/* imgui.c */
+int im_practice_on(void);
+int im_fd_auto(void);
+void im_fd_auto_set(int on);
+/* keys.c */
+void lang_next_name(char *out, size_t cap);
+void practice_guard_say(void);           /* Practice F8: say the port's new "your fighter while recording" */void fight_ending(const char *sec);     /* a Ladder ending or the credits: cues held until the fight state ends */
 void fight_hold(void);                   /* a challenge result: no fight cues behind its Continue menu */
 void fight_resume(void);                 /* something loads: cues allowed again */
 int fight_live(void);                    /* a fight is being played: not paused, no port window, no result menu */

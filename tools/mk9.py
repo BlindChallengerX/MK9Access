@@ -46,10 +46,20 @@ def find_pid():
         if len(p) > 1 and p[0].strip('"').lower() == 'mk9.exe': return int(p[1])
     return None
 
+def guest_base():
+    """the port's guest base, from the mod's log (0x100000000 up to port 1.4.2, 0x200000000 on 1.4.4)"""
+    try:
+        with open(os.path.join(GAME, 'MK9Access', 'MK9Access.log'), 'rb') as f: data = f.read().decode('utf-8', 'replace')
+        i = data.rfind('guest_base ')
+        if i >= 0: return int(data[i + 11:].split()[0], 16)
+    except (OSError, ValueError): pass
+    return 0x100000000
+
 def attach():
-    global pid, hproc
+    global pid, hproc, GBASE
     pid = find_pid()
     hproc = k.OpenProcess(0x1F0FFF, False, pid) if pid else None
+    GBASE = guest_base()
     return pid
 
 def launch(args=(), wait=0):

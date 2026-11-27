@@ -1,7 +1,7 @@
 #include <winver.h>
 VS_VERSION_INFO VERSIONINFO
-FILEVERSION 1,0,13,0
-PRODUCTVERSION 1,0,13,0
+FILEVERSION 1,0,14,0
+PRODUCTVERSION 1,0,14,0
 FILEOS VOS_NT_WINDOWS32
 FILETYPE VFT_DLL
 BEGIN
@@ -11,11 +11,11 @@ BEGIN
     BEGIN
       VALUE "CompanyName", "MK9 Access (open source accessibility mod)"
       VALUE "FileDescription", "MK9 Access plugin: screen reader mod for MK9 by Lauta (ReXGlue code plugin, loads MK9Access/MK9Access.dll)"
-      VALUE "FileVersion", "1.0.13"
+      VALUE "FileVersion", "1.0.14"
       VALUE "InternalName", "mk9access (MK9 Access plugin)"
       VALUE "OriginalFilename", "mk9access.dll"
       VALUE "ProductName", "MK9 Access"
-      VALUE "ProductVersion", "1.0.13"
+      VALUE "ProductVersion", "1.0.14"
     END
   END
   BLOCK "VarFileInfo"

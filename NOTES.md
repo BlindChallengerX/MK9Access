@@ -874,3 +874,31 @@ recovery (F1 explained, window raised, SDL background pad events), tutorial Cont
 hold (unverified in game), README online section. Commit c03281f, GitHub v1.0.13 (820 files, Defender clean); a 1.0.12
 scratch folder self-updated from GitHub (settings.txt + mk9.toml kept). Zip recycled from Downloads after upload.
 Note for update tests: a scratch folder without mk9.exe takes the first-install path (port download) first.
+
+## Settings menu and combo readout (2026-11-27, after TBlaze's MKX Access; deployed, not committed or released)
+- Reference: TBlaze's MKX Access (github.com/ItsTBlaze/MKX-accessibility, MIT), cloned to Downloads\MKX-accessibility
+  (TBlaze). Its ideas taken: an accessibility menu with every setting and per-sound previews, a combo readout, a 75 %
+  health warning. Still open from it: X-ray / meter sounds, a wall (corner) cue, a "plus and minus only" frame data
+  mode, a mute key, Extras (bios, stats).
+- Menu (src/a11ymenu.c): F4 (Insert was tried first: NVDA and JAWS swallow Insert, it never reaches the game), or
+  Back + A on a controller (port: Back + Y F1, Back + Start F2, Practice Back + LB / RB / X / left / right). 13 items:
+  distance cue, its volume, health tones (off / 50+25 / 75+50+25), attack height sounds (Enter = learn), combo readout
+  (off / in Practice / in every fight), speech during fights, descriptions, voice volume, frame data in Practice,
+  keyboard layout (keys_toggle), game language (lang_cycle), overall volume (0-100 in tens, g_master = 1.2 x %), close.
+  Up / Down (W / S), Left / Right (A / D) change + preview (distance cue 1.3 s at middle distance, a health tone, a
+  knock, 3 s of a fatality clip), Enter / Space / J plays, Home / End, Escape / Backspace / K / B closes. Settings in
+  fight.c's settings.txt (combo_readout=, volume=, frame_data_auto= added). While open: keys.c's message hook drops
+  every key-down (queued to the menu), pad.c gives the game an idle pad until every button is released after closing,
+  and a held Back hides A from the game; fight cues hushed except previews (s_preview_until).
+- Krypt keys moved: Shift+F4 koffins in view, Ctrl+F4 pings (were F4, Shift+F4).
+- Practice on port 1.4.4: plain F8 is the port's (mk9_practice_record.cpp: mk9_practice_record_guard stand / crouch /
+  none); the mod steps aside and says "While recording, your fighter blocks standing" etc. (keys.c practice_guard_say
+  reads the cvar 150 ms later). Shift / Ctrl / Alt + F8 key-downs are dropped before ImGui so they stay the mod's.
+- Combo readout (fight.c): the combo counter's numbers don't pass the text hooks; a landed contact while the victim
+  reels (action kind 0x40-0x5F except 0x4F: 0x46 hit, also through a launcher's air time and knockdown; 0x62 getting
+  up; 0x00 free) adds to the combo; damage = victim health before the first hit minus now; said when they are free
+  for 2 polls and 150 ms after the last hit. Verified on the dummy: 2 jabs "2 hits, 8 percent", jab "3 percent", two
+  jabs apart two readouts, uppercut "12 percent". Not tried: juggles with several hits, the opponent's combos ("Took").
+- Fixed while testing: fight.c used -1 in s_dealt as "not known", but the dealt value goes negative in Practice after
+  the dummy's health refills (-0.13 rising), so every hit after a refill went unheard (no knock, no combo). Now
+  s_dealt_ok. tools/mk9.py reads the guest base from the log (port 1.4.4 moved it to 0x200000000); snap.py follows.
