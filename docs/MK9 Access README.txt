@@ -204,6 +204,13 @@ fighter for about two seconds and you hear what they look like: build, face,
 clothes from top to bottom, footwear and weapons, in their default costume.
 F6 reads it again any time. The settings menu can limit it to F6 only.
 
+Kombat Kodes (local Versus): on the versus screen before the fight each player
+sets three icons, numbered 0 to 9, which make a kode such as 466-466 (unlimited
+super meter). Player 1 changes them with front punch, back punch and front
+kick; player 2 with theirs. After each press the mod says that player's three
+numbers, for example "Player 1: 4 6 6". The screen only lasts a few seconds, so
+know your kode before the fight starts.
+
 4. FIGHTS
 
 The distance clicks play the whole fight, like a parking sensor. They come

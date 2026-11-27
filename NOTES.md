@@ -987,3 +987,19 @@ Spanish audio descriptions (story + fatalities), X-ray ready sounds, fighter loo
 bios/menu/stats, "View" button naming, combo damage rounded down. Commit 42580a0, GitHub v1.0.15 (1529 files, 198 MB,
 Defender clean); a 1.0.14 scratch folder self-updated from GitHub (settings.txt + mk9.toml kept, story_es 632 and
 fatalities_es 76 files arrived). Zip recycled from Downloads after upload.
+
+## Forum reports 2026-11-27 evening (released as 1.0.16)
+- "F4 closes the game when started with the .cmd" + "keys don't work at first start until I switch away and back":
+  reproduced with the real launch.cmd: Windows has the game window in front with the focus, but SDL missed its focus
+  and drops every key (Press Start ignored J / Enter, the attract demo ran). Posting WM_KILLFOCUS / WM_ACTIVATE
+  inactive, then WM_ACTIVATE active / WM_SETFOCUS cures it. A kick 1 s after the window is in front is not enough (SDL
+  lost it again before the title; kicks at 3 s and 15 s failed, the title came at 29 s), so keys.c keys_focus_kick also
+  runs when the title localizes [PlayerSelect] PressStartXbox (at most every 10 s). Verified: launch.cmd start, J at
+  Press Start opens the main menu. The F4 close was not reproduced; likely SDL's Alt+F4 with its Alt state stuck after
+  the player's Alt+Tab around the dead-keys start: F4 key-downs never reach the game now unless Alt is really held
+  (keys.c hook), so a real Alt+F4 still closes it.
+- Kombat Kodes (forum question): versus screen KodeContainer "Showing", KodeContainer.KodeEntry.KodeBox0-5
+  gotoAndStop(frame), frame 1 = icon 0; boxes 0-2 player 1 (U / I / J = front punch / back punch / front kick), 3-5
+  player 2 (numpad 7 / 8 / 4 with the second keyboard player). menu.c kode_event says "Player 1: 4 6 6" after each change.
+  The versus screen lasts about 3 s; whether the game's kode name ([KombatKodes]) is read once a kode works was not
+  seen (100-100 showed nothing; 466-466 did not fit in time).

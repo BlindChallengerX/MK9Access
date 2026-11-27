@@ -413,6 +413,12 @@ static LRESULT CALLBACK getmsg_proc(int code, WPARAM wp, LPARAM lp) {
         /* Shift / Ctrl / Alt + F8 are the mod's; ImGui would also take them as the port's F8 in Practice */
         if (down && m->wParam == VK_F8 && (GetKeyState(VK_SHIFT) < 0 || GetKeyState(VK_CONTROL) < 0 || GetKeyState(VK_MENU) < 0)) {
             m->message = WM_NULL;
+        } else if (down && m->wParam == VK_F4 && !(GetAsyncKeyState(VK_MENU) & 0x8000)) {
+            /* F4 is only the mod's (the settings menu, read with GetAsyncKeyState). The game never sees it: SDL closes
+             * the window on F4 whenever it believes Alt is down, and after a start where it missed the focus (below)
+             * its Alt could stay down - forum report 2026-11-27: "F4 closes the game when started with the .cmd".
+             * A real Alt+F4 still closes the game. */
+            m->message = WM_NULL;
         } else if (down && a11y_menu_open()) {
             if (m->wParam != VK_F4) a11y_menu_key((int)m->wParam);
             m->message = WM_NULL;
@@ -531,10 +537,46 @@ static void online_return_poll(void) {
     state = 2;
 }
 
+/* Started from "MK9 Access launch.cmd" (forum report 2026-11-27, reproduced): the window comes up in front with the
+ * keyboard focus as far as Windows is concerned, but SDL missed its focus and drops every key until the player
+ * switches away and back (Press Start ignored J and Enter; the attract demo ran). Once the window has been in front
+ * for a second, the mod posts it the focus going and coming back, which SDL takes as a real focus change. Harmless
+ * when SDL had it already. */
+void keys_focus_kick(const char *why);
+static void focus_kick_poll(void) {
+    static int done; static DWORD since;
+    if (done) return;
+    WinFind w = { NULL, 0 };
+    EnumWindows(find_game_win, (LPARAM)&w);
+    if (!w.best || GetForegroundWindow() != w.best) { since = 0; return; }
+    if (!since) { since = GetTickCount(); return; }
+    if (GetTickCount() - since < 1000) return;
+    done = 1;
+    keys_focus_kick("start");
+}
+
+/* Also when the title says Press Start (menu.c): kicks during the logos were not enough - SDL lost the focus again
+ * before the title (tried at 3 s and 15 s, the title came at 29 s); one after Press Start cured it. */
+void keys_focus_kick(const char *why) {
+    static DWORD last;
+    if (last && GetTickCount() - last < 10000) return;   /* the title again after the attract demo: fine */
+    WinFind w = { NULL, 0 };
+    EnumWindows(find_game_win, (LPARAM)&w);
+    if (!w.best || GetForegroundWindow() != w.best) return;
+    last = GetTickCount();
+    PostMessageW(w.best, WM_KILLFOCUS, 0, 0);
+    PostMessageW(w.best, WM_ACTIVATE, WA_INACTIVE, 0);
+    Sleep(150);
+    PostMessageW(w.best, WM_ACTIVATE, WA_ACTIVE, 0);
+    PostMessageW(w.best, WM_SETFOCUS, 0, 0);
+    log_line("keys: focus given to the game window again (SDL, %s)", why);
+}
+
 void keys_poll(void) {
     static DWORD last;
     second_player_watch();
     online_return_poll();
+    focus_kick_poll();
     if (g_msg_hook || GetTickCount() - last < 1000) return;
     last = GetTickCount();
     keys_pc_on();

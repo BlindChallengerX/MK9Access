@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include "rex_mod.h"
 
-#define MOD_VERSION "1.0.15"
+#define MOD_VERSION "1.0.16"
 
 extern wchar_t g_game_dir[MAX_PATH];   /* folder of mk9.exe, with trailing backslash */
 extern wchar_t g_mod_dir[MAX_PATH];    /* g_game_dir + "MK9Access\" */
@@ -165,7 +165,9 @@ int im_fd_auto(void);
 void im_fd_auto_set(int on);
 /* keys.c */
 void lang_next_name(char *out, size_t cap);
-void practice_guard_say(void);           /* Practice F8: say the port's new "your fighter while recording" */void fight_ending(const char *sec);     /* a Ladder ending or the credits: cues held until the fight state ends */
+void practice_guard_say(void);           /* Practice F8: say the port's new "your fighter while recording" */
+void keys_focus_kick(const char *why);   /* SDL takes the game window's focus again (dead keys after a .cmd start) */
+void fight_ending(const char *sec);     /* a Ladder ending or the credits: cues held until the fight state ends */
 void fight_hold(void);                   /* a challenge result: no fight cues behind its Continue menu */
 void fight_resume(void);                 /* something loads: cues allowed again */
 int fight_live(void);                    /* a fight is being played: not paused, no port window, no result menu */

@@ -1463,6 +1463,28 @@ void menu_fighter_describe(void) {
     if (!d) { char m[120]; snprintf(m, sizeof m, "No description for %s", g_fd_name); speak_utf8(m, 1); return; }
     speak_utf8(d, 1);
 }
+/* ---------- Kombat Kodes on the versus screen (forum question 2026-11-27) ----------
+ * Local Versus: KodeContainer gotoAndStop "Showing", then KodeContainer.KodeEntry.KodeBox<0-5>.gotoAndStop(frame):
+ * boxes 0-2 player 1 (front punch, back punch, front kick change them), 3-5 player 2; frame 1 = icon 0, and kodes are
+ * written with those digits ("Throwing disabled 100-100"). Each change says that player's three digits. */
+static int g_kode[6]; static DWORD g_kode_shown;
+static int kode_event(FocusEv *e) {
+    if (!strcmp(e->target, "KodeContainer")) {
+        if (!_stricmp(e->arg, "Showing")) { memset(g_kode, 0, sizeof g_kode); g_kode_shown = GetTickCount(); }
+        return 1;
+    }
+    if (strncmp(e->target, "KodeContainer.KodeEntry.KodeBox", 31)) return 0;
+    int b = atoi(e->target + 31), f = atoi(e->arg);
+    if (b < 0 || b > 5 || f < 1) return 1;
+    int was = g_kode[b];
+    g_kode[b] = (f - 1) % 10;
+    if (GetTickCount() - g_kode_shown < 300 || was == g_kode[b]) return 1;   /* the boxes set up as the screen opens */
+    int p = b / 3;
+    char m[64];
+    snprintf(m, sizeof m, "Player %d: %d %d %d", p + 1, g_kode[p * 3], g_kode[p * 3 + 1], g_kode[p * 3 + 2]);
+    int fw = speech_force(1); speak_utf8(m, 1); speech_force(fw);
+    return 1;
+}
 static void on_focus_event(FocusEv *e) {
     if (g_debug) log_line("FOCUS %08x %s %s%s", e->holder, e->target, e->arg, e->stop ? " (stop)" : "");
     if (e->stop && !strcmp(e->target, "navTextBase") && !_stricmp(e->arg, "disable")) {
@@ -1472,6 +1494,7 @@ static void on_focus_event(FocusEv *e) {
     size_t tl0 = strlen(e->target);
     if (e->stop == 2) { ml_highlight(atoi(e->arg), e->t); return; }   /* said once the move's events are in */
     if (preset_event(e)) return;
+    if (kode_event(e)) return;
     if (!strcmp(e->target, "charViewer.stats") && !_stricmp(e->arg, "BuildOn")) {
         g_stats_holder = e->holder; g_stats_due = GetTickCount() + 150; memset(g_stats_master, 0, sizeof g_stats_master);
         return;
@@ -1717,6 +1740,7 @@ static void on_group(LocCall *g, int n) {
     /* a fight or challenge loading: the cues may come back (fight.c holds them after a challenge result) */
     for (int i = 0; i < n; i++) if (!_stricmp(g[i].key, "LOADING")) { fight_resume(); break; }
     for (int i = 0; i < n; i++) if (ending_section(g[i].sec)) { fight_ending(g[i].sec); break; }
+    for (int i = 0; i < n; i++) if (!_stricmp(g[i].key, "PressStartXbox")) { keys_focus_kick("title"); break; }
     DWORD now = GetTickCount();
     uint32_t first_label = 0, focus_label = 0;
     int nlabels = 0, focus = -1, picker = 0;
