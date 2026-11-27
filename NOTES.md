@@ -1014,3 +1014,7 @@ Tested: setup.ps1 in scratch folders (stale -> fixed, same and custom kept); rea
 log "names a folder without the game (moved?)", relaunched with game\saves. The reporter's actual cause is not
 confirmed: other candidates are "Continue without saving" at the profile question, or a game folder Windows won't let
 the game write to. MK9Access\MK9Access.log line "saves: user_data_root = ..." shows the folder each start used.
+
+## 1.0.17 released 2026-11-27
+Moved game folder no longer splits the saves (section above). Commit d26577c, GitHub v1.0.17 (1529 files, Defender
+clean); a 1.0.16 scratch folder self-updated from GitHub (settings.txt + mk9.toml kept). Zip recycled after upload.
