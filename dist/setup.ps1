@@ -41,6 +41,19 @@ Set-Key 'mk9_plugins' 'true' 'MK9 Access: load game\plugins\*.dll'
 Set-Key 'mk9_update_check' 'false' 'MK9 Access updates the port itself (MK9Access\mk9update.ps1)'
 $saves = (Join-Path $GameDir 'saves') -replace '\\', '/'
 Add-Key 'user_data_root' ('"' + $saves + '"') 'MK9 Access: saves in the game folder'
+# A game folder moved or renamed after the first start leaves the old "<old folder>/saves" here, and a bare mk9.exe
+# start would save there (an empty profile). Same rule as the plugin: a value ending in "saves" whose parent holds no
+# mk9.exe is that stale line. A folder the player picked by hand is kept.
+$ri = Find-Key 'user_data_root'
+if ($ri -ge 0 -and $lines[$ri] -match '^\s*user_data_root\s*=\s*["'']([^"'']+)["'']') {
+    $old = $Matches[1].TrimEnd('/', '\')
+    $parent = Split-Path -Parent $old
+    if ((Split-Path -Leaf $old) -ieq 'saves' -and $parent -and
+        ([IO.Path]::GetFullPath($parent).TrimEnd('\') -ine $GameDir.TrimEnd('\')) -and
+        -not (Test-Path -LiteralPath (Join-Path $parent 'mk9.exe'))) {
+        Set-Key 'user_data_root' ('"' + $saves + '"') 'MK9 Access: saves in the game folder'
+    }
+}
 # English: set once per install, whatever was there (the port's own default is Spanish, and its first-start window
 # saves Spanish when the player just accepts it). MK9Access\english_set.txt records it, so a language chosen
 # afterwards (F2 or mk9.toml) is kept.

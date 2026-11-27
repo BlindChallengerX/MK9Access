@@ -128,6 +128,27 @@ static int toml_user_data_root(const wchar_t *game_dir, wchar_t *out, int cap) {
     return 0;
 }
 
+/* setup.ps1 writes the full path "<game>/saves" into mk9.toml on the first start and keeps it. When the player
+ * later moves or renames the game folder, that line still names the old place: the launch .cmd saved in the new
+ * folder while a bare mk9.exe start saved in the old one, an empty profile (forum report 2026-11-27: koins earned,
+ * the Krypt said 0). A value ending in "saves" whose parent holds no mk9.exe is that stale line: use <game>\saves.
+ * A folder the player picked by hand (any other name, or next to an mk9.exe) is kept. */
+static void stale_root_fix(const wchar_t *game_dir, wchar_t *root, int cap) {
+    wchar_t p[MAX_PATH], probe[MAX_PATH];
+    wcsncpy(p, root, MAX_PATH - 1); p[MAX_PATH - 1] = 0;
+    for (wchar_t *c = p; *c; c++) if (*c == L'/') *c = L'\\';
+    size_t n = wcslen(p);
+    while (n && p[n - 1] == L'\\') p[--n] = 0;
+    wchar_t *last = wcsrchr(p, L'\\');
+    if (!last || _wcsicmp(last + 1, L"saves")) return;
+    last[1] = 0;                                             /* p = parent folder with a trailing backslash */
+    if (!_wcsicmp(p, game_dir)) return;
+    swprintf(probe, MAX_PATH, L"%lsmk9.exe", p);
+    if (GetFileAttributesW(probe) != INVALID_FILE_ATTRIBUTES) return;
+    swprintf(root, cap, L"%lssaves", game_dir);
+    plog("mk9.toml user_data_root names a folder without the game (moved?); saving in this game folder's saves");
+}
+
 /* Saves in the folder mk9.toml names (Controlled Folder Access crashes the port in Documents), whichever way the game
  * starts. The port reads user_data_root from the command line or the REX_USER_DATA_ROOT environment variable before
  * any plugin loads (cvar ApplyEnvironment; the command line outranks it), never from mk9.toml in time.
@@ -151,6 +172,7 @@ static void relaunch_for_saves(void) {
     if (!slash) return;
     slash[1] = 0;
     if (!toml_user_data_root(dir, root, MAX_PATH)) return;   /* player chose Documents */
+    stale_root_fix(dir, root, MAX_PATH);
     int inherited = GetEnvironmentVariableW(L"REX_USER_DATA_ROOT", env, MAX_PATH) > 0;
     SetEnvironmentVariableW(L"REX_USER_DATA_ROOT", root);    /* for the copies the port starts */
     if (wcsstr(cmd, L"--user_data_root") || inherited) return;

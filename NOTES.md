@@ -1003,3 +1003,14 @@ fatalities_es 76 files arrived). Zip recycled from Downloads after upload.
   player 2 (numpad 7 / 8 / 4 with the second keyboard player). menu.c kode_event says "Player 1: 4 6 6" after each change.
   The versus screen lasts about 3 s; whether the game's kode name ([KombatKodes]) is read once a kode works was not
   seen (100-100 showed nothing; 466-466 did not fit in time).
+
+## Moved game folder split the saves (forum report 2026-11-27, "0 koins in the Krypt"; released as 1.0.17)
+setup.ps1 wrote the full "<game>/saves" path into mk9.toml once (Add-Key) and never again. After a player moved or
+renamed the game folder, launch.cmd saved in the new folder (`%~dp0saves`) but a bare mk9.exe start (and the
+REX_USER_DATA_ROOT the plugin hands to port-started copies) used the old path: an empty profile, 0 koins.
+Fix (released in 1.0.17): plugin.c `stale_root_fix` and setup.ps1 use <game>\saves when the toml value ends in
+`saves` and its parent folder holds no mk9.exe; a hand-picked folder (other name, or next to an mk9.exe) is kept.
+Tested: setup.ps1 in scratch folders (stale -> fixed, same and custom kept); real bare start with a stale line ->
+log "names a folder without the game (moved?)", relaunched with game\saves. The reporter's actual cause is not
+confirmed: other candidates are "Continue without saving" at the profile question, or a game folder Windows won't let
+the game write to. MK9Access\MK9Access.log line "saves: user_data_root = ..." shows the folder each start used.
