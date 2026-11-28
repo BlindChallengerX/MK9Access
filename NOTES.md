@@ -1070,3 +1070,8 @@ launch.cmd is now goto/call based with CRLF line endings (labels need CRLF). Tes
 (fresh install + port 1.4.3 -> 1.4.4 and mod 1.0.17 -> 1.0.18 self-update), port unzipped in "mk9-lauta-... (1)",
 port zip in the folder, no PowerShell on PATH (curl path). Constrained Language mode itself could not be simulated for a
 child powershell (__PSLockdownPolicy had no effect here); the in-session CLM run showed the silent exit.
+
+## 1.0.19 released 2026-11-28
+First-install fixes (section above) + README install text. Commit 675f9bf, GitHub v1.0.19 (1529 files, Defender clean);
+a fresh "[Ally]" folder from the published zip installed the port through launch.cmd, and a 1.0.18 folder self-updated
+to 1.0.19 from GitHub (new launch.cmd arrived). Zip recycled after upload.
