@@ -163,7 +163,7 @@ static volatile DWORD s_preview_until;  /* the accessibility menu is playing a c
 int fight_live(void) { return s_live && !s_hold && !s_over && !s_end && !g32(PAUSED) && !im_menu_on() && !a11y_menu_open(); }
 int fight_quiet(void) { return !s_fight_speech && fight_live(); }
 
-static void cues_off(void) { hum_set(0, 110, 0, 0, W_SOFT); hum_trem(0, 0); click_set(0, 0, 0, 700); }
+static void cues_off(void) { hum_set(0, 110, 0, 0, W_SOFT); hum_trem(0, 0); click_set(0, 0, 0, 700); light_quiet(); }
 static float s_hp[2] = { -1, -1 };
 static int s_inplay;
 
@@ -515,6 +515,7 @@ void fight_poll(void) {
         float interval = 0.450f * powf(0.085f / 0.450f, k);
         click_set(1.0f / interval, (0.075f + 0.035f * k) * vol, pan, s_air ? 935.0f : 700.0f);
     } else click_set(0, 0, 0, 700);
+    light_poll(me.x, op.x, vol);          /* Challenge Tower "Ancestral Light" only (towerlight.c) */
     uint32_t obj[2] = { me.obj, op.obj };
     for (int a = 0; a < 2; a++) {
         float dealt = gf(obj[a] + O_DEALT);

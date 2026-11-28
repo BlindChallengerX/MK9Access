@@ -344,6 +344,15 @@ price, and your koin balance on entry. Shift+F4 lists the other koffins in view
 Buying reads what you unlocked and your new balance. The map reads each zone
 with how many koffins you have opened.
 
+Challenge 29, Ancestral Light (Nightwolf against Scorpion): your opponent only
+takes damage inside a cone of light that jumps to a new spot every 10 to 15
+seconds. A soft shimmering tone plays from where the light is, to your left or
+right. It rises as your opponent gets nearer to the light and stays high while
+they stand in it. Two rising notes mean they just stepped into the light, two
+falling notes mean they left it, and three quick high notes mean the light has
+moved. Hits land while they are in the light: keep them there or wait for the
+light to come to them.
+
 Fatality challenges ("Perform the displayed Fatality Input") read the input,
 and the fatality you perform is named and described as in any fight. After a
 challenge's Success or Failure the distance cue stays quiet behind the

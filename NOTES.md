@@ -1018,3 +1018,30 @@ the game write to. MK9Access\MK9Access.log line "saves: user_data_root = ..." sh
 ## 1.0.17 released 2026-11-27
 Moved game folder no longer splits the saves (section above). Commit d26577c, GitHub v1.0.17 (1529 files, Defender
 clean); a 1.0.16 scratch folder self-updated from GitHub (settings.txt + mk9.toml kept). Zip recycled after upload.
+
+## Challenge Tower 29 "Ancestral Light": light cue (2026-11-28, forum request; released in 1.0.18)
+Request: "challenge 29 or 30 with Nightwolf and Scorpion, you must hit the opponent in a lit place; I can't do it,
+the place is visual". It is challenge 29 (TowerBlock5, tower.mko): "Opponent only takes damage within the cone of
+light." Tools: work\tower_unpack (ue3unpack of TowerBlock*.xxx; TowerBlock5 holds p_cone_mover,
+ancestral_light_mission(_intro, _damage_callback)).
+- What did NOT work: the cone actor (class vtable 820bba20, in the world actor list TArray at 0x83422D0C {ptr,
+  count, max}; Location at actor +0xDC depth / +0xE0 x / +0xE4 height, Rotator +0xE8/+0xEC) is a searchlight that
+  sways and often sits on Nightwolf; neither its x nor its aimed point predicted which hits did damage (62 bot hits).
+  The beam on screen does not sit at its x either. Don't redo that.
+- What works: the script's static data. Script object = r3 of the by-name lookup 82A10380 (any "ancestral_light_*"
+  or "p_cone_mover"); [script + 0x84] = static data; + 0x27C = the light spot's X (float, same units as fighter
+  actor +0xE0); + 0x284 = 7.47 while it shines, 0 for about a second when it moves. Every 10-15 s the spot becomes
+  the opponent's (sometimes Nightwolf's) position at that moment. A hit does damage when the opponent is within
+  about 133 of the spot: all 18 damaging hits were <= 137 away, all 44 others >= 129 (two edge cases). Script VM
+  notes that got there: handler words in the bytecode are 82A12118 native call (native address follows), 82A17200
+  call a script function, 82A11430 float subtract, 82A11C38 less-than, 82A120C0 jump if false, 82A120F0 jump;
+  operands 0x8000000N = imports (table [script+0xA0], entry idx*16-8 -> storage), 0x40000000|off = static data,
+  else a local. Hit outcome: a non-damaging hit still shows the hit reaction (kind 0x46) but the attacker's +0x3014
+  dealt does not rise, so the height knocks only play for hits that count.
+- towerlight.c: shimmer tone (slot 5, sine 784-1568 Hz, tremolo 0.25) panned by spot - my x (width 200), pitch by
+  the opponent's distance to the spot; in at < 115, out at > 130, held 150 ms, chimes at most every 0.6 s; three
+  notes when the spot moves; quieter while it moves; one spoken explanation per game start 7 s after the load.
+  Reset on tower card / main menu (mg_reset). Verified by bot on the test saves (see the file header); unheard.
+- Test saves: tower skips were NOT kept after the game was closed (back at challenge 7): skip with U then J on
+  each card (150-600 test koins each). The bot loop must stop when the player is down (health poke otherwise kept
+  it pressing keys on the Continue menu).

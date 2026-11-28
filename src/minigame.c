@@ -231,4 +231,4 @@ static void sight_poll(void) {
 void mg_poll(void) { meter_poll(); sight_poll(); }
 
 /* A menu came up (Challenge Tower card, main menu): whatever minigame was running is over. Game thread: only flags. */
-void mg_reset(void) { s_on = 0; s_ts_req = 4; }
+void mg_reset(void) { s_on = 0; s_ts_req = 4; light_reset(); }

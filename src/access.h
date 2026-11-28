@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include "rex_mod.h"
 
-#define MOD_VERSION "1.0.17"
+#define MOD_VERSION "1.0.18"
 
 extern wchar_t g_game_dir[MAX_PATH];   /* folder of mk9.exe, with trailing backslash */
 extern wchar_t g_mod_dir[MAX_PATH];    /* g_game_dir + "MK9Access\" */
@@ -173,6 +173,11 @@ void fight_resume(void);                 /* something loads: cues allowed again 
 int fight_live(void);                    /* a fight is being played: not paused, no port window, no result menu */
 int fight_quiet(void);                   /* a fight is on: the screen reader stays silent unless forced */
 
+/* towerlight.c: Challenge Tower "Ancestral Light": where the light is and whether the opponent stands in it */
+void light_lookup(const char *name, uint32_t script);   /* game thread: a script function looked up by name */
+void light_reset(void);
+void light_poll(float mx, float ox, float vol);
+void light_quiet(void);
 /* minigame.c: Test Your Might / Strike meter tones, Test Your Sight tracking */
 void mg_resolve(uint32_t holder, const char *path);
 void mg_invoke(uint32_t holder, const char *p, const char *arg);

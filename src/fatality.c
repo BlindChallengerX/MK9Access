@@ -69,7 +69,7 @@ static char g_cb_fat[64];             /* the last "Fatality<N>CinemaPostLoadCall
 static volatile LONG g_cb_fat_seq; static LONG g_cb_fat_seen;
 
 static void h_lookup(PPCContext *ctx, uint8_t *base) {
-    uint32_t a = (uint32_t)ctx->r4;
+    uint32_t a = (uint32_t)ctx->r4, scr = (uint32_t)ctx->r3;
     CALL_ORIG(o_lookup, ctx, base);
     InterlockedIncrement(&g_inflight);
     if (a >= 0x40000000u && guest_ok(a, 24)) {
@@ -80,6 +80,7 @@ static void h_lookup(PPCContext *ctx, uint8_t *base) {
             n[k] = c;
         }
         n[k] = 0;
+        light_lookup(n, scr);
         static const char suf[] = "CinemaPostLoadCallback";
         size_t ls = sizeof suf - 1;
         /* stage fatalities: "BgndFatality1CinemaPostLoadCallbackWithAttacker" (the suffix dropped here) */
