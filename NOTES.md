@@ -1045,3 +1045,8 @@ ancestral_light_mission(_intro, _damage_callback)).
 - Test saves: tower skips were NOT kept after the game was closed (back at challenge 7): skip with U then J on
   each card (150-600 test koins each). The bot loop must stop when the player is down (health poke otherwise kept
   it pressing keys on the Continue menu).
+
+## 1.0.18 released 2026-11-28
+Ancestral Light cue (section above). Commit b6d05c3, GitHub v1.0.18 (1529 files, Defender clean); a 1.0.17 scratch
+folder self-updated from GitHub (port downloaded first: an empty scratch folder takes the first-install path). Zip
+recycled after upload.
