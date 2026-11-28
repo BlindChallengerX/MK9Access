@@ -36,30 +36,32 @@ param([string]$GameDir, [int]$WaitPid = 0, [string]$Installed = '', [string]$Mod
 
 $ErrorActionPreference = 'Stop'
 $headers = @{ 'User-Agent' = 'MK9Access-Updater' }      # generic UA, no personal data
+# GitHub only takes TLS 1.2+; PowerShell 5.1 on some Windows setups still offers only TLS 1.0 by default.
+try { [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12 } catch {}
 
 if (-not $GameDir) { $GameDir = Split-Path -Parent $PSScriptRoot }   # MK9Access\ -> game\
-$GameDir = (Resolve-Path $GameDir).Path.TrimEnd('\')
+$GameDir = [IO.Path]::GetFullPath($GameDir).TrimEnd('\')
 $modDir  = Join-Path $GameDir 'MK9Access'
 $logFile = Join-Path $modDir 'update.log'
 $pendingRoot = Join-Path $modDir 'pending'
 
 function Log($msg) {
     try {
-        Add-Content -Path $logFile -Encoding utf8 -Value ((Get-Date -Format 'yyyy-MM-dd HH:mm:ss') + ' ' + $msg)
-        $lines = Get-Content -Path $logFile
-        if ($lines.Count -gt 300) { Set-Content -Path $logFile -Encoding utf8 -Value ($lines | Select-Object -Last 200) }
+        Add-Content -LiteralPath $logFile -Encoding utf8 -Value ((Get-Date -Format 'yyyy-MM-dd HH:mm:ss') + ' ' + $msg)
+        $lines = Get-Content -LiteralPath $logFile
+        if ($lines.Count -gt 300) { Set-Content -LiteralPath $logFile -Encoding utf8 -Value ($lines | Select-Object -Last 200) }
     } catch {}
 }
-$fresh = -not (Test-Path (Join-Path $GameDir 'mk9.exe'))   # first install: no port in this folder yet
+$fresh = -not (Test-Path -LiteralPath (Join-Path $GameDir 'mk9.exe'))   # first install: no port in this folder yet
 function Say($msg) { Log $msg; if ($fresh) { Write-Host $msg } }
 
 function Get-LoggedVersion {
     # the port logs "this program X.Y.Z" every launch; read the newest log.
     try {
-        $log = Get-ChildItem -Path (Join-Path $GameDir 'logs') -Filter 'mk9_*.log' |
+        $log = Get-ChildItem -LiteralPath (Join-Path $GameDir 'logs') -Filter 'mk9_*.log' |
                Sort-Object LastWriteTime -Descending | Select-Object -First 1
         if ($log) {
-            $m = Select-String -Path $log.FullName -Pattern 'this program (\d+\.\d+\.\d+)' | Select-Object -Last 1
+            $m = Select-String -LiteralPath $log.FullName -Pattern 'this program (\d+\.\d+\.\d+)' | Select-Object -Last 1
             if ($m) { return $m.Matches[0].Groups[1].Value }
         }
     } catch {}
@@ -68,7 +70,7 @@ function Get-LoggedVersion {
 
 function Get-ModDllVersion {
     try {
-        $v = (Get-Item (Join-Path $GameDir 'plugins\mk9access.dll')).VersionInfo.ProductVersion
+        $v = (Get-Item -LiteralPath (Join-Path $GameDir 'plugins\mk9access.dll')).VersionInfo.ProductVersion
         if ($v -match '^\d+\.\d+\.\d+') { return $Matches[0] }
     } catch {}
     return $null
@@ -91,17 +93,27 @@ $mod  = @{ Name = 'mod'; Label = 'MK9 Access'; Repo = 'BlindChallengerX/MK9Acces
            Marker = 'plugins\mk9access.dll'; Keep = @(); Status = (Join-Path $modDir 'mod_update_status.txt'); Installed = $ModVersion
            Feed = $env:MK9A_MOD_FEED }
 
-function Set-Status($c, $text) { if (-not $fresh) { Set-Content -Path $c.Status -Encoding ascii -Value $text } }
+function Set-Status($c, $text) { if (-not $fresh) { Set-Content -LiteralPath $c.Status -Encoding ascii -Value $text } }
 
 function Get-Release($c) {
-    if ($c.Feed) { return (Get-Content -Path $c.Feed -Raw | ConvertFrom-Json) }
+    if ($c.Feed) { return (Get-Content -LiteralPath $c.Feed -Raw | ConvertFrom-Json) }
     return Invoke-RestMethod -Uri "https://api.github.com/repos/$($c.Repo)/releases/latest" -Headers $headers -TimeoutSec 20
 }
 
 function Save-Asset($c, $asset, $zip) {
-    if ($c.Feed) { Copy-Item -Path $asset.browser_download_url -Destination $zip -Force; return }
-    $ProgressPreference = 'SilentlyContinue'                      # PS 5.1's progress bar slows downloads a lot
-    Invoke-WebRequest -Uri $asset.browser_download_url -OutFile $zip -Headers $headers -TimeoutSec 1800 -UseBasicParsing
+    if ($c.Feed) { Copy-Item -LiteralPath $asset.browser_download_url -Destination $zip -Force; return }
+    # WebClient, not Invoke-WebRequest: -OutFile reads [ ] in a folder name as a wildcard and fails
+    $wc = New-Object Net.WebClient
+    try {
+        $wc.Headers['User-Agent'] = $headers['User-Agent']
+        $wc.DownloadFile($asset.browser_download_url, $zip)
+    } finally { $wc.Dispose() }
+}
+
+function Expand-Zip($zip, $dest) {
+    # .NET's unzip, not Expand-Archive: that one fails when the folder name has [ ]
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+    [IO.Compression.ZipFile]::ExtractToDirectory($zip, $dest)
 }
 
 # Step 1 + 2 for one component: returns the unpacked root to install from, or $null (current, offline, no asset).
@@ -115,39 +127,39 @@ function Get-Pending($c) {
         $croot = Join-Path $pendingRoot $c.Name
         if ($latestV -le $installedV) {
             Log "check: $($c.Name) $($c.Installed) is current (latest $latest)"
-            if (Test-Path $croot) { Remove-Item -Path $croot -Recurse -Force -ErrorAction SilentlyContinue }
+            if (Test-Path -LiteralPath $croot) { Remove-Item -LiteralPath $croot -Recurse -Force -ErrorAction SilentlyContinue }
             # a stale "ready"/"failed" (installed some other way meanwhile) must not be spoken; "applied" is the mod's to clear
-            if ((Test-Path $c.Status) -and ((Get-Content -Path $c.Status -Raw) -match '^(ready|failed) ')) { Remove-Item -Path $c.Status -Force }
+            if ((Test-Path -LiteralPath $c.Status) -and ((Get-Content -LiteralPath $c.Status -Raw) -match '^(ready|failed) ')) { Remove-Item -LiteralPath $c.Status -Force }
             return $null
         }
         $pending = Join-Path $croot $latest
         $files   = Join-Path $pending 'files'
         $done    = Join-Path $pending 'complete'
-        if (-not (Test-Path $done)) {                             # kept across starts until installed
+        if (-not (Test-Path -LiteralPath $done)) {                             # kept across starts until installed
             $asset = $rel.assets | Where-Object { $_.name -like $c.Asset } | Select-Object -First 1
             if (-not $asset) { Log "check: $($c.Name) $latest has no $($c.Asset)"; if ($fresh) { throw "version $latest has no Windows download yet" }; return $null }
             Log "update $($c.Name) $($c.Installed) -> $latest : downloading $($asset.name)"
             if ($fresh) { Write-Host ("Downloading $($c.Label) $latest, {0} MB. This can take a few minutes." -f [math]::Round($asset.size / 1MB)) }
-            if (Test-Path $croot) { Remove-Item -Path $croot -Recurse -Force }
+            if (Test-Path -LiteralPath $croot) { Remove-Item -LiteralPath $croot -Recurse -Force }
             New-Item -ItemType Directory -Path $pending -Force | Out-Null
             $zip = Join-Path $pending 'update.zip'
             Save-Asset $c $asset $zip
-            if ((Get-Item $zip).Length -ne $asset.size) { throw "download is $((Get-Item $zip).Length) bytes, expected $($asset.size)" }
+            if ((Get-Item -LiteralPath $zip).Length -ne $asset.size) { throw "download is $((Get-Item -LiteralPath $zip).Length) bytes, expected $($asset.size)" }
             if ($fresh) { Write-Host 'Download finished. Unpacking.' }
-            Expand-Archive -Path $zip -DestinationPath $files -Force
-            Remove-Item -Path $zip -Force
+            Expand-Zip $zip $files
+            Remove-Item -LiteralPath $zip -Force
             $leaf = Split-Path -Leaf $c.Marker
-            $hit = Get-ChildItem -Path $files -Recurse -Filter $leaf |
+            $hit = Get-ChildItem -LiteralPath $files -Recurse -Filter $leaf |
                    Where-Object { $_.FullName.EndsWith('\' + $c.Marker, [StringComparison]::OrdinalIgnoreCase) } | Select-Object -First 1
             if (-not $hit) { throw "the zip has no $($c.Marker)" }
             $root = $hit.FullName.Substring(0, $hit.FullName.Length - $c.Marker.Length).TrimEnd('\')
-            Set-Content -Path $done -Encoding ascii -Value $root
+            Set-Content -LiteralPath $done -Encoding ascii -Value $root
             Log "update $($c.Name) $latest downloaded and unpacked"
         }
         $c.Latest = $latest
         $c.Backup = Join-Path $pending 'backup'
         Set-Status $c "ready $latest"
-        return (Get-Content -Path $done | Select-Object -First 1)
+        return (Get-Content -LiteralPath $done | Select-Object -First 1)
     } catch {
         Log ("$($c.Name) update check failed: " + $_.Exception.Message)   # offline, GitHub down: try again next start
         if ($fresh) { throw }
@@ -161,36 +173,36 @@ function Install-Pending($c, $root) {
     try {
         # mk9.exe / the plugin first: if it is still locked nothing else has been touched yet.
         $first = Split-Path -Leaf $c.Marker
-        $items = Get-ChildItem -Path $root -Recurse -File | Sort-Object { if ($_.Name -ieq $first) { 0 } else { 1 } }
+        $items = Get-ChildItem -LiteralPath $root -Recurse -File | Sort-Object { if ($_.Name -ieq $first) { 0 } else { 1 } }
         foreach ($f in $items) {
             $relPath = $f.FullName.Substring($root.Length).TrimStart('\')
             $target = Join-Path $GameDir $relPath
-            if (($c.Keep -contains $relPath) -and (Test-Path $target)) { continue }   # a first install takes the port's mk9.toml
-            if (Test-Path $target) {
+            if (($c.Keep -contains $relPath) -and (Test-Path -LiteralPath $target)) { continue }   # a first install takes the port's mk9.toml
+            if (Test-Path -LiteralPath $target) {
                 $b = Join-Path $c.Backup $relPath
                 New-Item -ItemType Directory -Path (Split-Path -Parent $b) -Force | Out-Null
-                Copy-Item -Path $target -Destination $b -Force
+                Copy-Item -LiteralPath $target -Destination $b -Force
             } else {
                 New-Item -ItemType Directory -Path (Split-Path -Parent $target) -Force | Out-Null
             }
             $copied.Add($relPath)
-            Copy-Item -Path $f.FullName -Destination $target -Force
+            Copy-Item -LiteralPath $f.FullName -Destination $target -Force
         }
     } catch {
         $why = $_.Exception.Message
         foreach ($relPath in $copied) {                               # put the replaced files back
             $b = Join-Path $c.Backup $relPath
             try {
-                if (Test-Path $b) { Copy-Item -Path $b -Destination (Join-Path $GameDir $relPath) -Force }
-                else { Remove-Item -Path (Join-Path $GameDir $relPath) -Force }
+                if (Test-Path -LiteralPath $b) { Copy-Item -LiteralPath $b -Destination (Join-Path $GameDir $relPath) -Force }
+                else { Remove-Item -LiteralPath (Join-Path $GameDir $relPath) -Force }
             } catch {}
         }
-        if (Test-Path $c.Backup) { Remove-Item -Path $c.Backup -Recurse -Force -ErrorAction SilentlyContinue }
+        if (Test-Path -LiteralPath $c.Backup) { Remove-Item -LiteralPath $c.Backup -Recurse -Force -ErrorAction SilentlyContinue }
         Log "update $($c.Name) $($c.Latest) could not be installed, left as it was: $why"
         Set-Status $c "failed $($c.Latest)"
         return $false
     }
-    Remove-Item -Path (Join-Path $pendingRoot $c.Name) -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item -LiteralPath (Join-Path $pendingRoot $c.Name) -Recurse -Force -ErrorAction SilentlyContinue
     Set-Status $c "applied $($c.Latest)"
     Log "update $($c.Name) to $($c.Latest) installed ($($copied.Count) files)"
     return $true
@@ -200,12 +212,16 @@ function Install-Pending($c, $root) {
 $lock = $null
 try {
     $lock = [IO.File]::Open((Join-Path $modDir 'update.lock'), 'OpenOrCreate', 'ReadWrite', 'None')
-} catch { exit 0 }
+} catch {
+    # first install from launch.cmd: say why instead of closing silently (launch.cmd then tries curl)
+    if ($fresh) { Write-Host ('The download could not start: ' + $_.Exception.Message); exit 1 }
+    exit 0
+}
 
 try {
     # pending\<version> folders from the port-only updater (1.0.5 and older)
-    if (Test-Path $pendingRoot) {
-        Get-ChildItem -Path $pendingRoot -Directory | Where-Object { $_.Name -notin @('port', 'mod') } |
+    if (Test-Path -LiteralPath $pendingRoot) {
+        Get-ChildItem -LiteralPath $pendingRoot -Directory | Where-Object { $_.Name -notin @('port', 'mod') } |
             Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
     }
     if ($fresh) { $port.Installed = '0.0.0'; Say 'MK9 by Lauta is not in this folder yet. Asking GitHub for its latest version.' }

@@ -51,10 +51,14 @@ MK9 by Lauta, the port, is downloaded for you. If you don't have it yet:
 3. A console window says "Getting MK9 by Lauta" and downloads the newest
    version of the port from its GitHub page (about 75 MB), unpacks it into the
    folder and says when it is done. Your screen reader reads each step. If
-   the download fails, the window says why; press any key to close it and
-   start the .cmd again. You can also download the port yourself from
-   https://github.com/machinebreak/mk9-lauta/releases (the
-   windows-x64.zip) and unzip it into the same folder.
+   PowerShell cannot download, it tries again with the download tool that
+   comes with Windows. If that fails too, the window says so; press any key
+   to close it and start the .cmd again. You can also download the port
+   yourself from https://github.com/machinebreak/mk9-lauta/releases (the
+   file that ends in windows-x64.zip): leave the zip in your Downloads
+   folder or put it in this folder, and the .cmd unpacks it by itself. If
+   you unzipped it already and it made a mk9-lauta folder inside this one,
+   the .cmd moves it into place.
 4. The first time, the game files are not there yet, and the same console
    window asks for your .iso. It lists the Mortal Kombat .iso files it finds
    in Downloads, the Desktop, Documents and the game folder: type the number

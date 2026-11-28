@@ -1050,3 +1050,23 @@ ancestral_light_mission(_intro, _damage_callback)).
 Ancestral Light cue (section above). Commit b6d05c3, GitHub v1.0.18 (1529 files, Defender clean); a 1.0.17 scratch
 folder self-updated from GitHub (port downloaded first: an empty scratch folder takes the first-install path). Zip
 recycled after upload.
+
+## First install could not get the port (forum report 2026-11-28, ROG Ally; released in 1.0.19)
+Report: launch.cmd said "MK9 by Lauta could not be downloaded" on the player's PC and ROG Ally, and still said it after
+they downloaded the port by hand. Exact console text not seen. Found and fixed, all tested in scratch folders:
+- A folder name with [ ] broke every PowerShell step: Resolve-Path, -Path, Invoke-WebRequest -OutFile, Expand-Archive
+  and Start-Process all read [ ] as a wildcard. mk9update.ps1 now uses -LiteralPath, [IO.Path]::GetFullPath,
+  Net.WebClient.DownloadFile and IO.Compression.ZipFile; install.ps1 starts mk9.exe with Diagnostics.Process.
+- PowerShell in Constrained Language mode (Smart App Control, AppLocker, security programs) made mk9update.ps1 exit 0
+  without a word (the [IO.File]::Open lock threw and was caught). launch.cmd now says the language mode when it is not
+  FullLanguage, and the lock failure is printed on a first install.
+- Downloading by hand: Windows' Extract All puts the port in a "mk9-lauta-v1.4.4-windows-x64" folder inside the game
+  folder, so mk9.exe was never next to launch.cmd. launch.cmd now moves a mk9-lauta* subfolder up (robocopy /MOVE; only
+  that name, never other folders) or unpacks a mk9-lauta-*windows-x64*.zip from the game folder or Downloads (tar.exe;
+  handles the port zip's backslash paths).
+- Fallback when PowerShell cannot download at all: curl.exe (tag from the releases/latest redirect) + tar.exe.
+- TLS 1.2 forced in mk9update.ps1 (harmless where it is already the default).
+launch.cmd is now goto/call based with CRLF line endings (labels need CRLF). Tested: plain folder, "[Ally]" folder
+(fresh install + port 1.4.3 -> 1.4.4 and mod 1.0.17 -> 1.0.18 self-update), port unzipped in "mk9-lauta-... (1)",
+port zip in the folder, no PowerShell on PATH (curl path). Constrained Language mode itself could not be simulated for a
+child powershell (__PSLockdownPolicy had no effect here); the in-session CLM run showed the silent exit.

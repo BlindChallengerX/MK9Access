@@ -133,8 +133,13 @@ Write-Host 'The port checks the files first and then copies them. This takes a f
 $started = Get-Date
 $env:MK9_TEST_INSTALL = $chosen
 # the same start as the .cmd's: plugins on, saves in the game folder
-$gameArgs = @('--mk9_plugins=true', ('--user_data_root="' + (Join-Path $GameDir 'saves') + '"'))
-$proc = Start-Process -FilePath (Join-Path $GameDir 'mk9.exe') -ArgumentList $gameArgs -WorkingDirectory $GameDir -PassThru
+# (Process.Start, not Start-Process: that one reads [ ] in a folder name as a wildcard and finds no mk9.exe)
+$psi = New-Object Diagnostics.ProcessStartInfo
+$psi.FileName = Join-Path $GameDir 'mk9.exe'
+$psi.Arguments = '--mk9_plugins=true --user_data_root="' + (Join-Path $GameDir 'saves') + '"'
+$psi.WorkingDirectory = $GameDir
+$psi.UseShellExecute = $false
+$proc = [Diagnostics.Process]::Start($psi)
 Remove-Item Env:MK9_TEST_INSTALL
 
 # The port's installer window takes the foreground; bring this console back so the screen reader reads the progress.
